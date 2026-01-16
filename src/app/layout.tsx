@@ -8,7 +8,7 @@ import { Footer } from "@/components/layout/footer"
 import { CustomCursor } from "@/components/ui/custom-cursor"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
-import { PageLoader } from "@/components/ui/page-loader"
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,10 +61,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-black antialiased`}
       >
-        <ThemeProvider>
-          <SmoothScrollProvider>
-            <PageLoader />
-            <CustomCursor />
+          <ThemeProvider>
+            <SmoothScrollProvider>
+              <CustomCursor />
             <ScrollProgress />
             <CommandPalette />
             <Navbar />
