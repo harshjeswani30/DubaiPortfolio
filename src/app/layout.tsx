@@ -9,6 +9,7 @@ import { FloatingNav } from "@/components/layout/floating-nav"
 import { CustomCursor } from "@/components/ui/custom-cursor"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
+import ClickSpark from "@/components/ui/click-spark"
 
 
 const geistSans = Geist({
@@ -62,16 +63,24 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-black antialiased`}
       >
+        <ClickSpark
+          sparkColor="#A5C9CA"
+          sparkSize={10}
+          sparkRadius={15}
+          sparkCount={8}
+          duration={400}
+        >
           <ThemeProvider>
             <SmoothScrollProvider>
               <CustomCursor />
-            <ScrollProgress />
+              <ScrollProgress />
               <CommandPalette />
               <FloatingNav />
               <main className="min-h-screen">{children}</main>
-            <Footer />
-          </SmoothScrollProvider>
-        </ThemeProvider>
+              <Footer />
+            </SmoothScrollProvider>
+          </ThemeProvider>
+        </ClickSpark>
       </body>
     </html>
   )
