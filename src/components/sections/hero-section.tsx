@@ -1,9 +1,9 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Briefcase, Users, Clock, MessageCircle } from "lucide-react"
+import { ArrowRight, Briefcase, Users, Clock, MessageCircle, Sparkles, Code2, Palette } from "lucide-react"
 import Image from "next/image"
 import RotatingText from "@/components/ui/rotating-text"
 
@@ -13,10 +13,17 @@ const stats = [
   { icon: Users, value: "30+", label: "Happy Clients" },
 ]
 
+const floatingTags = [
+  { icon: Code2, text: "React", color: "#61DAFB" },
+  { icon: Palette, text: "UI/UX", color: "#FF6B6B" },
+  { icon: Sparkles, text: "Creative", color: "#A5C9CA" },
+]
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [imageHover, setImageHover] = useState(false)
+  const [activeTag, setActiveTag] = useState<number | null>(null)
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -55,8 +62,8 @@ export function HeroSection() {
     const y = e.clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    cardRotateX.set((y - centerY) / 10)
-    cardRotateY.set((centerX - x) / 10)
+    cardRotateX.set((y - centerY) / 8)
+    cardRotateY.set((centerX - x) / 8)
   }
 
   const handleImageMouseLeave = () => {
@@ -229,130 +236,258 @@ export function HeroSection() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
           style={{ y: imageY }}
-          className="relative flex items-center justify-center flex-shrink-0"
+          className="relative flex items-center justify-center flex-shrink-0 lg:mr-8"
         >
-            <div 
-              className="relative"
-              style={{ perspective: "1000px" }}
+          <div 
+            className="relative"
+            style={{ perspective: "1200px" }}
+          >
+            <motion.div
+              onMouseEnter={() => setImageHover(true)}
+              onMouseMove={handleImageMouseMove}
+              onMouseLeave={handleImageMouseLeave}
+              style={{
+                rotateX: smoothRotateX,
+                rotateY: smoothRotateY,
+                transformStyle: "preserve-3d",
+              }}
+              whileHover={{ scale: 1.03 }}
+              className="relative overflow-hidden cursor-pointer"
             >
-              <motion.div
-                onMouseEnter={() => setImageHover(true)}
-                onMouseMove={handleImageMouseMove}
-                onMouseLeave={handleImageMouseLeave}
-                style={{
-                  rotateX: smoothRotateX,
-                  rotateY: smoothRotateY,
-                  transformStyle: "preserve-3d",
-                }}
-                whileHover={{ scale: 1.02 }}
-                className="relative h-[280px] w-[220px] sm:h-[320px] sm:w-[260px] lg:h-[380px] lg:w-[300px] overflow-hidden rounded-[40px] border-4 border-[#395B64]/50 shadow-2xl cursor-pointer"
+              <svg width="0" height="0" className="absolute">
+                <defs>
+                  <clipPath id="leafShape" clipPathUnits="objectBoundingBox">
+                    <path d="M0.95,0.05 C0.98,0.15 1,0.3 0.98,0.5 C0.95,0.75 0.8,0.9 0.55,0.98 C0.35,1.02 0.15,0.95 0.08,0.8 C0.02,0.65 0,0.45 0.05,0.25 C0.1,0.1 0.25,0.02 0.45,0 C0.65,-0.02 0.85,0 0.95,0.05" />
+                  </clipPath>
+                </defs>
+              </svg>
+              
+              <div 
+                className="relative h-[320px] w-[280px] sm:h-[380px] sm:w-[320px] lg:h-[450px] lg:w-[380px]"
+                style={{ clipPath: "url(#leafShape)" }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#395B64] to-[#2C3333]" />
                 <Image
                   src="/owner.jpg"
                   alt="Developer Portrait"
                   fill
-                  className="object-cover transition-transform duration-500"
-                  style={{ transform: imageHover ? "scale(1.05)" : "scale(1)" }}
+                  className="object-cover transition-transform duration-700"
+                  style={{ transform: imageHover ? "scale(1.1)" : "scale(1)" }}
                   priority
                 />
                 <motion.div 
                   className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-transparent to-transparent"
-                  animate={{ opacity: imageHover ? 0.3 : 0.6 }}
+                  animate={{ opacity: imageHover ? 0.2 : 0.5 }}
                 />
                 
                 <motion.div
-                  className="absolute inset-0 opacity-0 transition-opacity duration-300"
+                  className="absolute inset-0"
                   style={{ 
-                    opacity: imageHover ? 1 : 0,
-                    background: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(165, 201, 202, 0.15) 0%, transparent 50%)"
+                    opacity: imageHover ? 0.6 : 0,
+                    background: "radial-gradient(circle at 70% 30%, rgba(165, 201, 202, 0.3) 0%, transparent 60%)"
                   }}
+                  animate={{ opacity: imageHover ? 0.6 : 0 }}
+                  transition={{ duration: 0.3 }}
                 />
-                
-                <motion.div
-                  className="absolute inset-0 rounded-[36px] border-2 border-[#A5C9CA]/0 transition-all duration-300"
-                  style={{ borderColor: imageHover ? "rgba(165, 201, 202, 0.3)" : "transparent" }}
-                />
-              </motion.div>
-
+              </div>
+              
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ delay: 1, type: "spring", stiffness: 100 }}
-                className="absolute -right-4 top-6 z-30"
+                className="absolute inset-0 pointer-events-none"
+                style={{ 
+                  clipPath: "url(#leafShape)",
+                  border: "3px solid transparent",
+                  background: `linear-gradient(135deg, rgba(165, 201, 202, ${imageHover ? 0.5 : 0.2}) 0%, transparent 50%, rgba(165, 201, 202, ${imageHover ? 0.3 : 0.1}) 100%)`,
+                  WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                  padding: "3px"
+                }}
+                animate={{ 
+                  boxShadow: imageHover 
+                    ? "0 0 60px rgba(165, 201, 202, 0.4), inset 0 0 60px rgba(165, 201, 202, 0.1)" 
+                    : "0 0 30px rgba(165, 201, 202, 0.2)"
+                }}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0, x: 30 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ delay: 1, type: "spring", stiffness: 100 }}
+              className="absolute -right-8 top-8 z-30"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, -8, 0],
+                  rotate: [0, 5, 0]
+                }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                whileHover={{ scale: 1.15, rotate: 10 }}
+                className="group relative cursor-pointer"
+              >
+                <div className="relative rounded-2xl border border-green-400/30 bg-[#2C3333]/90 px-4 py-3 backdrop-blur-xl shadow-[0_0_30px_rgba(74,222,128,0.2)]">
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl"
+                    animate={{ 
+                      boxShadow: ["0 0 20px rgba(74,222,128,0.2)", "0 0 40px rgba(74,222,128,0.4)", "0 0 20px rgba(74,222,128,0.2)"]
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <div className="relative flex items-center gap-3">
+                    <motion.span 
+                      className="relative flex h-3 w-3"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-3 w-3 rounded-full bg-green-400 shadow-[0_0_15px_rgba(74,222,128,0.8)]" />
+                    </motion.span>
+                    <span className="text-sm font-bold text-green-300 tracking-wide">AVAILABLE</span>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {floatingTags.map((tag, index) => (
+              <motion.div
+                key={tag.text}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.2 + index * 0.15, type: "spring", stiffness: 100 }}
+                className="absolute z-30"
+                style={{
+                  left: index === 0 ? "-60px" : index === 1 ? "-40px" : "auto",
+                  right: index === 2 ? "-50px" : "auto",
+                  top: index === 0 ? "25%" : index === 1 ? "55%" : "40%",
+                }}
               >
                 <motion.div
-                  animate={{ y: [0, -6, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  whileHover={{ scale: 1.1, rotate: 3 }}
-                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
+                  animate={{ 
+                    y: [0, index % 2 === 0 ? -10 : 10, 0],
+                    x: [0, index % 2 === 0 ? 5 : -5, 0],
+                    rotate: [0, index % 2 === 0 ? 3 : -3, 0]
+                  }}
+                  transition={{ 
+                    duration: 3 + index * 0.5, 
+                    repeat: Infinity, 
+                    ease: "easeInOut",
+                    delay: index * 0.3
+                  }}
+                  whileHover={{ scale: 1.2, rotate: 0 }}
+                  onHoverStart={() => setActiveTag(index)}
+                  onHoverEnd={() => setActiveTag(null)}
+                  className="group relative cursor-pointer"
                 >
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/10 to-green-500/0"
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                  />
-                  <div className="relative flex items-center gap-2.5">
-                    <span className="relative flex h-2.5 w-2.5">
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
+                  <motion.div 
+                    className="relative flex items-center gap-2 rounded-xl border bg-[#2C3333]/95 px-3 py-2 backdrop-blur-xl shadow-lg"
+                    style={{ 
+                      borderColor: activeTag === index ? tag.color : "rgba(57, 91, 100, 0.6)",
+                    }}
+                    animate={{
+                      boxShadow: activeTag === index 
+                        ? `0 0 25px ${tag.color}40, 0 0 50px ${tag.color}20`
+                        : "0 4px 20px rgba(0,0,0,0.3)"
+                    }}
+                  >
+                    <motion.div
+                      className="absolute inset-0 rounded-xl opacity-0"
+                      style={{ background: `linear-gradient(135deg, ${tag.color}20, transparent)` }}
+                      animate={{ opacity: activeTag === index ? 1 : 0 }}
+                    />
+                    <motion.div
+                      animate={{ rotate: activeTag === index ? 360 : 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <tag.icon 
+                        className="h-4 w-4 relative z-10" 
+                        style={{ color: tag.color }}
+                      />
+                    </motion.div>
+                    <span 
+                      className="text-xs font-semibold relative z-10 transition-colors"
+                      style={{ color: activeTag === index ? tag.color : "#E7F6F2" }}
+                    >
+                      {tag.text}
                     </span>
-                    <span className="text-sm font-semibold text-[#E7F6F2] group-hover:text-green-300 transition-colors">Available</span>
-                  </div>
+                  </motion.div>
                 </motion.div>
               </motion.div>
+            ))}
 
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, x: -30 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              transition={{ delay: 1.6, type: "spring", stiffness: 100 }}
+              className="absolute -left-12 bottom-16 z-30"
+            >
               <motion.div
-                initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ delay: 1.2, type: "spring", stiffness: 100 }}
-                className="absolute -left-6 top-1/3 z-30"
+                animate={{ 
+                  y: [0, 8, 0],
+                  rotate: [0, -3, 0]
+                }}
+                transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                whileHover={{ scale: 1.1, rotate: -8 }}
+                className="group relative cursor-pointer"
               >
-                <motion.div
-                  animate={{ y: [0, 8, 0], rotate: [0, -2, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                  whileHover={{ scale: 1.1, rotate: -5 }}
-                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
-                >
+                <div className="relative rounded-2xl border border-[#395B64]/60 bg-[#2C3333]/95 px-4 py-3 backdrop-blur-xl shadow-xl overflow-hidden">
                   <motion.div
                     className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
                     animate={{ x: ["-100%", "100%"] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                   />
-                  <div className="relative flex items-center gap-2.5">
-                    <div className="text-lg group-hover:scale-110 transition-transform">🇦🇪</div>
+                  <div className="relative flex items-center gap-3">
+                    <motion.div 
+                      className="text-2xl"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                    >
+                      🇦🇪
+                    </motion.div>
                     <div>
-                      <div className="text-[9px] text-[#A5C9CA]/60 uppercase tracking-wider">Based in</div>
-                      <div className="text-sm font-semibold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Dubai</div>
+                      <div className="text-[9px] text-[#A5C9CA]/60 uppercase tracking-widest font-medium">Based in</div>
+                      <div className="text-base font-bold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Dubai</div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               </motion.div>
+            </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 1.4, type: "spring", stiffness: 100 }}
-                className="absolute -bottom-4 left-1/2 -translate-x-1/2 z-30"
-              >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ delay: 1.8, type: "spring", stiffness: 100 }}
+              className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-30"
+            >
+              <Link href="/contact">
                 <motion.div
-                  animate={{ y: [0, 6, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group relative cursor-pointer"
                 >
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#A5C9CA] via-[#395B64] to-[#A5C9CA] opacity-50 blur-sm"
+                    animate={{ 
+                      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    style={{ backgroundSize: "200% 200%" }}
                   />
-                  <div className="relative flex items-center gap-2.5">
-                    <MessageCircle className="h-4 w-4 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
-                    <span className="text-sm font-semibold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Let&apos;s Connect</span>
+                  <div className="relative flex items-center gap-3 rounded-2xl border border-[#A5C9CA]/30 bg-[#2C3333] px-5 py-3 backdrop-blur-xl">
+                    <motion.div
+                      animate={{ rotate: [0, 15, -15, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 2 }}
+                    >
+                      <MessageCircle className="h-5 w-5 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
+                    </motion.div>
+                    <span className="text-sm font-bold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Let&apos;s Connect</span>
+                    <ArrowRight className="h-4 w-4 text-[#A5C9CA] transition-transform group-hover:translate-x-1" />
                   </div>
                 </motion.div>
-              </motion.div>
-            </div>
+              </Link>
+            </motion.div>
+          </div>
         </motion.div>
       </motion.div>
 
