@@ -12,13 +12,7 @@ const stats = [
   { icon: Users, value: "30+", label: "Happy Clients" },
 ]
 
-const techOrbs = [
-  { name: "React", delay: 0 },
-  { name: "Next.js", delay: 0.5 },
-  { name: "TypeScript", delay: 1 },
-  { name: "Node.js", delay: 1.5 },
-  { name: "Tailwind", delay: 2 },
-]
+
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -271,164 +265,133 @@ export function HeroSection() {
           style={{ y: imageY }}
           className="relative flex items-center justify-center flex-shrink-0"
         >
-          <div 
-            className="relative"
-            style={{ perspective: "1000px" }}
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-6 rounded-full border border-dashed border-[#395B64]/30"
-            />
-            <motion.div
-              animate={{ rotate: -360 }}
-              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-              className="absolute -inset-12 rounded-full border border-[#A5C9CA]/10"
-            />
-            
-            {techOrbs.map((tech, i) => (
+            <div 
+              className="relative"
+              style={{ perspective: "1000px" }}
+            >
               <motion.div
-                key={tech.name}
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1 + tech.delay * 0.2 }}
-                className="absolute z-20"
+                onMouseEnter={() => setImageHover(true)}
+                onMouseMove={handleImageMouseMove}
+                onMouseLeave={handleImageMouseLeave}
                 style={{
-                  top: `${50 + 42 * Math.sin((i * 2 * Math.PI) / techOrbs.length)}%`,
-                  left: `${50 + 42 * Math.cos((i * 2 * Math.PI) / techOrbs.length)}%`,
-                  transform: "translate(-50%, -50%)",
+                  rotateX: smoothRotateX,
+                  rotateY: smoothRotateY,
+                  transformStyle: "preserve-3d",
                 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative h-[280px] w-[220px] sm:h-[320px] sm:w-[260px] lg:h-[380px] lg:w-[300px] overflow-hidden rounded-[40px] border-4 border-[#395B64]/50 shadow-2xl cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#395B64] to-[#2C3333]" />
+                <Image
+                  src="/owner.jpg"
+                  alt="Developer Portrait"
+                  fill
+                  className="object-cover transition-transform duration-500"
+                  style={{ transform: imageHover ? "scale(1.05)" : "scale(1)" }}
+                  priority
+                />
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-transparent to-transparent"
+                  animate={{ opacity: imageHover ? 0.3 : 0.6 }}
+                />
+                
+                <motion.div
+                  className="absolute inset-0 opacity-0 transition-opacity duration-300"
+                  style={{ 
+                    opacity: imageHover ? 1 : 0,
+                    background: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(165, 201, 202, 0.15) 0%, transparent 50%)"
+                  }}
+                />
+                
+                <motion.div
+                  className="absolute inset-0 rounded-[36px] border-2 border-[#A5C9CA]/0 transition-all duration-300"
+                  style={{ borderColor: imageHover ? "rgba(165, 201, 202, 0.3)" : "transparent" }}
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                transition={{ delay: 1, type: "spring", stiffness: 100 }}
+                className="absolute -right-4 top-6 z-30"
               >
                 <motion.div
-                  animate={{ 
-                    y: [0, -6, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{ 
-                    duration: 3,
-                    repeat: Infinity,
-                    delay: tech.delay
-                  }}
-                  whileHover={{ scale: 1.2 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#395B64] bg-[#2C3333] text-xs font-medium text-[#A5C9CA] shadow-lg glow-sm cursor-pointer"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  whileHover={{ scale: 1.1, rotate: 3 }}
+                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
                 >
-                  {tech.name.slice(0, 2)}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/10 to-green-500/0"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="relative flex items-center gap-2.5">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]" />
+                    </span>
+                    <span className="text-sm font-semibold text-[#E7F6F2] group-hover:text-green-300 transition-colors">Available</span>
+                  </div>
                 </motion.div>
               </motion.div>
-            ))}
-            
-            <motion.div
-              onMouseEnter={() => setImageHover(true)}
-              onMouseMove={handleImageMouseMove}
-              onMouseLeave={handleImageMouseLeave}
-              style={{
-                rotateX: smoothRotateX,
-                rotateY: smoothRotateY,
-                transformStyle: "preserve-3d",
-              }}
-              whileHover={{ scale: 1.02 }}
-              className="relative h-[280px] w-[220px] sm:h-[320px] sm:w-[260px] lg:h-[380px] lg:w-[300px] overflow-hidden rounded-[40px] border-4 border-[#395B64]/50 shadow-2xl cursor-pointer"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#395B64] to-[#2C3333]" />
-              <Image
-                src="/owner.jpg"
-                alt="Developer Portrait"
-                fill
-                className="object-cover transition-transform duration-500"
-                style={{ transform: imageHover ? "scale(1.05)" : "scale(1)" }}
-                priority
-              />
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-transparent to-transparent"
-                animate={{ opacity: imageHover ? 0.3 : 0.6 }}
-              />
-              
-              <motion.div
-                className="absolute inset-0 opacity-0 transition-opacity duration-300"
-                style={{ 
-                  opacity: imageHover ? 1 : 0,
-                  background: "radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(165, 201, 202, 0.15) 0%, transparent 50%)"
-                }}
-              />
-              
-              <motion.div
-                className="absolute inset-0 rounded-[36px] border-2 border-[#A5C9CA]/0 transition-all duration-300"
-                style={{ borderColor: imageHover ? "rgba(165, 201, 202, 0.3)" : "transparent" }}
-              />
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: imageHover ? 1 : 0, y: imageHover ? 0 : 20 }}
-                transition={{ duration: 0.3 }}
-                className="absolute bottom-4 left-4 right-4"
-              >
-                <div className="rounded-xl bg-[#2C3333]/90 backdrop-blur-md p-3 border border-[#395B64]">
-                  <div className="text-sm font-bold text-[#E7F6F2]">Full-Stack Developer</div>
-                  <div className="text-xs text-[#A5C9CA]/70">React • Node • Cloud</div>
-                </div>
-              </motion.div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1 }}
-              className="absolute -right-2 top-4 z-30"
-            >
               <motion.div
-                animate={{ y: [0, -4, 0], rotate: [0, 3, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="rounded-xl border border-[#395B64] bg-[#2C3333]/95 px-3 py-2 backdrop-blur-md shadow-lg"
+                initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                transition={{ delay: 1.2, type: "spring", stiffness: 100 }}
+                className="absolute -left-6 top-1/3 z-30"
               >
-                <div className="flex items-center gap-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
-                  </span>
-                  <span className="text-xs font-semibold text-[#E7F6F2]">Available</span>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.1 }}
-              className="absolute -left-2 top-1/4 z-30"
-            >
-              <motion.div
-                animate={{ y: [0, 6, 0], rotate: [0, -2, 0] }}
-                transition={{ duration: 5, repeat: Infinity, delay: 0.5 }}
-                className="rounded-xl border border-[#395B64] bg-[#2C3333]/95 px-3 py-2 backdrop-blur-md shadow-lg"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="text-base">🇦🇪</div>
-                  <div>
-                    <div className="text-[9px] text-[#A5C9CA]/60">Based in</div>
-                    <div className="text-xs font-semibold text-[#E7F6F2]">Dubai</div>
+                <motion.div
+                  animate={{ y: [0, 8, 0], rotate: [0, -2, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                  whileHover={{ scale: 1.1, rotate: -5 }}
+                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="relative flex items-center gap-2.5">
+                    <div className="text-lg group-hover:scale-110 transition-transform">🇦🇪</div>
+                    <div>
+                      <div className="text-[9px] text-[#A5C9CA]/60 uppercase tracking-wider">Based in</div>
+                      <div className="text-sm font-semibold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Dubai</div>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.2 }}
-              className="absolute -bottom-2 left-1/2 -translate-x-1/2 z-30"
-            >
               <motion.div
-                animate={{ y: [0, 4, 0] }}
-                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                className="rounded-xl border border-[#395B64] bg-[#2C3333]/95 px-3 py-2 backdrop-blur-md shadow-lg"
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 1.4, type: "spring", stiffness: 100 }}
+                className="absolute -bottom-4 left-1/2 -translate-x-1/2 z-30"
               >
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-3 w-3 text-[#A5C9CA]" />
-                  <span className="text-xs font-semibold text-[#E7F6F2]">Let&apos;s Connect</span>
-                </div>
+                <motion.div
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  className="group relative rounded-2xl border border-[#395B64]/80 bg-[#2C3333]/95 px-4 py-2.5 backdrop-blur-xl shadow-xl cursor-pointer overflow-hidden"
+                >
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
+                    animate={{ x: ["-100%", "100%"] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="relative flex items-center gap-2.5">
+                    <motion.div
+                      animate={{ rotate: [0, 15, -15, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Sparkles className="h-4 w-4 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
+                    </motion.div>
+                    <span className="text-sm font-semibold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Let&apos;s Connect</span>
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          </div>
+            </div>
         </motion.div>
       </motion.div>
 
