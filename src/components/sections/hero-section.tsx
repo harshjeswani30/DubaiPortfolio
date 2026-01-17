@@ -117,7 +117,7 @@ export function HeroSection() {
                 <div className="relative flex items-center">
                   <RotatingText
                     texts={['Full-Stack Web Developer', 'Creative UI/UX Designer', 'Software Engineer']}
-                    mainClassName="px-2 bg-[#A5C9CA] text-[#2C3333] overflow-hidden py-1 justify-center rounded-lg"
+                    mainClassName="overflow-hidden justify-center text-sm font-medium text-[#E7F6F2]"
                     staggerFrom="last"
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
