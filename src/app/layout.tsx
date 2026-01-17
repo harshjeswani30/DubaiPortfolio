@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider"
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
 
 import { Footer } from "@/components/layout/footer"
+import { FloatingNav } from "@/components/layout/floating-nav"
 import { CustomCursor } from "@/components/ui/custom-cursor"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
@@ -66,6 +67,7 @@ export default function RootLayout({
               <CustomCursor />
             <ScrollProgress />
               <CommandPalette />
+              <FloatingNav />
               <main className="min-h-screen">{children}</main>
             <Footer />
           </SmoothScrollProvider>
