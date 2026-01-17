@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Github, Linkedin, Twitter, Mail, ArrowUp, Heart, Gamepad2 } from "lucide-react"
+import { Github, Linkedin, Twitter, Mail, ArrowUp, Heart, Code2 } from "lucide-react"
 
 const socialLinks = [
   { href: "https://github.com", icon: Github, label: "GitHub" },
@@ -36,7 +36,7 @@ export function Footer() {
                 className="flex items-center gap-3"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#395B64] glow-sm">
-                  <Gamepad2 className="h-6 w-6 text-[#A5C9CA]" />
+                    <Code2 className="h-6 w-6 text-[#A5C9CA]" />
                 </div>
                 <span className="text-xl font-bold text-[#E7F6F2]">Portfolio</span>
               </motion.div>

@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, MessageCircle, Rocket, Sparkles, Send, Gamepad2 } from "lucide-react"
+import { ArrowRight, MessageCircle, Rocket, Sparkles, Send } from "lucide-react"
 
 export function CTASection() {
   const ref = useRef<HTMLDivElement>(null)
@@ -88,7 +88,7 @@ export function CTASection() {
                   transition={{ duration: 3, repeat: Infinity }}
                   className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#395B64] glow-md"
                 >
-                  <Gamepad2 className="h-8 w-8 text-[#A5C9CA]" />
+                  <MessageCircle className="h-8 w-8 text-[#A5C9CA]" />
                 </motion.div>
               </motion.div>
 
@@ -98,9 +98,9 @@ export function CTASection() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-3xl font-bold text-[#E7F6F2] md:text-4xl lg:text-5xl"
               >
-                Ready to Start a New
+                Let&apos;s Work
                 <span className="relative mx-2 inline-block">
-                  <span className="gradient-text">Quest</span>
+                  <span className="gradient-text">Together</span>
                   <motion.span
                     animate={{ rotate: [0, 15, -15, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
@@ -109,7 +109,6 @@ export function CTASection() {
                     <Sparkles className="h-5 w-5 text-[#A5C9CA]" />
                   </motion.span>
                 </span>
-                Together?
               </motion.h2>
 
               <motion.p
@@ -118,7 +117,7 @@ export function CTASection() {
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="mx-auto mt-4 max-w-xl text-[#A5C9CA]/70"
               >
-                Whether it&apos;s a new project, collaboration, or just a chat about tech — I&apos;m always excited to connect with fellow adventurers.
+                Have a project in mind? I&apos;d love to hear about it. Let&apos;s discuss how we can bring your ideas to life.
               </motion.p>
 
               <motion.div
@@ -141,7 +140,7 @@ export function CTASection() {
                       className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                     />
                     <MessageCircle className="h-5 w-5" />
-                    Start Conversation
+                    Get in Touch
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </motion.button>
                 </Link>
@@ -152,7 +151,7 @@ export function CTASection() {
                     className="flex items-center gap-3 rounded-2xl border-2 border-[#395B64] bg-transparent px-8 py-4 font-semibold text-[#E7F6F2] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/20"
                   >
                     <Rocket className="h-5 w-5" />
-                    Explore Work
+                    View My Work
                   </motion.button>
                 </Link>
               </motion.div>
@@ -166,7 +165,7 @@ export function CTASection() {
                 {[
                   { label: "Response Time", value: "< 24hrs" },
                   { label: "Projects Done", value: "50+" },
-                  { label: "Happy Clients", value: "100%" },
+                  { label: "Client Satisfaction", value: "100%" },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}

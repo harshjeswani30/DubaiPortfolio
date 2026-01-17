@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect } from "react"
-import { Menu, X, Command, Gamepad2 } from "lucide-react"
+import { Menu, X, Command, Code2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const navItems = [
@@ -53,7 +53,7 @@ export function Navbar() {
                 transition={{ duration: 4, repeat: Infinity }}
                 className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
               >
-                <Gamepad2 className="h-5 w-5 text-[#A5C9CA]" />
+                  <Code2 className="h-5 w-5 text-[#A5C9CA]" />
               </motion.div>
               <span className="text-xl font-bold text-[#E7F6F2]">Portfolio</span>
             </motion.div>

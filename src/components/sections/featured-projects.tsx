@@ -3,7 +3,7 @@
 import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
-import { ArrowUpRight, Folder, ExternalLink, Github, Star, GitFork } from "lucide-react"
+import { ArrowUpRight, Folder, ExternalLink, Github } from "lucide-react"
 
 interface Project {
   id: string
@@ -45,13 +45,13 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               className="mb-6 flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2"
             >
               <Folder className="h-4 w-4 text-[#A5C9CA]" />
-              <span className="text-sm font-medium text-[#A5C9CA]">Quest Log</span>
+              <span className="text-sm font-medium text-[#A5C9CA]">Portfolio</span>
             </motion.div>
             <h2 className="text-4xl font-bold text-[#E7F6F2] md:text-5xl lg:text-6xl">
-              Featured <span className="gradient-text">Quests</span>
+              Featured <span className="gradient-text">Projects</span>
             </h2>
             <p className="mt-4 max-w-lg text-[#A5C9CA]/70">
-              Completed missions that showcase my abilities. Each project is a story of challenges conquered.
+              A selection of my recent work. Each project showcases different skills and technologies.
             </p>
           </div>
           
@@ -61,7 +61,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               whileTap={{ scale: 0.98 }}
               className="group flex items-center gap-2 rounded-xl border border-[#395B64] bg-[#395B64]/20 px-5 py-3 text-sm font-medium text-[#A5C9CA] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/30"
             >
-              View All Quests
+              View All Projects
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </motion.button>
           </Link>
@@ -142,17 +142,6 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                   </div>
 
                   <div className="relative p-6">
-                    <div className="mb-3 flex items-center gap-4">
-                      <div className="flex items-center gap-1 text-xs text-[#A5C9CA]/60">
-                        <Star className="h-3 w-3" />
-                        <span>128</span>
-                      </div>
-                      <div className="flex items-center gap-1 text-xs text-[#A5C9CA]/60">
-                        <GitFork className="h-3 w-3" />
-                        <span>32</span>
-                      </div>
-                    </div>
-
                     <h3 className="mb-2 text-xl font-bold text-[#E7F6F2] transition-colors group-hover:text-[#A5C9CA]">
                       {project.title}
                     </h3>
@@ -201,7 +190,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#395B64]/20">
               <Folder className="h-10 w-10 text-[#A5C9CA]/50" />
             </div>
-            <h3 className="text-xl font-semibold text-[#E7F6F2]">No quests yet</h3>
+            <h3 className="text-xl font-semibold text-[#E7F6F2]">No projects yet</h3>
             <p className="mt-2 text-[#A5C9CA]/60">Featured projects will appear here.</p>
           </motion.div>
         )}
@@ -218,7 +207,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               whileTap={{ scale: 0.98 }}
               className="flex items-center gap-2 rounded-2xl border-2 border-[#395B64] bg-[#395B64]/20 px-6 py-3 font-semibold text-[#E7F6F2] transition-colors hover:border-[#A5C9CA]"
             >
-              View All Quests
+              View All Projects
               <ArrowUpRight className="h-4 w-4" />
             </motion.button>
           </Link>

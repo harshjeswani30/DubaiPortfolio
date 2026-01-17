@@ -3,13 +3,13 @@
 import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Play, Sparkles, Trophy, Target, Zap } from "lucide-react"
+import { ArrowRight, Sparkles, Briefcase, Users, Clock } from "lucide-react"
 import Image from "next/image"
 
 const stats = [
-  { icon: Trophy, value: "5+", label: "Years", suffix: "XP" },
-  { icon: Target, value: "50+", label: "Quests", suffix: "Done" },
-  { icon: Zap, value: "30+", label: "Allies", suffix: "Happy" },
+  { icon: Clock, value: "5+", label: "Years Experience" },
+  { icon: Briefcase, value: "50+", label: "Projects Completed" },
+  { icon: Users, value: "30+", label: "Happy Clients" },
 ]
 
 const techOrbs = [
@@ -22,7 +22,6 @@ const techOrbs = [
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   
   const { scrollYProgress } = useScroll({
@@ -45,7 +44,6 @@ export function HeroSection() {
       const { innerWidth, innerHeight } = window
       mouseX.set((clientX - innerWidth / 2) / 50)
       mouseY.set((clientY - innerHeight / 2) / 50)
-      setMousePosition({ x: clientX, y: clientY })
     }
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
@@ -102,7 +100,7 @@ export function HeroSection() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#A5C9CA] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
               </span>
-              <span className="text-sm font-medium text-[#A5C9CA]">Level 99 Developer</span>
+              <span className="text-sm font-medium text-[#A5C9CA]">Full-Stack Developer</span>
             </div>
           </motion.div>
 
@@ -153,8 +151,7 @@ export function HeroSection() {
                   transition={{ duration: 0.3 }}
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                 />
-                <Play className="h-4 w-4 fill-current" />
-                Start Journey
+                View My Work
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </motion.button>
             </Link>
@@ -164,7 +161,7 @@ export function HeroSection() {
                 whileTap={{ scale: 0.98 }}
                 className="rounded-2xl border-2 border-[#395B64] bg-transparent px-7 py-4 text-sm font-semibold text-[#E7F6F2] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/20"
               >
-                Send Message
+                Get in Touch
               </motion.button>
             </Link>
           </motion.div>
@@ -191,10 +188,7 @@ export function HeroSection() {
                     <stat.icon className="h-5 w-5 text-[#A5C9CA]" />
                   </div>
                   <div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xl font-bold text-[#E7F6F2]">{stat.value}</span>
-                      <span className="text-xs text-[#A5C9CA]">{stat.suffix}</span>
-                    </div>
+                    <div className="text-xl font-bold text-[#E7F6F2]">{stat.value}</div>
                     <div className="text-xs text-[#A5C9CA]/60">{stat.label}</div>
                   </div>
                 </motion.div>
@@ -263,32 +257,6 @@ export function HeroSection() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-transparent to-transparent" />
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-                className="absolute bottom-6 left-6 right-6"
-              >
-                <div className="rounded-2xl border border-[#395B64] bg-[#2C3333]/90 p-4 backdrop-blur-md">
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className="text-xs font-medium text-[#A5C9CA]">Current Quest</span>
-                    <span className="flex items-center gap-1 text-xs text-[#A5C9CA]">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#A5C9CA]" />
-                      Active
-                    </span>
-                  </div>
-                  <div className="text-sm font-semibold text-[#E7F6F2]">Building Amazing Products</div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#395B64]">
-                    <motion.div
-                      initial={{ width: "0%" }}
-                      animate={{ width: "75%" }}
-                      transition={{ duration: 1.5, delay: 1.5 }}
-                      className="h-full rounded-full bg-gradient-to-r from-[#A5C9CA] to-[#E7F6F2]"
-                    />
-                  </div>
-                </div>
-              </motion.div>
             </div>
 
             <motion.div
@@ -303,13 +271,11 @@ export function HeroSection() {
                 className="rounded-2xl border border-[#395B64] bg-[#2C3333]/95 p-3 backdrop-blur-md glow-sm"
               >
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#395B64]">
-                    <Zap className="h-4 w-4 text-[#A5C9CA]" />
-                  </div>
-                  <div>
-                    <div className="text-[10px] text-[#A5C9CA]/60">Status</div>
-                    <div className="text-xs font-semibold text-[#E7F6F2]">Available</div>
-                  </div>
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-400" />
+                  </span>
+                  <span className="text-xs font-semibold text-[#E7F6F2]">Available for work</span>
                 </div>
               </motion.div>
             </motion.div>

@@ -3,47 +3,33 @@
 import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Code, Layers, Zap, Cpu, Database, Palette, ChevronRight, Star } from "lucide-react"
+import { ArrowRight, Code, Cpu, Database, Palette, ChevronRight } from "lucide-react"
 
 const services = [
   {
     icon: Code,
-    title: "Frontend Mastery",
+    title: "Frontend Development",
     description: "Crafting pixel-perfect, responsive interfaces with React, Next.js & TypeScript that users love.",
-    level: 95,
     skills: ["React", "Next.js", "TypeScript"],
-    xp: "2500 XP",
   },
   {
     icon: Database,
     title: "Backend Engineering",
     description: "Building robust APIs and scalable server architectures with Node.js, Python & PostgreSQL.",
-    level: 88,
     skills: ["Node.js", "PostgreSQL", "APIs"],
-    xp: "2100 XP",
   },
   {
     icon: Palette,
     title: "UI/UX Design",
     description: "Creating intuitive user experiences with modern design principles and smooth animations.",
-    level: 82,
     skills: ["Figma", "Motion", "Design Systems"],
-    xp: "1800 XP",
   },
   {
     icon: Cpu,
     title: "DevOps & Cloud",
     description: "Deploying and scaling applications with Docker, AWS, and CI/CD pipelines.",
-    level: 78,
     skills: ["Docker", "AWS", "CI/CD"],
-    xp: "1600 XP",
   },
-]
-
-const achievements = [
-  { icon: Star, label: "Clean Code", value: "Master" },
-  { icon: Zap, label: "Fast Delivery", value: "Expert" },
-  { icon: Layers, label: "Scalable", value: "Pro" },
 ]
 
 export function ServicesSection() {
@@ -72,39 +58,15 @@ export function ServicesSection() {
             className="mb-6 flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2"
           >
             <Cpu className="h-4 w-4 text-[#A5C9CA]" />
-            <span className="text-sm font-medium text-[#A5C9CA]">Skill Tree</span>
+            <span className="text-sm font-medium text-[#A5C9CA]">What I Do</span>
           </motion.div>
           
           <h2 className="text-4xl font-bold text-[#E7F6F2] md:text-5xl lg:text-6xl">
-            My <span className="gradient-text">Arsenal</span>
+            My <span className="gradient-text">Services</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-[#A5C9CA]/70">
-            Equipped with powerful skills and ready for any challenge. Each ability has been honed through countless projects.
+            Comprehensive solutions for your digital needs. From concept to deployment, I deliver quality at every step.
           </p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-8 flex items-center gap-6"
-          >
-            {achievements.map((achievement, i) => (
-              <motion.div
-                key={achievement.label}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.4 + i * 0.1 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="flex items-center gap-2 rounded-xl border border-[#395B64]/50 bg-[#395B64]/10 px-4 py-2"
-              >
-                <achievement.icon className="h-4 w-4 text-[#A5C9CA]" />
-                <div className="text-left">
-                  <div className="text-[10px] text-[#A5C9CA]/60">{achievement.label}</div>
-                  <div className="text-xs font-semibold text-[#E7F6F2]">{achievement.value}</div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
         </motion.div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -137,9 +99,6 @@ export function ServicesSection() {
                     >
                       <service.icon className="h-7 w-7 text-[#A5C9CA]" />
                     </motion.div>
-                    <div className="flex items-center gap-2 rounded-full bg-[#395B64]/30 px-3 py-1">
-                      <span className="text-xs font-semibold text-[#A5C9CA]">{service.xp}</span>
-                    </div>
                   </div>
 
                   <div className="mt-5">
@@ -149,21 +108,6 @@ export function ServicesSection() {
                     <p className="mt-2 text-sm text-[#A5C9CA]/70 leading-relaxed">
                       {service.description}
                     </p>
-                  </div>
-
-                  <div className="mt-5">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-[#A5C9CA]/60">Skill Level</span>
-                      <span className="font-semibold text-[#E7F6F2]">{service.level}%</span>
-                    </div>
-                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#395B64]/50">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={isInView ? { width: `${service.level}%` } : {}}
-                        transition={{ duration: 1.5, delay: 0.5 + i * 0.1, ease: "easeOut" }}
-                        className="h-full rounded-full bg-gradient-to-r from-[#A5C9CA] to-[#E7F6F2]"
-                      />
-                    </div>
                   </div>
 
                   <div className="mt-5 flex flex-wrap gap-2">
@@ -203,7 +147,7 @@ export function ServicesSection() {
               whileTap={{ scale: 0.98 }}
               className="group flex items-center gap-3 rounded-2xl border-2 border-[#395B64] bg-[#395B64]/20 px-8 py-4 font-semibold text-[#E7F6F2] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/30"
             >
-              View Full Skill Tree
+              View All Skills
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </motion.button>
           </Link>
