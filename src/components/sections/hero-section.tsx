@@ -1,10 +1,11 @@
 "use client"
 
-import { useRef, useState, useEffect, useCallback } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Briefcase, Users, Clock, MessageCircle } from "lucide-react"
 import Image from "next/image"
+import gsap from "gsap"
 
 const stats = [
   { icon: Clock, value: "5+", label: "Years Experience" },
@@ -12,41 +13,49 @@ const stats = [
   { icon: Users, value: "30+", label: "Happy Clients" },
 ]
 
-const roles = ["Full-Stack Developer", "UI/UX Designer", "Problem Solver", "Tech Enthusiast"]
-
-
-
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const roleTextRef = useRef<HTMLSpanElement>(null)
+  const roleBadgeRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [imageHover, setImageHover] = useState(false)
-  const [currentRoleIndex, setCurrentRoleIndex] = useState(0)
-  const [displayText, setDisplayText] = useState("")
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  const typeText = useCallback(() => {
-    const currentRole = roles[currentRoleIndex]
-    
-    if (!isDeleting) {
-      if (displayText.length < currentRole.length) {
-        setDisplayText(currentRole.slice(0, displayText.length + 1))
-      } else {
-        setTimeout(() => setIsDeleting(true), 2000)
-      }
-    } else {
-      if (displayText.length > 0) {
-        setDisplayText(displayText.slice(0, -1))
-      } else {
-        setIsDeleting(false)
-        setCurrentRoleIndex((prev) => (prev + 1) % roles.length)
-      }
-    }
-  }, [currentRoleIndex, displayText, isDeleting])
 
   useEffect(() => {
-    const timeout = setTimeout(typeText, isDeleting ? 50 : 100)
-    return () => clearTimeout(timeout)
-  }, [typeText, isDeleting])
+    if (!roleTextRef.current || !roleBadgeRef.current) return
+
+    const text = "Full-Stack Web Developer"
+    const chars = text.split("")
+    roleTextRef.current.innerHTML = chars
+      .map((char) => `<span class="char" style="display:inline-block;opacity:0;transform:translateY(20px) rotateX(-90deg)">${char === " " ? "&nbsp;" : char}</span>`)
+      .join("")
+
+    const tl = gsap.timeline({ delay: 0.5 })
+    
+    tl.to(roleBadgeRef.current, {
+      width: "auto",
+      paddingLeft: 20,
+      paddingRight: 20,
+      duration: 0.6,
+      ease: "power3.out",
+    })
+    
+    tl.to(
+      roleTextRef.current.querySelectorAll(".char"),
+      {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        duration: 0.5,
+        stagger: 0.03,
+        ease: "back.out(1.7)",
+      },
+      "-=0.3"
+    )
+
+    return () => {
+      tl.kill()
+    }
+  }, [])
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
