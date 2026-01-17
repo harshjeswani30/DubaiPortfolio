@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Briefcase, Users, Clock, MessageCircle } from "lucide-react"
 import Image from "next/image"
@@ -15,46 +15,18 @@ const stats = [
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const roleTextRef = useRef<HTMLSpanElement>(null)
-  const roleBadgeRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [imageHover, setImageHover] = useState(false)
 
+  const roles = ["Full-Stack Web Developer", "Creative UI/UX Designer", "Software Engineer"]
+  const [roleIndex, setRoleIndex] = useState(0)
+  const displayText = roles[roleIndex]
+
   useEffect(() => {
-    if (!roleTextRef.current || !roleBadgeRef.current) return
-
-    const text = "Full-Stack Web Developer"
-    const chars = text.split("")
-    roleTextRef.current.innerHTML = chars
-      .map((char) => `<span class="char" style="display:inline-block;opacity:0;transform:translateY(20px) rotateX(-90deg)">${char === " " ? "&nbsp;" : char}</span>`)
-      .join("")
-
-    const tl = gsap.timeline({ delay: 0.5 })
-    
-    tl.to(roleBadgeRef.current, {
-      width: "auto",
-      paddingLeft: 20,
-      paddingRight: 20,
-      duration: 0.6,
-      ease: "power3.out",
-    })
-    
-    tl.to(
-      roleTextRef.current.querySelectorAll(".char"),
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        duration: 0.5,
-        stagger: 0.03,
-        ease: "back.out(1.7)",
-      },
-      "-=0.3"
-    )
-
-    return () => {
-      tl.kill()
-    }
+    const timer = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length)
+    }, 3000)
+    return () => clearInterval(timer)
   }, [])
   
   const { scrollYProgress } = useScroll({
