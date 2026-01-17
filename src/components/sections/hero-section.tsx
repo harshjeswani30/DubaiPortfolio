@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePres
 import Link from "next/link"
 import { ArrowRight, Briefcase, Users, Clock, MessageCircle } from "lucide-react"
 import Image from "next/image"
-import gsap from "gsap"
+import RotatingText from "@/components/ui/rotating-text"
 
 const stats = [
   { icon: Clock, value: "5+", label: "Years Experience" },
@@ -17,17 +17,6 @@ export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [imageHover, setImageHover] = useState(false)
-
-  const roles = ["Full-Stack Web Developer", "Creative UI/UX Designer", "Software Engineer"]
-  const [roleIndex, setRoleIndex] = useState(0)
-  const displayText = roles[roleIndex]
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length)
-    }, 3000)
-    return () => clearInterval(timer)
-  }, [])
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -126,30 +115,17 @@ export function HeroSection() {
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
                 </span>
                 <div className="relative flex items-center">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={displayText}
-                      className="text-sm font-medium text-[#A5C9CA] whitespace-nowrap"
-                    >
-                      {displayText.split("").map((char, idx) => (
-                        <motion.span
-                          key={idx}
-                          initial={{ opacity: 0, y: 20, rotateX: -90 }}
-                          animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                          exit={{ opacity: 0, y: -20, rotateX: 90 }}
-                          transition={{ duration: 0.15, delay: idx * 0.02 }}
-                          className="inline-block"
-                          style={{ transformOrigin: "bottom" }}
-                        >
-                          {char === " " ? "\u00A0" : char}
-                        </motion.span>
-                      ))}
-                    </motion.span>
-                  </AnimatePresence>
-                  <motion.span
-                    className="ml-0.5 inline-block w-[2px] h-4 bg-[#A5C9CA]"
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                  <RotatingText
+                    texts={['Full-Stack Web Developer', 'Creative UI/UX Designer', 'Software Engineer']}
+                    mainClassName="px-2 bg-[#A5C9CA] text-[#2C3333] overflow-hidden py-1 justify-center rounded-lg"
+                    staggerFrom="last"
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "-120%" }}
+                    staggerDuration={0.025}
+                    splitLevelClassName="overflow-hidden pb-0.5"
+                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    rotationInterval={2000}
                   />
                 </div>
               </div>
