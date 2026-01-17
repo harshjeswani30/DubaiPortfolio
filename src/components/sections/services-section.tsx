@@ -53,6 +53,10 @@ export function ServicesSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
   const [activeService, setActiveService] = useState(0)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [isPaused, setIsPaused] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const progressRef = useRef<NodeJS.Timeout | null>(null)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -81,12 +85,65 @@ export function ServicesSection() {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [mouseX, mouseY])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
+  const startAutoPlay = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    if (progressRef.current) clearInterval(progressRef.current)
+    
+    setProgress(0)
+    
+    progressRef.current = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) return 0
+        return prev + 2.5
+      })
+    }, 100)
+    
+    intervalRef.current = setInterval(() => {
       setActiveService((prev) => (prev + 1) % services.length)
+      setProgress(0)
     }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+  }
+
+  const stopAutoPlay = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+    if (progressRef.current) {
+      clearInterval(progressRef.current)
+      progressRef.current = null
+    }
+  }
+
+  useEffect(() => {
+    if (!isPaused) {
+      startAutoPlay()
+    } else {
+      stopAutoPlay()
+    }
+    return () => stopAutoPlay()
+  }, [isPaused])
+
+  const handleServiceHover = (index: number) => {
+    setIsPaused(true)
+    setHoveredIndex(index)
+    setActiveService(index)
+    setProgress(0)
+  }
+
+  const handleServiceLeave = () => {
+    setHoveredIndex(null)
+    setIsPaused(false)
+  }
+
+  const handleServiceClick = (index: number) => {
+    setActiveService(index)
+    setProgress(0)
+    if (!isPaused) {
+      stopAutoPlay()
+      startAutoPlay()
+    }
+  }
 
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#2C3333] py-32">
@@ -187,44 +244,39 @@ export function ServicesSection() {
             transition={{ delay: 0.5 }}
           >
             {services.map((_, i) => (
-              <motion.button
-                key={i}
-                onClick={() => setActiveService(i)}
-                className="relative h-2 rounded-full overflow-hidden"
-                animate={{ width: activeService === i ? 32 : 8 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="absolute inset-0 bg-[#395B64]" />
-                {activeService === i && (
-                  <motion.div
-                    className="absolute inset-0 bg-[#A5C9CA]"
-                    initial={{ x: "-100%" }}
-                    animate={{ x: "0%" }}
-                    transition={{ duration: 4, ease: "linear" }}
-                  />
-                )}
-              </motion.button>
-            ))}
+                <motion.button
+                  key={i}
+                  onClick={() => handleServiceClick(i)}
+                  className="relative h-2 rounded-full overflow-hidden"
+                  animate={{ width: activeService === i ? 32 : 8 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="absolute inset-0 bg-[#395B64]" />
+                  {activeService === i && (
+                    <motion.div
+                      className="absolute inset-0 bg-[#A5C9CA]"
+                      style={{ width: `${progress}%` }}
+                    />
+                  )}
+                </motion.button>
+              ))}
           </motion.div>
         </motion.div>
 
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-5">
             <div className="sticky top-32 space-y-4">
-              {services.map((service, i) => (
-                <motion.div
-                  key={service.title}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  onMouseEnter={() => {
-                    setHoveredIndex(i)
-                    setActiveService(i)
-                  }}
-                  onMouseLeave={() => setHoveredIndex(null)}
-                  onClick={() => setActiveService(i)}
-                  className="cursor-pointer"
-                >
+{services.map((service, i) => (
+                  <motion.div
+                    key={service.title}
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={isInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    onMouseEnter={() => handleServiceHover(i)}
+                    onMouseLeave={handleServiceLeave}
+                    onClick={() => handleServiceClick(i)}
+                    className="cursor-pointer"
+                  >
                   <motion.div
                     animate={{ 
                       scale: activeService === i ? 1.02 : 1,
