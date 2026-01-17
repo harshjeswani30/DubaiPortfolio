@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Code, Cpu, Database, Palette, ChevronRight } from "lucide-react"
 
@@ -37,18 +37,46 @@ export function ServicesSection() {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  })
+
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+
+  const bgY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
+  const titleY = useTransform(smoothProgress, [0, 0.5], ["30px", "0px"])
+  const titleOpacity = useTransform(smoothProgress, [0, 0.3], [0, 1])
+  
+  const card1Y = useTransform(smoothProgress, [0.1, 0.5], ["60px", "0px"])
+  const card2Y = useTransform(smoothProgress, [0.15, 0.55], ["80px", "0px"])
+  const card3Y = useTransform(smoothProgress, [0.2, 0.6], ["100px", "0px"])
+  const card4Y = useTransform(smoothProgress, [0.25, 0.65], ["120px", "0px"])
+  
+  const cardYValues = [card1Y, card2Y, card3Y, card4Y]
+
+  const orb1X = useTransform(smoothProgress, [0, 1], ["-10%", "10%"])
+  const orb2Y = useTransform(smoothProgress, [0, 1], ["10%", "-10%"])
+
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#2C3333] py-32">
-      <div className="absolute inset-0 grid-background" />
+      <motion.div 
+        className="absolute inset-0 grid-background"
+        style={{ y: bgY }}
+      />
       
-      <div className="absolute left-0 top-1/4 h-[500px] w-[500px] rounded-full bg-[#395B64]/10 blur-[120px]" />
-      <div className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[#A5C9CA]/5 blur-[100px]" />
+      <motion.div 
+        style={{ x: orb1X }}
+        className="absolute left-0 top-1/4 h-[500px] w-[500px] rounded-full bg-[#395B64]/10 blur-[120px]" 
+      />
+      <motion.div 
+        style={{ y: orb2Y }}
+        className="absolute bottom-0 right-0 h-[400px] w-[400px] rounded-full bg-[#A5C9CA]/5 blur-[100px]" 
+      />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
+          style={{ y: titleY, opacity: titleOpacity }}
           className="mb-16 flex flex-col items-center text-center"
         >
           <motion.div
@@ -76,6 +104,7 @@ export function ServicesSection() {
               initial={{ opacity: 0, y: 40 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: i * 0.1 }}
+              style={{ y: cardYValues[i] }}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             >
