@@ -1,7 +1,7 @@
 {
-  "projectId": "28742cd2-5134-49d2-98b4-925e50f69c80",
-  "createdAt": 1768556393585,
+  "projectId": "30d26c28-1ccd-40fa-857e-78e4fcb6e316",
+  "createdAt": 1768658860651,
   "startupCommands": [
-    "npm install && npx next dev --port 3000"
+    "bun install; bun run dev"
   ]
 }
