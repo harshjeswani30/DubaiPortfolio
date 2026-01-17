@@ -105,27 +105,71 @@ export function HeroSection() {
           style={{ y }}
           className="flex flex-col justify-center lg:max-w-lg flex-shrink-0"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="mb-4 flex items-center gap-3"
-          >
             <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="mb-4 flex items-center gap-3"
             >
-              <Sparkles className="h-4 w-4 text-[#E7F6F2]" />
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
+              >
+                <Sparkles className="h-4 w-4 text-[#E7F6F2]" />
+              </motion.div>
+              <div className="group relative flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2 overflow-hidden cursor-pointer hover:border-[#A5C9CA]/50 transition-colors">
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
+                  animate={{ x: ["-100%", "100%"] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                />
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#A5C9CA] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
+                </span>
+                <div className="relative h-5 overflow-hidden">
+                  <motion.div
+                    animate={{ y: ["0%", "-50%"] }}
+                    transition={{ 
+                      duration: 3,
+                      repeat: Infinity,
+                      repeatType: "reverse",
+                      ease: [0.4, 0, 0.2, 1],
+                      repeatDelay: 1
+                    }}
+                    className="flex flex-col"
+                  >
+                    {["Full-Stack Developer", "UI/UX Designer", "Problem Solver", "Full-Stack Developer"].map((text, idx) => (
+                      <motion.span
+                        key={idx}
+                        className="text-sm font-medium text-[#A5C9CA] h-5 flex items-center whitespace-nowrap"
+                      >
+                        {text.split("").map((char, charIdx) => (
+                          <motion.span
+                            key={charIdx}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: charIdx * 0.03,
+                              duration: 0.2,
+                            }}
+                            className="inline-block"
+                          >
+                            {char === " " ? "\u00A0" : char}
+                          </motion.span>
+                        ))}
+                      </motion.span>
+                    ))}
+                  </motion.div>
+                </div>
+                <motion.div
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-[2px] h-3 bg-[#A5C9CA]"
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                />
+              </div>
             </motion.div>
-            <div className="flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-3 py-1.5">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#A5C9CA] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
-              </span>
-              <span className="text-sm font-medium text-[#A5C9CA]">Full-Stack Developer</span>
-            </div>
-          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
