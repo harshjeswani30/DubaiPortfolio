@@ -77,7 +77,7 @@ export function HeroSection() {
         />
       </div>
 
-      <motion.div style={{ opacity }} className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between px-6 pt-28 pb-20 lg:pt-0 lg:pb-0 gap-8">
+      <motion.div style={{ opacity }} className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between px-6 pt-32 pb-20 gap-8">
         <motion.div 
           style={{ y }}
           className="flex flex-col justify-center lg:max-w-xl"
