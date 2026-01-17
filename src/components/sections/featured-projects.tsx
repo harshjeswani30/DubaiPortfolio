@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Folder, ExternalLink, Github, Star, GitFork } from "lucide-react"
 
 interface Project {
   id: string
@@ -22,89 +22,169 @@ interface FeaturedProjectsProps {
 export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section ref={ref} className="relative bg-black py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section ref={ref} className="relative overflow-hidden bg-[#2C3333] py-32">
+      <div className="absolute inset-0 dot-background opacity-50" />
+      
+      <div className="absolute right-0 top-1/3 h-[600px] w-[600px] rounded-full bg-[#395B64]/10 blur-[150px]" />
+
+      <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="mb-16 flex items-end justify-between"
+          className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end"
         >
           <div>
-            <span className="mb-4 inline-block text-sm font-medium uppercase tracking-wider text-indigo-400">
-              Featured Work
-            </span>
-            <h2 className="text-4xl font-bold text-white md:text-5xl">
-              Selected Projects
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={isInView ? { scale: 1 } : {}}
+              transition={{ type: "spring", duration: 0.6 }}
+              className="mb-6 flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2"
+            >
+              <Folder className="h-4 w-4 text-[#A5C9CA]" />
+              <span className="text-sm font-medium text-[#A5C9CA]">Quest Log</span>
+            </motion.div>
+            <h2 className="text-4xl font-bold text-[#E7F6F2] md:text-5xl lg:text-6xl">
+              Featured <span className="gradient-text">Quests</span>
             </h2>
+            <p className="mt-4 max-w-lg text-[#A5C9CA]/70">
+              Completed missions that showcase my abilities. Each project is a story of challenges conquered.
+            </p>
           </div>
-          <Link
-            href="/projects"
-            className="hidden items-center gap-2 text-zinc-400 transition-colors hover:text-white md:flex"
-          >
-            View All
-            <ArrowUpRight className="h-4 w-4" />
+          
+          <Link href="/projects">
+            <motion.button
+              whileHover={{ scale: 1.02, x: 4 }}
+              whileTap={{ scale: 0.98 }}
+              className="group flex items-center gap-2 rounded-xl border border-[#395B64] bg-[#395B64]/20 px-5 py-3 text-sm font-medium text-[#A5C9CA] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/30"
+            >
+              View All Quests
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </motion.button>
           </Link>
         </motion.div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {projects.map((project, i) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 60 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: i * 0.15 }}
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
             >
               <Link href={`/projects/${project.slug}`}>
                 <motion.div
                   whileHover={{ y: -8 }}
-                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-1"
+                  transition={{ type: "spring", stiffness: 300 }}
+                  className="group relative h-full overflow-hidden rounded-3xl border border-[#395B64]/50 bg-gradient-to-br from-[#395B64]/10 to-[#2C3333]"
                 >
-                  <div className="relative aspect-[16/10] overflow-hidden rounded-xl bg-zinc-800">
+                  <div className="relative aspect-[16/10] overflow-hidden">
                     {project.featured_image ? (
                       <img
                         src={project.featured_image}
                         alt={project.title}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
-                        <span className="text-4xl font-bold text-white/20">
+                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#395B64]/30 to-[#2C3333]">
+                        <motion.span
+                          animate={{ 
+                            scale: hoveredIndex === i ? [1, 1.1, 1] : 1,
+                            rotate: hoveredIndex === i ? [0, 5, -5, 0] : 0
+                          }}
+                          transition={{ duration: 0.5 }}
+                          className="text-6xl font-bold text-[#A5C9CA]/20"
+                        >
                           {project.title.charAt(0)}
-                        </span>
+                        </motion.span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                      <span className="inline-flex items-center gap-1 text-sm text-white">
-                        View Project <ArrowUpRight className="h-3 w-3" />
-                      </span>
+                    
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-[#2C3333]/20 to-transparent" />
+                    
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: hoveredIndex === i ? 1 : 0, y: hoveredIndex === i ? 0 : 20 }}
+                      className="absolute right-4 top-4 flex gap-2"
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2C3333]/80 backdrop-blur-sm"
+                      >
+                        <Github className="h-5 w-5 text-[#A5C9CA]" />
+                      </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2C3333]/80 backdrop-blur-sm"
+                      >
+                        <ExternalLink className="h-5 w-5 text-[#A5C9CA]" />
+                      </motion.div>
+                    </motion.div>
+
+                    <div className="absolute left-4 top-4">
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                        transition={{ delay: 0.3 + i * 0.1 }}
+                        className="flex items-center gap-2 rounded-full bg-[#2C3333]/80 px-3 py-1.5 backdrop-blur-sm"
+                      >
+                        <span className="flex h-2 w-2 items-center justify-center rounded-full bg-[#A5C9CA]">
+                          <span className="h-1 w-1 rounded-full bg-[#E7F6F2]" />
+                        </span>
+                        <span className="text-xs font-medium text-[#A5C9CA]">{project.category}</span>
+                      </motion.div>
                     </div>
                   </div>
-                  <div className="p-6">
-                    <div className="mb-3 flex items-center gap-2">
-                      <span className="rounded-full bg-indigo-500/10 px-3 py-1 text-xs font-medium text-indigo-400">
-                        {project.category}
-                      </span>
+
+                  <div className="relative p-6">
+                    <div className="mb-3 flex items-center gap-4">
+                      <div className="flex items-center gap-1 text-xs text-[#A5C9CA]/60">
+                        <Star className="h-3 w-3" />
+                        <span>128</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-[#A5C9CA]/60">
+                        <GitFork className="h-3 w-3" />
+                        <span>32</span>
+                      </div>
                     </div>
-                    <h3 className="mb-2 text-xl font-semibold text-white transition-colors group-hover:text-indigo-400">
+
+                    <h3 className="mb-2 text-xl font-bold text-[#E7F6F2] transition-colors group-hover:text-[#A5C9CA]">
                       {project.title}
                     </h3>
-                    <p className="mb-4 line-clamp-2 text-sm text-zinc-400">
+                    <p className="mb-4 line-clamp-2 text-sm text-[#A5C9CA]/70 leading-relaxed">
                       {project.description}
                     </p>
+
                     <div className="flex flex-wrap gap-2">
-                      {project.tech_stack.slice(0, 4).map((tech) => (
-                        <span
+                      {project.tech_stack.slice(0, 4).map((tech, techIndex) => (
+                        <motion.span
                           key={tech}
-                          className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-500"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                          transition={{ delay: 0.4 + i * 0.1 + techIndex * 0.05 }}
+                          className="rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 px-3 py-1 text-xs font-medium text-[#A5C9CA]"
                         >
                           {tech}
-                        </span>
+                        </motion.span>
                       ))}
+                      {project.tech_stack.length > 4 && (
+                        <span className="rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 px-3 py-1 text-xs font-medium text-[#A5C9CA]/60">
+                          +{project.tech_stack.length - 4}
+                        </span>
+                      )}
                     </div>
+
+                    <motion.div
+                      initial={{ width: "0%" }}
+                      animate={isInView ? { width: "100%" } : {}}
+                      transition={{ duration: 1, delay: 0.5 + i * 0.2 }}
+                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#A5C9CA] to-[#E7F6F2]"
+                    />
                   </div>
                 </motion.div>
               </Link>
@@ -112,18 +192,35 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
           ))}
         </div>
 
+        {projects.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={isInView ? { opacity: 1 } : {}}
+            className="flex flex-col items-center justify-center py-20 text-center"
+          >
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#395B64]/20">
+              <Folder className="h-10 w-10 text-[#A5C9CA]/50" />
+            </div>
+            <h3 className="text-xl font-semibold text-[#E7F6F2]">No quests yet</h3>
+            <p className="mt-2 text-[#A5C9CA]/60">Featured projects will appear here.</p>
+          </motion.div>
+        )}
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ delay: 0.8 }}
           className="mt-12 flex justify-center md:hidden"
         >
-          <Link
-            href="/projects"
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-6 py-3 text-white transition-colors hover:bg-white/10"
-          >
-            View All Projects
-            <ArrowUpRight className="h-4 w-4" />
+          <Link href="/projects">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center gap-2 rounded-2xl border-2 border-[#395B64] bg-[#395B64]/20 px-6 py-3 font-semibold text-[#E7F6F2] transition-colors hover:border-[#A5C9CA]"
+            >
+              View All Quests
+              <ArrowUpRight className="h-4 w-4" />
+            </motion.button>
           </Link>
         </motion.div>
       </div>

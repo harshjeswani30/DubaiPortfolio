@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-dark: #2C3333;
+  --primary-medium: #395B64;
+  --accent-light: #A5C9CA;
+  --accent-lightest: #E7F6F2;
+  --background: #2C3333;
+  --foreground: #E7F6F2;
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #ededed;
+  --background: #2C3333;
+  --foreground: #E7F6F2;
 }
 
 @theme inline {
@@ -55,38 +59,38 @@ body {
 }
 
 ::selection {
-  background: rgba(99, 102, 241, 0.3);
-  color: #fff;
+  background: rgba(165, 201, 202, 0.4);
+  color: #E7F6F2;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #2C3333;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  background: #395B64;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #A5C9CA;
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(135deg, #A5C9CA 0%, #E7F6F2 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(57, 91, 100, 0.3);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(165, 201, 202, 0.2);
 }
 
 .noise {
@@ -112,6 +116,16 @@ body {
   50% { opacity: 1; }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(100px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(100px) rotate(-360deg); }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
@@ -120,9 +134,34 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-orbit {
+  animation: orbit 20s linear infinite;
+}
+
 .grid-background {
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+    linear-gradient(rgba(165, 201, 202, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(165, 201, 202, 0.05) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.dot-background {
+  background-image: radial-gradient(rgba(165, 201, 202, 0.15) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.glow-sm {
+  box-shadow: 0 0 20px rgba(165, 201, 202, 0.15);
+}
+
+.glow-md {
+  box-shadow: 0 0 40px rgba(165, 201, 202, 0.2);
+}
+
+.glow-lg {
+  box-shadow: 0 0 60px rgba(165, 201, 202, 0.25);
 }

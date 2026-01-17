@@ -64,7 +64,7 @@ export function CustomCursor() {
             opacity: isVisible ? 1 : 0,
           }}
           transition={{ duration: 0.2 }}
-          className="h-4 w-4 rounded-full bg-white"
+          className="h-4 w-4 rounded-full bg-[#A5C9CA]"
         />
       </motion.div>
       <motion.div
@@ -82,7 +82,7 @@ export function CustomCursor() {
             opacity: isVisible ? 0.3 : 0,
           }}
           transition={{ duration: 0.3, delay: 0.05 }}
-          className="h-8 w-8 rounded-full border border-white/50"
+          className="h-8 w-8 rounded-full border border-[#A5C9CA]/50"
         />
       </motion.div>
     </>
