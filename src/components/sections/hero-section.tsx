@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
+import { useRef, useState, useEffect, useCallback } from "react"
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Sparkles, Briefcase, Users, Clock } from "lucide-react"
+import { ArrowRight, Briefcase, Users, Clock, MessageCircle } from "lucide-react"
 import Image from "next/image"
 
 const stats = [
@@ -12,12 +12,41 @@ const stats = [
   { icon: Users, value: "30+", label: "Happy Clients" },
 ]
 
+const roles = ["Full-Stack Developer", "UI/UX Designer", "Problem Solver", "Tech Enthusiast"]
+
 
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [imageHover, setImageHover] = useState(false)
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0)
+  const [displayText, setDisplayText] = useState("")
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  const typeText = useCallback(() => {
+    const currentRole = roles[currentRoleIndex]
+    
+    if (!isDeleting) {
+      if (displayText.length < currentRole.length) {
+        setDisplayText(currentRole.slice(0, displayText.length + 1))
+      } else {
+        setTimeout(() => setIsDeleting(true), 2000)
+      }
+    } else {
+      if (displayText.length > 0) {
+        setDisplayText(displayText.slice(0, -1))
+      } else {
+        setIsDeleting(false)
+        setCurrentRoleIndex((prev) => (prev + 1) % roles.length)
+      }
+    }
+  }, [currentRoleIndex, displayText, isDeleting])
+
+  useEffect(() => {
+    const timeout = setTimeout(typeText, isDeleting ? 50 : 100)
+    return () => clearTimeout(timeout)
+  }, [typeText, isDeleting])
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -103,16 +132,9 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="mb-4 flex items-center gap-3"
+              className="mb-4"
             >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
-              >
-                <Sparkles className="h-4 w-4 text-[#E7F6F2]" />
-              </motion.div>
-              <div className="group relative flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2 overflow-hidden cursor-pointer hover:border-[#A5C9CA]/50 transition-colors">
+              <div className="group relative inline-flex items-center gap-3 rounded-full border border-[#395B64] bg-[#395B64]/20 px-5 py-2.5 overflow-hidden cursor-pointer hover:border-[#A5C9CA]/50 transition-colors">
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
                   animate={{ x: ["-100%", "100%"] }}
@@ -122,46 +144,33 @@ export function HeroSection() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#A5C9CA] opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
                 </span>
-                <div className="relative h-5 overflow-hidden">
-                  <motion.div
-                    animate={{ y: ["0%", "-50%"] }}
-                    transition={{ 
-                      duration: 3,
-                      repeat: Infinity,
-                      repeatType: "reverse",
-                      ease: [0.4, 0, 0.2, 1],
-                      repeatDelay: 1
-                    }}
-                    className="flex flex-col"
-                  >
-                    {["Full-Stack Developer", "UI/UX Designer", "Problem Solver", "Full-Stack Developer"].map((text, idx) => (
-                      <motion.span
-                        key={idx}
-                        className="text-sm font-medium text-[#A5C9CA] h-5 flex items-center whitespace-nowrap"
-                      >
-                        {text.split("").map((char, charIdx) => (
-                          <motion.span
-                            key={charIdx}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              delay: charIdx * 0.03,
-                              duration: 0.2,
-                            }}
-                            className="inline-block"
-                          >
-                            {char === " " ? "\u00A0" : char}
-                          </motion.span>
-                        ))}
-                      </motion.span>
-                    ))}
-                  </motion.div>
+                <div className="relative flex items-center">
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={displayText}
+                      className="text-sm font-medium text-[#A5C9CA] whitespace-nowrap"
+                    >
+                      {displayText.split("").map((char, idx) => (
+                        <motion.span
+                          key={idx}
+                          initial={{ opacity: 0, y: 20, rotateX: -90 }}
+                          animate={{ opacity: 1, y: 0, rotateX: 0 }}
+                          exit={{ opacity: 0, y: -20, rotateX: 90 }}
+                          transition={{ duration: 0.15, delay: idx * 0.02 }}
+                          className="inline-block"
+                          style={{ transformOrigin: "bottom" }}
+                        >
+                          {char === " " ? "\u00A0" : char}
+                        </motion.span>
+                      ))}
+                    </motion.span>
+                  </AnimatePresence>
+                  <motion.span
+                    className="ml-0.5 inline-block w-[2px] h-4 bg-[#A5C9CA]"
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                  />
                 </div>
-                <motion.div
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-[2px] h-3 bg-[#A5C9CA]"
-                  animate={{ opacity: [1, 0] }}
-                  transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
-                />
               </div>
             </motion.div>
 
@@ -381,12 +390,7 @@ export function HeroSection() {
                     transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                   />
                   <div className="relative flex items-center gap-2.5">
-                    <motion.div
-                      animate={{ rotate: [0, 15, -15, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <Sparkles className="h-4 w-4 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
-                    </motion.div>
+                    <MessageCircle className="h-4 w-4 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
                     <span className="text-sm font-semibold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Let&apos;s Connect</span>
                   </div>
                 </motion.div>
