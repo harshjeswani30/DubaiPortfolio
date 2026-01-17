@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
-import { Navbar } from "@/components/layout/navbar"
+
 import { Footer } from "@/components/layout/footer"
 import { CustomCursor } from "@/components/ui/custom-cursor"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
@@ -65,9 +65,8 @@ export default function RootLayout({
             <SmoothScrollProvider>
               <CustomCursor />
             <ScrollProgress />
-            <CommandPalette />
-            <Navbar />
-            <main className="min-h-screen">{children}</main>
+              <CommandPalette />
+              <main className="min-h-screen">{children}</main>
             <Footer />
           </SmoothScrollProvider>
         </ThemeProvider>

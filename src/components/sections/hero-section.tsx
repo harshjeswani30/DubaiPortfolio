@@ -1,10 +1,12 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion"
+import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Sparkles, Briefcase, Users, Clock } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { ArrowRight, Sparkles, Briefcase, Users, Clock, Code2, Command, Menu, X } from "lucide-react"
 import Image from "next/image"
+import { cn } from "@/lib/utils"
 
 const stats = [
   { icon: Clock, value: "5+", label: "Years Experience" },
@@ -20,9 +22,21 @@ const techOrbs = [
   { name: "Tailwind", delay: 2 },
 ]
 
+const navItems = [
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
+  { href: "/projects", label: "Projects" },
+  { href: "/skills", label: "Skills" },
+  { href: "/blog", label: "Blog" },
+  { href: "/resume", label: "Resume" },
+  { href: "/contact", label: "Contact" },
+]
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -77,10 +91,127 @@ export function HeroSection() {
         />
       </div>
 
-      <motion.div style={{ opacity }} className="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between px-6 py-20 lg:py-0 gap-8">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative z-20 mx-auto max-w-7xl px-6 pt-6"
+      >
+        <div className="flex items-center justify-between">
+          <Link href="/">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-3"
+            >
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
+              >
+                <Code2 className="h-5 w-5 text-[#A5C9CA]" />
+              </motion.div>
+              <span className="text-xl font-bold text-[#E7F6F2]">Portfolio</span>
+            </motion.div>
+          </Link>
+
+          <div className="hidden items-center gap-1 rounded-2xl border border-[#395B64]/50 bg-[#395B64]/10 px-2 py-2 backdrop-blur-xl md:flex">
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href}>
+                <motion.div
+                  className={cn(
+                    "relative rounded-xl px-4 py-2 text-sm font-medium transition-colors",
+                    pathname === item.href
+                      ? "text-[#E7F6F2]"
+                      : "text-[#A5C9CA]/70 hover:text-[#E7F6F2]"
+                  )}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {pathname === item.href && (
+                    <motion.div
+                      layoutId="navbar-indicator"
+                      className="absolute inset-0 rounded-xl bg-[#395B64]"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="relative z-10">{item.label}</span>
+                </motion.div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="hidden items-center gap-2 rounded-xl border border-[#395B64]/50 bg-[#395B64]/10 px-3 py-2 text-sm text-[#A5C9CA]/70 backdrop-blur-xl transition-all hover:border-[#A5C9CA]/50 hover:text-[#A5C9CA] md:flex"
+            >
+              <Command className="h-3 w-3" />
+              <span>K</span>
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-[#395B64]/50 bg-[#395B64]/10 text-[#E7F6F2] backdrop-blur-xl md:hidden"
+            >
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </motion.button>
+          </div>
+        </div>
+      </motion.div>
+
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-[#2C3333]/95 backdrop-blur-xl md:hidden"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ delay: 0.1 }}
+              className="flex h-full flex-col items-center justify-center gap-6"
+            >
+              {navItems.map((item, i) => (
+                <motion.div
+                  key={item.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.05 }}
+                >
+                  <Link
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={cn(
+                      "relative block text-3xl font-bold transition-colors",
+                      pathname === item.href ? "text-[#A5C9CA]" : "text-[#E7F6F2]/60 hover:text-[#E7F6F2]"
+                    )}
+                  >
+                    {pathname === item.href && (
+                      <motion.span
+                        layoutId="mobile-indicator"
+                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#A5C9CA]"
+                      />
+                    )}
+                    {item.label}
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div style={{ opacity }} className="relative z-10 mx-auto flex min-h-[calc(100vh-80px)] max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between px-6 py-12 lg:py-0 gap-8">
         <motion.div 
           style={{ y }}
-          className="flex flex-col justify-center lg:max-w-xl pt-24 lg:pt-0"
+          className="flex flex-col justify-center lg:max-w-xl"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
