@@ -1,10 +1,9 @@
 "use client"
 
-import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring, MotionValue } from "framer-motion"
+import { useRef, useState, useEffect, useCallback } from "react"
+import { motion, useScroll, useTransform, useMotionValue, useSpring, MotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Briefcase, Users, Clock } from "lucide-react"
-import gsap from "gsap"
 import RotatingText from "@/components/ui/rotating-text"
 import { CreativeImageCard } from "@/components/ui/creative-image-card"
 
@@ -18,54 +17,24 @@ function useParallax(value: MotionValue<number>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance])
 }
 
-const neuronPathsData = [
-  { d: "M 0 0 L -120 -80 L -200 -60 L -280 -100", branches: [{ from: [-120, -80], to: [-150, -140] }, { from: [-200, -60], to: [-240, -20] }] },
-  { d: "M 0 0 L -80 -140 L -60 -240 L -100 -340", branches: [{ from: [-80, -140], to: [-140, -160] }, { from: [-60, -240], to: [-20, -280] }] },
-  { d: "M 0 0 L -140 -40 L -260 -30 L -380 -60", branches: [{ from: [-140, -40], to: [-160, -100] }, { from: [-260, -30], to: [-280, 40] }] },
-  { d: "M 0 0 L -100 60 L -180 140 L -280 200", branches: [{ from: [-100, 60], to: [-140, 20] }, { from: [-180, 140], to: [-220, 100] }] },
-  { d: "M 0 0 L -60 120 L -40 220 L -80 320", branches: [{ from: [-60, 120], to: [-120, 140] }, { from: [-40, 220], to: [20, 260] }] },
-  { d: "M 0 0 L 120 -100 L 220 -160 L 340 -200", branches: [{ from: [120, -100], to: [140, -160] }, { from: [220, -160], to: [260, -100] }] },
-  { d: "M 0 0 L 80 -160 L 120 -280 L 100 -400", branches: [{ from: [80, -160], to: [140, -180] }, { from: [120, -280], to: [60, -320] }] },
-  { d: "M 0 0 L 160 -40 L 280 -20 L 400 -60", branches: [{ from: [160, -40], to: [180, -100] }, { from: [280, -20], to: [300, 50] }] },
-  { d: "M 0 0 L 100 80 L 200 140 L 320 180", branches: [{ from: [100, 80], to: [120, 20] }, { from: [200, 140], to: [240, 80] }] },
-  { d: "M 0 0 L 60 140 L 100 260 L 80 380", branches: [{ from: [60, 140], to: [120, 160] }, { from: [100, 260], to: [40, 300] }] },
-  { d: "M 0 0 L -40 -160 L 20 -280 L -20 -400", branches: [{ from: [-40, -160], to: [-100, -180] }, { from: [20, -280], to: [80, -300] }] },
-  { d: "M 0 0 L 40 160 L -20 280 L 40 400", branches: [{ from: [40, 160], to: [100, 180] }, { from: [-20, 280], to: [-80, 300] }] },
-]
+const defaultGradient = {
+  color1: "rgba(0, 173, 181, 0.08)",
+  color2: "rgba(57, 62, 70, 0.15)",
+  angle: 135,
+}
 
-const synapseNodesData = [
-  { cx: -280, cy: -100, size: 6 },
-  { cx: -100, cy: -340, size: 5 },
-  { cx: -380, cy: -60, size: 7 },
-  { cx: -280, cy: 200, size: 6 },
-  { cx: -80, cy: 320, size: 5 },
-  { cx: 340, cy: -200, size: 6 },
-  { cx: 100, cy: -400, size: 5 },
-  { cx: 400, cy: -60, size: 7 },
-  { cx: 320, cy: 180, size: 6 },
-  { cx: 80, cy: 380, size: 5 },
-  { cx: -20, cy: -400, size: 6 },
-  { cx: 40, cy: 400, size: 6 },
-  { cx: -150, cy: -140, size: 4 },
-  { cx: -140, cy: -160, size: 4 },
-  { cx: -160, cy: -100, size: 4 },
-  { cx: 140, cy: -160, size: 4 },
-  { cx: 140, cy: -180, size: 4 },
-  { cx: 180, cy: -100, size: 4 },
-  { cx: -120, cy: 140, size: 4 },
-  { cx: 120, cy: 160, size: 4 },
-]
-
-const vinePathsData = neuronPathsData
-
-const leafPathsData = synapseNodesData
+const hoverGradient = {
+  color1: "rgba(0, 173, 181, 0.18)",
+  color2: "rgba(74, 222, 128, 0.12)",
+  angle: 145,
+}
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
+  const cardContainerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [isCardHovered, setIsCardHovered] = useState(false)
-  const timelineRef = useRef<gsap.core.Timeline | null>(null)
+  const [cardPosition, setCardPosition] = useState<"left" | "center" | "right">("center")
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -94,6 +63,11 @@ export function HeroSection() {
   const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 })
   const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 })
 
+  const ambientGlowOpacity = useSpring(0, { stiffness: 30, damping: 25 })
+  const ambientGlowScale = useSpring(0.8, { stiffness: 25, damping: 20 })
+  const noiseOpacity = useSpring(0.03, { stiffness: 20, damping: 25 })
+  const gradientAngle = useSpring(defaultGradient.angle, { stiffness: 20, damping: 30 })
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const { clientX, clientY } = e
@@ -105,112 +79,42 @@ export function HeroSection() {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [mouseX, mouseY])
 
-  useEffect(() => {
-    if (!svgRef.current) return
-
-    timelineRef.current = gsap.timeline({ paused: true })
-
-    const axonPaths = svgRef.current.querySelectorAll(".axon-path")
-    const branchPaths = svgRef.current.querySelectorAll(".branch-path")
-    const synapseNodes = svgRef.current.querySelectorAll(".synapse-node")
-    const pulseCircles = svgRef.current.querySelectorAll(".pulse-circle")
-
-    axonPaths.forEach((path) => {
-      const length = (path as SVGPathElement).getTotalLength()
-      gsap.set(path, {
-        strokeDasharray: length,
-        strokeDashoffset: length,
-        opacity: 0,
-      })
-    })
-
-    branchPaths.forEach((path) => {
-      const length = (path as SVGPathElement).getTotalLength()
-      gsap.set(path, {
-        strokeDasharray: length,
-        strokeDashoffset: length,
-        opacity: 0,
-      })
-    })
-
-    synapseNodes.forEach((node) => {
-      gsap.set(node, {
-        scale: 0,
-        opacity: 0,
-        transformOrigin: "center center",
-      })
-    })
-
-    pulseCircles.forEach((circle) => {
-      gsap.set(circle, {
-        scale: 0,
-        opacity: 0,
-        transformOrigin: "center center",
-      })
-    })
-
-    timelineRef.current
-      .to(axonPaths, {
-        opacity: 1,
-        duration: 0.05,
-        stagger: 0.015,
-      })
-      .to(
-        axonPaths,
-        {
-          strokeDashoffset: 0,
-          duration: 0.35,
-          stagger: 0.02,
-          ease: "power2.out",
-        },
-        "<"
-      )
-      .to(
-        branchPaths,
-        {
-          opacity: 1,
-          strokeDashoffset: 0,
-          duration: 0.25,
-          stagger: 0.01,
-          ease: "power2.out",
-        },
-        "-=0.15"
-      )
-      .to(
-        synapseNodes,
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.2,
-          stagger: 0.01,
-          ease: "back.out(2)",
-        },
-        "-=0.15"
-      )
-      .to(
-        pulseCircles,
-        {
-          scale: 1.5,
-          opacity: 0.6,
-          duration: 0.3,
-          stagger: 0.02,
-          ease: "power1.out",
-        },
-        "-=0.1"
-      )
-
-    return () => {
-      timelineRef.current?.kill()
+  const updateCardPosition = useCallback(() => {
+    if (!cardContainerRef.current) return
+    const rect = cardContainerRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const screenWidth = window.innerWidth
+    
+    if (centerX < screenWidth * 0.33) {
+      setCardPosition("left")
+    } else if (centerX > screenWidth * 0.66) {
+      setCardPosition("right")
+    } else {
+      setCardPosition("center")
     }
   }, [])
 
   useEffect(() => {
+    updateCardPosition()
+    window.addEventListener("resize", updateCardPosition)
+    return () => window.removeEventListener("resize", updateCardPosition)
+  }, [updateCardPosition])
+
+  useEffect(() => {
     if (isCardHovered) {
-      timelineRef.current?.timeScale(1).play()
+      ambientGlowOpacity.set(1)
+      ambientGlowScale.set(1.2)
+      noiseOpacity.set(0.06)
+      
+      const angleOffset = cardPosition === "left" ? -15 : cardPosition === "right" ? 15 : 0
+      gradientAngle.set(hoverGradient.angle + angleOffset)
     } else {
-      timelineRef.current?.timeScale(1.5).reverse()
+      ambientGlowOpacity.set(0)
+      ambientGlowScale.set(0.8)
+      noiseOpacity.set(0.03)
+      gradientAngle.set(defaultGradient.angle)
     }
-  }, [isCardHovered])
+  }, [isCardHovered, cardPosition, ambientGlowOpacity, ambientGlowScale, noiseOpacity, gradientAngle])
 
   return (
     <section
@@ -222,6 +126,90 @@ export function HeroSection() {
         style={{ y: bgY }}
       />
       
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{ opacity: noiseOpacity }}
+      >
+        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+          <filter id="heroNoise">
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#heroNoise)" />
+        </svg>
+      </motion.div>
+
+      <motion.div
+        className="absolute inset-0 pointer-events-none transition-all"
+        style={{
+          background: useTransform(
+            gradientAngle,
+            (angle) => `linear-gradient(${angle}deg, ${isCardHovered ? hoverGradient.color1 : defaultGradient.color1} 0%, transparent 50%, ${isCardHovered ? hoverGradient.color2 : defaultGradient.color2} 100%)`
+          ),
+        }}
+        animate={{
+          opacity: isCardHovered ? 1 : 0.5,
+        }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      />
+
+      <AnimatePresence>
+        {isCardHovered && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ 
+              duration: 0.6, 
+              ease: [0.16, 1, 0.3, 1],
+              exit: { duration: 1, ease: [0.16, 1, 0.3, 1] }
+            }}
+            className="absolute pointer-events-none"
+            style={{
+              right: "15%",
+              top: "50%",
+              transform: "translate(50%, -50%)",
+              width: "800px",
+              height: "800px",
+            }}
+          >
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: "radial-gradient(circle, rgba(0, 173, 181, 0.15) 0%, rgba(0, 173, 181, 0.05) 40%, transparent 70%)",
+                scale: ambientGlowScale,
+                opacity: ambientGlowOpacity,
+              }}
+            />
+            <motion.div
+              className="absolute inset-[15%] rounded-full"
+              style={{
+                background: "radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 60%)",
+                filter: "blur(40px)",
+              }}
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.6, 0.8, 0.6],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          background: isCardHovered 
+            ? "radial-gradient(ellipse at 70% 50%, rgba(0, 173, 181, 0.08) 0%, transparent 50%)"
+            : "radial-gradient(ellipse at 70% 50%, rgba(0, 173, 181, 0) 0%, transparent 50%)",
+        }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      />
+
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{ rotate: 360 }}
@@ -237,10 +225,18 @@ export function HeroSection() {
         <motion.div
           style={{ x: smoothX, y: smoothY }}
           className="absolute left-1/4 top-1/3 h-[400px] w-[400px] rounded-full bg-[#393E46]/20 blur-[100px]"
+          animate={{
+            backgroundColor: isCardHovered ? "rgba(0, 173, 181, 0.15)" : "rgba(57, 62, 70, 0.2)",
+          }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         />
         <motion.div
           style={{ x: smoothX, y: smoothY }}
-          className="absolute bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full bg-[#00ADB5]/10 blur-[80px]"
+          className="absolute bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full blur-[80px]"
+          animate={{
+            backgroundColor: isCardHovered ? "rgba(74, 222, 128, 0.12)" : "rgba(0, 173, 181, 0.1)",
+          }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         />
 
         <motion.div
@@ -397,82 +393,50 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div
+            ref={cardContainerRef}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3 }}
             style={{ y: imageY }}
             className="relative flex items-center justify-center flex-shrink-0 lg:mr-8"
           >
-            <svg
-              ref={svgRef}
-              className="absolute z-0 pointer-events-none"
-              style={{
-                width: "200%",
-                height: "200%",
-                left: "50%",
-                top: "50%",
-                transform: "translate(-50%, -50%)",
-                overflow: "visible",
-              }}
-              viewBox="-600 -600 1200 1200"
-              fill="none"
-            >
-              <defs>
-                <linearGradient id="heroVineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#00ADB5" />
-                  <stop offset="50%" stopColor="#4ade80" />
-                  <stop offset="100%" stopColor="#22c55e" />
-                </linearGradient>
-                <linearGradient id="heroLeafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#4ade80" />
-                  <stop offset="100%" stopColor="#16a34a" />
-                </linearGradient>
-                <filter id="heroGlow">
-                  <feGaussianBlur stdDeviation="4" result="coloredBlur" />
-                  <feMerge>
-                    <feMergeNode in="coloredBlur" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {vinePathsData.map((vine, i) => (
-                <path
-                  key={`vine-${i}`}
-                  className="vine-path"
-                  d={vine.d}
-                  stroke="url(#heroVineGradient)"
-                  strokeWidth="2.5"
-                  fill="none"
-                  strokeLinecap="round"
-                  filter="url(#heroGlow)"
-                />
-              ))}
-
-              {leafPathsData.map((leaf, i) => (
-                <g key={`leaf-${i}`} className="leaf-shape">
-                  <ellipse
-                    cx={leaf.cx}
-                    cy={leaf.cy}
-                    rx="12"
-                    ry="6"
-                    fill="url(#heroLeafGradient)"
-                    filter="url(#heroGlow)"
-                    transform={`rotate(${Math.random() * 90 - 45} ${leaf.cx} ${leaf.cy})`}
+            <AnimatePresence>
+              {isCardHovered && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ 
+                    duration: 0.5, 
+                    ease: [0.16, 1, 0.3, 1],
+                    exit: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+                  }}
+                  className="absolute inset-0 -z-10"
+                  style={{
+                    width: "150%",
+                    height: "150%",
+                    left: "-25%",
+                    top: "-25%",
+                  }}
+                >
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      background: "radial-gradient(circle, rgba(0, 173, 181, 0.2) 0%, rgba(0, 173, 181, 0.08) 30%, transparent 60%)",
+                      filter: "blur(30px)",
+                    }}
+                    animate={{
+                      scale: [1, 1.05, 1],
+                    }}
+                    transition={{
+                      duration: 2.5,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
                   />
-                  <ellipse
-                    cx={leaf.cx + (Math.random() > 0.5 ? 15 : -15)}
-                    cy={leaf.cy + (Math.random() > 0.5 ? 10 : -10)}
-                    rx="8"
-                    ry="4"
-                    fill="url(#heroLeafGradient)"
-                    filter="url(#heroGlow)"
-                    opacity="0.7"
-                    transform={`rotate(${Math.random() * 90 - 45} ${leaf.cx + 15} ${leaf.cy + 10})`}
-                  />
-                </g>
-              ))}
-            </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <CreativeImageCard onHoverChange={setIsCardHovered} />
           </motion.div>
