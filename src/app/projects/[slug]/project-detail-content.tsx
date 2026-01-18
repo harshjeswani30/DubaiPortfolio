@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion"
+import { useEffect, useRef, useState, useCallback } from "react"
+import { motion, useScroll, useTransform, useSpring, useInView, useMotionValue, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ExternalLink, Github, Layers, Code2, Sparkles, Eye, ArrowUpRight } from "lucide-react"
+import { ArrowLeft, ExternalLink, Github, Layers, Code2, Sparkles, Eye, ArrowUpRight, Calendar, Clock, Zap, Target, CheckCircle2, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -22,15 +22,174 @@ interface Project {
   created_at?: string
 }
 
+function ParallaxImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  })
+  const y = useTransform(scrollYProgress, [0, 1], [-50, 50])
+
+  return (
+    <div ref={ref} className={`overflow-hidden ${className}`}>
+      <motion.div style={{ y }} className="h-[120%] w-full">
+        <Image src={src} alt={alt} fill className="object-cover" />
+      </motion.div>
+    </div>
+  )
+}
+
+function Lightbox({ images, currentIndex, onClose, onNext, onPrev }: { 
+  images: string[]
+  currentIndex: number
+  onClose: () => void
+  onNext: () => void
+  onPrev: () => void
+}) {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') onNext()
+      if (e.key === 'ArrowLeft') onPrev()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose, onNext, onPrev])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl"
+      onClick={onClose}
+    >
+      <motion.button
+        className="absolute right-6 top-6 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={onClose}
+      >
+        <X className="h-6 w-6" />
+      </motion.button>
+
+      <motion.button
+        className="absolute left-6 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+        whileHover={{ scale: 1.1, x: -4 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={(e) => { e.stopPropagation(); onPrev() }}
+      >
+        <ChevronLeft className="h-8 w-8" />
+      </motion.button>
+
+      <motion.button
+        className="absolute right-6 top-1/2 flex h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
+        whileHover={{ scale: 1.1, x: 4 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={(e) => { e.stopPropagation(); onNext() }}
+      >
+        <ChevronRight className="h-8 w-8" />
+      </motion.button>
+
+      <motion.div
+        className="relative h-[80vh] w-[90vw] max-w-6xl"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", damping: 25 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Image
+          src={images[currentIndex]}
+          alt={`Gallery image ${currentIndex + 1}`}
+          fill
+          className="rounded-2xl object-contain"
+        />
+      </motion.div>
+
+      <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 gap-2">
+        {images.map((_, i) => (
+          <div
+            key={i}
+            className={`h-2 w-2 rounded-full transition-all ${i === currentIndex ? 'bg-[#00ADB5] w-6' : 'bg-white/30'}`}
+          />
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
+function MagneticCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [5, -5]), { stiffness: 100, damping: 20 })
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-5, 5]), { stiffness: 100, damping: 20 })
+
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    x.set((e.clientX - rect.left) / rect.width - 0.5)
+    y.set((e.clientY - rect.top) / rect.height - 0.5)
+  }, [x, y])
+
+  const handleMouseLeave = useCallback(() => {
+    x.set(0)
+    y.set(0)
+  }, [x, y])
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+function FloatingParticle({ delay }: { delay: number }) {
+  return (
+    <motion.div
+      className="absolute h-1 w-1 rounded-full bg-[#00ADB5]/30"
+      initial={{ opacity: 0, scale: 0 }}
+      animate={{
+        opacity: [0, 1, 0],
+        scale: [0, 1, 0],
+        y: [0, -100],
+        x: [0, Math.random() * 50 - 25],
+      }}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        delay,
+        ease: "easeOut",
+      }}
+      style={{
+        left: `${Math.random() * 100}%`,
+        bottom: `${Math.random() * 30}%`,
+      }}
+    />
+  )
+}
+
 export function ProjectDetailContent({ project }: { project: Project }) {
   const { completeTransition, isTransitioning } = usePageTransition()
   const router = useRouter()
   const [isRevealed, setIsRevealed] = useState(false)
   const [backUrl, setBackUrl] = useState("/projects")
   const [backLabel, setBackLabel] = useState("Back to Projects")
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const featuresRef = useRef<HTMLDivElement>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
   const isContentInView = useInView(contentRef, { once: true, margin: "-100px" })
+  const isFeaturesInView = useInView(featuresRef, { once: true, margin: "-100px" })
+  const isGalleryInView = useInView(galleryRef, { once: true, margin: "-100px" })
   const hasInitialized = useRef(false)
 
   const { scrollYProgress } = useScroll({
@@ -42,7 +201,8 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const heroOpacity = useTransform(smoothProgress, [0, 0.5], [1, 0])
   const heroScale = useTransform(smoothProgress, [0, 0.5], [1, 0.95])
   const heroY = useTransform(smoothProgress, [0, 0.5], [0, 50])
-  const imageScale = useTransform(smoothProgress, [0, 0.5], [1, 1.1])
+  const imageScale = useTransform(smoothProgress, [0, 0.5], [1, 1.15])
+  const imageBlur = useTransform(smoothProgress, [0, 0.5], [0, 10])
 
   useEffect(() => {
     if (hasInitialized.current) return
@@ -68,9 +228,28 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   }
 
   const titleWords = project.title.split(" ")
+  const allImages = project.images || []
+  
+  const projectFeatures = [
+    { icon: <Zap className="h-5 w-5" />, label: "Lightning Fast", desc: "Optimized performance" },
+    { icon: <Target className="h-5 w-5" />, label: "Pixel Perfect", desc: "Attention to detail" },
+    { icon: <CheckCircle2 className="h-5 w-5" />, label: "Fully Tested", desc: "Production ready" },
+  ]
 
   return (
     <div className="min-h-screen bg-[#222831] overflow-hidden">
+      <AnimatePresence>
+        {lightboxIndex !== null && allImages.length > 0 && (
+          <Lightbox
+            images={allImages}
+            currentIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onNext={() => setLightboxIndex((prev) => prev !== null ? (prev + 1) % allImages.length : 0)}
+            onPrev={() => setLightboxIndex((prev) => prev !== null ? (prev - 1 + allImages.length) % allImages.length : 0)}
+          />
+        )}
+      </AnimatePresence>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: isRevealed ? 1 : 0 }}
@@ -80,7 +259,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
         <section ref={heroRef} className="relative min-h-[100vh] overflow-hidden">
           <motion.div 
             className="absolute inset-0"
-            style={{ scale: imageScale }}
+            style={{ scale: imageScale, filter: `blur(${imageBlur}px)` }}
           >
             {project.featured_image ? (
               <Image
@@ -103,11 +282,15 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 />
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/80 to-[#222831]/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/80 to-[#222831]/30" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#222831]/60 via-transparent to-[#222831]/60" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,transparent_0%,#222831_70%)]" />
           </motion.div>
 
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(20)].map((_, i) => (
+              <FloatingParticle key={i} delay={i * 0.3} />
+            ))}
             <motion.div
               className="absolute top-1/4 left-[10%]"
               animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
@@ -132,7 +315,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
           </div>
 
           <motion.div 
-            className="relative z-10 flex min-h-[100vh] flex-col justify-end px-6 pb-20 pt-32 lg:px-12"
+            className="relative z-10 flex min-h-[100vh] flex-col justify-end px-6 pb-24 pt-32 lg:px-12"
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           >
             <div className="mx-auto w-full max-w-6xl">
@@ -155,19 +338,33 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 </button>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={isRevealed ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-5 py-2.5 backdrop-blur-sm"
-              >
-                <motion.span
-                  className="h-2.5 w-2.5 rounded-full bg-[#00ADB5]"
-                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <span className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">{project.category}</span>
-              </motion.div>
+              <div className="flex flex-wrap items-center gap-4 mb-6">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={isRevealed ? { opacity: 1, scale: 1 } : {}}
+                  transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="inline-flex items-center gap-3 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-5 py-2.5 backdrop-blur-sm"
+                >
+                  <motion.span
+                    className="h-2.5 w-2.5 rounded-full bg-[#00ADB5]"
+                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <span className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">{project.category}</span>
+                </motion.div>
+
+                {project.created_at && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={isRevealed ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="flex items-center gap-2 text-sm text-[#EEEEEE]/40"
+                  >
+                    <Calendar className="h-4 w-4" />
+                    <span>{new Date(project.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                  </motion.div>
+                )}
+              </div>
 
               <div className="overflow-hidden">
                 <h1 className="text-5xl font-bold text-[#EEEEEE] md:text-7xl lg:text-8xl xl:text-9xl leading-[0.9] tracking-tight">
@@ -175,8 +372,8 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     <motion.span
                       key={i}
                       className="inline-block mr-4 md:mr-6"
-                      initial={{ y: 120, opacity: 0 }}
-                      animate={isRevealed ? { y: 0, opacity: 1 } : {}}
+                      initial={{ y: 120, opacity: 0, rotateX: -80 }}
+                      animate={isRevealed ? { y: 0, opacity: 1, rotateX: 0 } : {}}
                       transition={{
                         duration: 0.8,
                         delay: 0.2 + i * 0.08,
@@ -211,8 +408,9 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#00ADB5] to-[#00ADB5]/90 px-8 py-4 font-semibold text-[#222831] shadow-xl shadow-[#00ADB5]/20 transition-all hover:shadow-2xl hover:shadow-[#00ADB5]/30"
+                    className="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#00ADB5] to-[#00CED6] px-8 py-4 font-semibold text-[#222831] shadow-xl shadow-[#00ADB5]/20 transition-all hover:shadow-2xl hover:shadow-[#00ADB5]/30"
                   >
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                     <Eye className="h-5 w-5" />
                     <span>View Live Project</span>
                     <motion.div
@@ -239,11 +437,31 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               </motion.div>
 
               <motion.div
-                className="mt-16 h-px w-full max-w-md bg-gradient-to-r from-[#00ADB5] via-[#00ADB5]/40 to-transparent"
-                initial={{ scaleX: 0, originX: 0 }}
-                animate={isRevealed ? { scaleX: 1 } : {}}
-                transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              />
+                className="mt-16"
+                initial={{ opacity: 0 }}
+                animate={isRevealed ? { opacity: 1 } : {}}
+                transition={{ delay: 0.7 }}
+              >
+                <div className="flex gap-8">
+                  {projectFeatures.map((feature, i) => (
+                    <motion.div
+                      key={feature.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={isRevealed ? { opacity: 1, y: 0 } : {}}
+                      transition={{ delay: 0.7 + i * 0.1, duration: 0.5 }}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10 text-[#00ADB5]">
+                        {feature.icon}
+                      </div>
+                      <div className="hidden sm:block">
+                        <div className="text-sm font-semibold text-[#EEEEEE]">{feature.label}</div>
+                        <div className="text-xs text-[#EEEEEE]/40">{feature.desc}</div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           </motion.div>
 
@@ -274,6 +492,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute -right-40 top-0 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-[#00ADB5]/5 to-transparent blur-[100px]" />
             <div className="absolute -left-40 bottom-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-[#393E46]/10 to-transparent blur-[80px]" />
+            <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='%23393E46' fill-opacity='0.1'/%3E%3C/svg%3E\")" }} />
           </div>
 
           <div className="relative mx-auto max-w-6xl px-6 lg:px-12">
@@ -281,26 +500,35 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               initial={{ opacity: 0, y: 40 }}
               animate={isContentInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-20"
+              className="mb-24"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
-                <span className="text-xs text-[#00ADB5] uppercase tracking-widest font-semibold">Tech Stack</span>
-                <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
+              <div className="flex items-center gap-4 mb-8">
+                <motion.div 
+                  className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                  initial={{ scaleY: 0 }}
+                  animate={isContentInView ? { scaleY: 1 } : {}}
+                  transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                />
+                <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Technologies Used</h2>
               </div>
 
-              <div className="flex flex-wrap justify-center gap-3">
+              <div className="flex flex-wrap gap-4">
                 {project.tech_stack.map((tech, i) => (
-                  <motion.span
+                  <motion.div
                     key={tech}
                     initial={{ opacity: 0, y: 20, scale: 0.9 }}
                     animate={isContentInView ? { opacity: 1, y: 0, scale: 1 } : {}}
                     transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    whileHover={{ scale: 1.05, y: -3 }}
-                    className="rounded-xl border border-[#393E46]/50 bg-[#393E46]/20 px-5 py-2.5 text-sm font-medium text-[#EEEEEE]/80 backdrop-blur-sm transition-all hover:border-[#00ADB5]/40 hover:bg-[#00ADB5]/10 hover:text-[#00ADB5]"
                   >
-                    {tech}
-                  </motion.span>
+                    <MagneticCard className="perspective-1000">
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#393E46]/10 px-6 py-4 backdrop-blur-sm transition-all hover:border-[#00ADB5]/40 hover:shadow-lg hover:shadow-[#00ADB5]/5"
+                      >
+                        <span className="text-base font-medium text-[#EEEEEE]/90">{tech}</span>
+                      </motion.div>
+                    </MagneticCard>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
@@ -310,73 +538,143 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 initial={{ opacity: 0, y: 50 }}
                 animate={isContentInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-20"
+                className="mb-24"
               >
-                <div className="group relative overflow-hidden rounded-3xl border border-[#393E46]/40 bg-[#2a2f38]/50 p-2 shadow-2xl shadow-black/20">
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/5 via-transparent to-[#393E46]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="relative aspect-video overflow-hidden rounded-2xl">
-                    <Image
-                      src={project.featured_image}
-                      alt={project.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
+                <MagneticCard className="perspective-1000">
+                  <div className="group relative overflow-hidden rounded-3xl border border-[#393E46]/40 bg-[#2a2f38]/50 p-2 shadow-2xl shadow-black/20">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/5 via-transparent to-[#393E46]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-[#00ADB5]/20 via-transparent to-[#393E46]/20 opacity-0 blur transition-opacity duration-500 group-hover:opacity-100" />
+                    <div className="relative aspect-video overflow-hidden rounded-2xl">
+                      <Image
+                        src={project.featured_image}
+                        alt={project.title}
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                    </div>
                   </div>
-                </div>
+                </MagneticCard>
               </motion.div>
             )}
 
             {project.content && (
               <motion.div
+                ref={featuresRef}
                 initial={{ opacity: 0, y: 40 }}
-                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.3, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-20"
+                className="mb-24"
               >
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
-                  <span className="text-xs text-[#00ADB5] uppercase tracking-widest font-semibold">About This Project</span>
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
+                <div className="flex items-center gap-4 mb-8">
+                  <motion.div 
+                    className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                    initial={{ scaleY: 0 }}
+                    animate={isFeaturesInView ? { scaleY: 1 } : {}}
+                    transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                  <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">About This Project</h2>
                 </div>
 
-                <div className="mx-auto max-w-3xl">
-                  <div className="prose prose-lg prose-invert max-w-none">
-                    <p className="text-lg text-[#EEEEEE]/65 leading-relaxed">{project.content}</p>
+                <div className="grid gap-8 lg:grid-cols-2">
+                  <div className="space-y-6">
+                    {project.content.split('\n\n').map((paragraph, i) => (
+                      <motion.p
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.4 + i * 0.1, duration: 0.6 }}
+                        className="text-lg text-[#EEEEEE]/65 leading-relaxed"
+                      >
+                        {paragraph}
+                      </motion.p>
+                    ))}
                   </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={isFeaturesInView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.5, duration: 0.7 }}
+                    className="space-y-4"
+                  >
+                    {[
+                      { label: "Category", value: project.category },
+                      { label: "Tech Stack", value: project.tech_stack.slice(0, 3).join(", ") },
+                      { label: "Status", value: "Completed" },
+                    ].map((item, i) => (
+                      <div key={item.label} className="flex items-center justify-between rounded-xl border border-[#393E46]/30 bg-[#393E46]/10 p-4">
+                        <span className="text-sm text-[#EEEEEE]/50">{item.label}</span>
+                        <span className="font-medium text-[#EEEEEE]">{item.value}</span>
+                      </div>
+                    ))}
+
+                    <div className="mt-6 rounded-2xl border border-[#00ADB5]/20 bg-gradient-to-br from-[#00ADB5]/10 to-transparent p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <Sparkles className="h-5 w-5 text-[#00ADB5]" />
+                        <span className="font-semibold text-[#EEEEEE]">Key Highlights</span>
+                      </div>
+                      <ul className="space-y-2">
+                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
+                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
+                          <span>Responsive Design</span>
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
+                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
+                          <span>Modern Architecture</span>
+                        </li>
+                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
+                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
+                          <span>Performance Optimized</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </motion.div>
                 </div>
               </motion.div>
             )}
 
-            {project.images && project.images.length > 0 && (
+            {allImages.length > 0 && (
               <motion.div
+                ref={galleryRef}
                 initial={{ opacity: 0, y: 40 }}
-                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-20"
+                className="mb-24"
               >
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
-                  <span className="text-xs text-[#00ADB5] uppercase tracking-widest font-semibold">Gallery</span>
-                  <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
+                <div className="flex items-center gap-4 mb-8">
+                  <motion.div 
+                    className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                    initial={{ scaleY: 0 }}
+                    animate={isGalleryInView ? { scaleY: 1 } : {}}
+                    transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                  <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Project Gallery</h2>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
-                  {project.images.map((image, i) => (
+                <div className="grid gap-6 md:grid-cols-2">
+                  {allImages.map((image, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 30 }}
-                      animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                      animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
                       transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
                       whileHover={{ scale: 1.02, y: -5 }}
-                      className="group relative overflow-hidden rounded-2xl border border-[#393E46]/40 bg-[#2a2f38]/50 shadow-lg transition-all hover:border-[#00ADB5]/30 hover:shadow-xl hover:shadow-[#00ADB5]/5"
+                      onClick={() => setLightboxIndex(i)}
+                      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[#393E46]/40 bg-[#2a2f38]/50 shadow-lg transition-all hover:border-[#00ADB5]/30 hover:shadow-xl hover:shadow-[#00ADB5]/5"
                     >
-                      <div className="aspect-video">
+                      <div className="aspect-video relative">
                         <Image
                           src={image}
                           alt={`${project.title} screenshot ${i + 1}`}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00ADB5]/90 text-[#222831]">
+                            <Eye className="h-6 w-6" />
+                          </div>
+                        </div>
                       </div>
                     </motion.div>
                   ))}
@@ -386,10 +684,12 @@ export function ProjectDetailContent({ project }: { project: Project }) {
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
-              animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+              animate={isGalleryInView || isContentInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex justify-center"
+              className="flex flex-col items-center gap-6"
             >
+              <div className="h-px w-full max-w-xs bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
+              
               <motion.button
                 onClick={handleBack}
                 whileHover={{ scale: 1.03, x: -5 }}
