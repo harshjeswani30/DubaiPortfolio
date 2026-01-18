@@ -363,9 +363,9 @@ export function HeroSection() {
                 initial={{ opacity: 0, scale: 0, x: 30 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ delay: 1, type: "spring", stiffness: 100 }}
-                style={{ y: floatingY1 }}
-                className="absolute -right-8 top-8 z-30"
-              >
+                  style={{ y: floatingY1 }}
+                  className="absolute -right-2 top-8 z-30"
+                >
                 <motion.div
                   animate={{ 
                     y: [0, -8, 0],
@@ -406,14 +406,14 @@ export function HeroSection() {
                   transition={{ delay: 1.2 + index * 0.15, type: "spring", stiffness: 100 }}
                   style={{ y: index === 0 ? floatingY2 : index === 1 ? floatingY3 : floatingY1 }}
                   className="absolute z-30"
-                  {...{
-                    style: {
-                      left: index === 0 ? "-60px" : index === 1 ? "-40px" : "auto",
-                      right: index === 2 ? "-50px" : "auto",
-                      top: index === 0 ? "25%" : index === 1 ? "55%" : "40%",
-                      y: index === 0 ? floatingY2 : index === 1 ? floatingY3 : floatingY1
-                    }
-                  }}
+                    {...{
+                      style: {
+                        left: index === 0 ? "-10px" : index === 1 ? "-5px" : "auto",
+                        right: index === 2 ? "-10px" : "auto",
+                        top: index === 0 ? "25%" : index === 1 ? "55%" : "40%",
+                        y: index === 0 ? floatingY2 : index === 1 ? floatingY3 : floatingY1
+                      }
+                    }}
                 >
                   <motion.div
                     animate={{ 
@@ -468,13 +468,13 @@ export function HeroSection() {
                 </motion.div>
               ))}
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, x: -30 }}
-                animate={{ opacity: 1, scale: 1, x: 0 }}
-                transition={{ delay: 1.6, type: "spring", stiffness: 100 }}
-                style={{ y: floatingY3 }}
-                className="absolute -left-12 bottom-16 z-30"
-              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, x: -30 }}
+                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  transition={{ delay: 1.6, type: "spring", stiffness: 100 }}
+                  style={{ y: floatingY3 }}
+                  className="absolute -left-2 bottom-16 z-30"
+                >
                 <motion.div
                   animate={{ 
                     y: [0, 8, 0],
@@ -507,13 +507,13 @@ export function HeroSection() {
                 </motion.div>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 1.8, type: "spring", stiffness: 100 }}
-                style={{ y: floatingY2 }}
-                className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-30"
-              >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 1.8, type: "spring", stiffness: 100 }}
+                  style={{ y: floatingY2 }}
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30"
+                >
                 <Link href="/contact">
                   <motion.div
                     animate={{ y: [0, 5, 0] }}
