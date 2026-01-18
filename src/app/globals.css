@@ -85,10 +85,10 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #00ADB5 0%, #EEEEEE 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: linear-gradient(135deg, #00ADB5 0%, #EEEEEE 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
 }
 
 .glass {
