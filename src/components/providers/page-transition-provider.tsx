@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react"
+import { createContext, useContext, useState, useCallback, ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
@@ -28,6 +28,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const [transitionData, setTransitionData] = useState<TransitionData | null>(null)
   const [showOverlay, setShowOverlay] = useState(false)
   const [isReverse, setIsReverse] = useState(false)
+  const [animationPhase, setAnimationPhase] = useState<'idle' | 'expanding' | 'collapsing'>('idle')
   const router = useRouter()
 
   const startTransition = useCallback((data: TransitionData, href: string) => {
@@ -49,10 +50,11 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     setIsTransitioning(true)
     setShowOverlay(true)
     setIsReverse(false)
+    setAnimationPhase('expanding')
     
     setTimeout(() => {
-        router.push(href)
-      }, 500)
+      router.push(href)
+    }, 500)
   }, [router])
 
   const startReverseTransition = useCallback((href: string) => {
@@ -73,18 +75,21 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
       setIsTransitioning(true)
       setShowOverlay(true)
       setIsReverse(true)
+      setAnimationPhase('collapsing')
       
       setTimeout(() => {
         router.push(href)
-        setTimeout(() => {
-          setShowOverlay(false)
-          setIsTransitioning(false)
-          setTransitionData(null)
-          setIsReverse(false)
-          sessionStorage.removeItem('lastCardRect')
-          sessionStorage.removeItem('lastProjectData')
-        }, 700)
-      }, 100)
+      }, 50)
+      
+      setTimeout(() => {
+        setShowOverlay(false)
+        setIsTransitioning(false)
+        setTransitionData(null)
+        setIsReverse(false)
+        setAnimationPhase('idle')
+        sessionStorage.removeItem('lastCardRect')
+        sessionStorage.removeItem('lastProjectData')
+      }, 600)
     } else {
       router.push(href)
     }
@@ -92,6 +97,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 
   const completeTransition = useCallback(() => {
     setShowOverlay(false)
+    setAnimationPhase('idle')
     setTimeout(() => {
       setIsTransitioning(false)
       setTransitionData(null)
@@ -104,16 +110,18 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     <PageTransitionContext.Provider value={{ isTransitioning, transitionData, startTransition, startReverseTransition, completeTransition }}>
       {children}
       
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showOverlay && transitionData && originRect && (
           <motion.div
-            className="fixed inset-0 z-[9999] overflow-hidden"
+            key="transition-overlay"
+            className="fixed inset-0 z-[9999] overflow-hidden pointer-events-none"
             initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2, delay: isReverse ? 0.4 : 0 }}
           >
             <motion.div
-              className="absolute bg-[#222831]"
+              className="absolute bg-[#222831] overflow-hidden"
               initial={isReverse ? {
                 left: 0,
                 top: 0,
@@ -140,28 +148,37 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
                 height: "100vh",
                 borderRadius: 0,
               }}
-            transition={{
-                  duration: 0.5,
-                  ease: [0.76, 0, 0.24, 1],
-                }}
+              transition={{
+                duration: 0.55,
+                ease: [0.76, 0, 0.24, 1],
+              }}
             >
               {transitionData.projectImage && (
+                <motion.div 
+                  className="absolute inset-0"
+                  initial={{ opacity: isReverse ? 1 : 0.9 }}
+                  animate={{ opacity: isReverse ? 0.9 : 1 }}
+                  transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+                >
+                  <Image
+                    src={transitionData.projectImage}
+                    alt={transitionData.projectTitle}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
                   <motion.div 
-                    className="absolute inset-0"
-                    initial={{ opacity: 0.8 }}
-                    animate={{ opacity: 0.6 }}
-                    transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-                  >
-                    <Image
-                      src={transitionData.projectImage}
-                      alt={transitionData.projectTitle}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-[#222831]/30" />
-                  </motion.div>
-                )}
+                    className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-[#222831]/30"
+                    initial={{ opacity: isReverse ? 0.5 : 1 }}
+                    animate={{ opacity: isReverse ? 1 : 0.5 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                </motion.div>
+              )}
+              
+              {!transitionData.projectImage && (
+                <div className="absolute inset-0 bg-gradient-to-br from-[#393E46]/30 via-[#2a2f38] to-[#222831]" />
+              )}
             </motion.div>
           </motion.div>
         )}
