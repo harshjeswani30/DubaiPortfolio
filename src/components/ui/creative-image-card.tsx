@@ -1,10 +1,9 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useState } from "react"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import gsap from "gsap"
 import { Code2, Palette, Sparkles, MessageCircle, ArrowRight } from "lucide-react"
 
 interface FloatingTag {
@@ -20,111 +19,23 @@ const floatingTags: FloatingTag[] = [
   { icon: Sparkles, text: "Creative", color: "#00ADB5", position: "bottom-left" },
 ]
 
-export function CreativeImageCard() {
+interface CreativeImageCardProps {
+  onHoverChange?: (isHovered: boolean) => void
+}
+
+export function CreativeImageCard({ onHoverChange }: CreativeImageCardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  const pathsRef = useRef<SVGPathElement[]>([])
-  const timelineRef = useRef<gsap.core.Timeline | null>(null)
 
   const cardRotateX = useMotionValue(0)
   const cardRotateY = useMotionValue(0)
   const smoothRotateX = useSpring(cardRotateX, { stiffness: 100, damping: 20 })
   const smoothRotateY = useSpring(cardRotateY, { stiffness: 100, damping: 20 })
 
-  const vinePathsData = [
-    "M 0 200 Q 50 180 80 140 Q 100 100 90 60 Q 85 30 100 0",
-    "M 0 220 Q 40 200 60 160 Q 75 130 70 100 Q 65 70 80 40 Q 90 20 85 0",
-    "M 0 180 Q 60 170 100 130 Q 130 100 120 60 Q 115 30 130 0",
-    "M 400 200 Q 350 180 320 140 Q 300 100 310 60 Q 315 30 300 0",
-    "M 400 220 Q 360 200 340 160 Q 325 130 330 100 Q 335 70 320 40 Q 310 20 315 0",
-    "M 400 180 Q 340 170 300 130 Q 270 100 280 60 Q 285 30 270 0",
-    "M 200 400 Q 180 350 160 300 Q 150 260 170 220 Q 185 180 175 140 Q 170 100 180 60",
-    "M 220 400 Q 200 340 190 280 Q 185 230 200 180 Q 210 130 200 80",
-    "M 180 400 Q 200 360 210 310 Q 215 270 195 230 Q 180 190 190 150",
-    "M 200 0 Q 180 50 160 100 Q 150 140 170 180 Q 185 220 175 260 Q 170 300 180 340",
-    "M 220 0 Q 200 60 190 120 Q 185 170 200 220 Q 210 270 200 320",
-    "M 180 0 Q 200 40 210 90 Q 215 130 195 170 Q 180 210 190 250",
-  ]
-
-  const leafPathsData = [
-    { path: "M 90 60 Q 70 50 60 35 Q 65 55 90 60", origin: "90 60" },
-    { path: "M 100 100 Q 120 85 135 90 Q 115 100 100 100", origin: "100 100" },
-    { path: "M 70 100 Q 50 80 40 85 Q 55 95 70 100", origin: "70 100" },
-    { path: "M 310 60 Q 330 50 340 35 Q 335 55 310 60", origin: "310 60" },
-    { path: "M 300 100 Q 280 85 265 90 Q 285 100 300 100", origin: "300 100" },
-    { path: "M 330 100 Q 350 80 360 85 Q 345 95 330 100", origin: "330 100" },
-    { path: "M 175 140 Q 155 130 145 115 Q 160 135 175 140", origin: "175 140" },
-    { path: "M 200 180 Q 220 165 235 170 Q 215 180 200 180", origin: "200 180" },
-    { path: "M 175 260 Q 155 270 145 285 Q 160 265 175 260", origin: "175 260" },
-    { path: "M 200 220 Q 220 235 235 230 Q 215 220 200 220", origin: "200 220" },
-  ]
-
-  useEffect(() => {
-    if (!svgRef.current) return
-
-    timelineRef.current = gsap.timeline({ paused: true })
-
-    const vinePaths = svgRef.current.querySelectorAll(".vine-path")
-    const leafPaths = svgRef.current.querySelectorAll(".leaf-path")
-
-    vinePaths.forEach((path) => {
-      const length = (path as SVGPathElement).getTotalLength()
-      gsap.set(path, {
-        strokeDasharray: length,
-        strokeDashoffset: length,
-        opacity: 0,
-      })
-    })
-
-    leafPaths.forEach((path) => {
-      gsap.set(path, {
-        scale: 0,
-        opacity: 0,
-        transformOrigin: "center center",
-      })
-    })
-
-    timelineRef.current
-      .to(vinePaths, {
-        opacity: 1,
-        duration: 0.1,
-        stagger: 0.05,
-      })
-      .to(
-        vinePaths,
-        {
-          strokeDashoffset: 0,
-          duration: 0.8,
-          stagger: 0.08,
-          ease: "power2.out",
-        },
-        "<"
-      )
-      .to(
-        leafPaths,
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.4,
-          stagger: 0.05,
-          ease: "back.out(2)",
-        },
-        "-=0.4"
-      )
-
-    return () => {
-      timelineRef.current?.kill()
-    }
-  }, [])
-
-  useEffect(() => {
-    if (isHovered) {
-      timelineRef.current?.play()
-    } else {
-      timelineRef.current?.reverse()
-    }
-  }, [isHovered])
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    onHoverChange?.(true)
+  }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return
@@ -139,6 +50,7 @@ export function CreativeImageCard() {
 
   const handleMouseLeave = () => {
     setIsHovered(false)
+    onHoverChange?.(false)
     cardRotateX.set(0)
     cardRotateY.set(0)
   }
@@ -167,7 +79,7 @@ export function CreativeImageCard() {
       ref={containerRef}
       className="relative"
       style={{ perspective: "1200px" }}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -180,57 +92,6 @@ export function CreativeImageCard() {
         className="relative"
       >
         <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[420px] lg:w-[420px]">
-          <svg
-            ref={svgRef}
-            className="absolute inset-0 z-20 h-full w-full pointer-events-none"
-            viewBox="0 0 400 400"
-            fill="none"
-            style={{ overflow: "visible" }}
-          >
-            <defs>
-              <linearGradient id="vineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#00ADB5" />
-                <stop offset="50%" stopColor="#4ade80" />
-                <stop offset="100%" stopColor="#22c55e" />
-              </linearGradient>
-              <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#4ade80" />
-                <stop offset="100%" stopColor="#16a34a" />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-
-            {vinePathsData.map((d, i) => (
-              <path
-                key={`vine-${i}`}
-                className="vine-path"
-                d={d}
-                stroke="url(#vineGradient)"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                filter="url(#glow)"
-              />
-            ))}
-
-            {leafPathsData.map((leaf, i) => (
-              <path
-                key={`leaf-${i}`}
-                className="leaf-path"
-                d={leaf.path}
-                fill="url(#leafGradient)"
-                filter="url(#glow)"
-                style={{ transformOrigin: leaf.origin }}
-              />
-            ))}
-          </svg>
-
           <motion.div
             className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
             animate={{
