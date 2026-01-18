@@ -174,10 +174,42 @@ body {
   box-shadow: 0 0 60px rgba(0, 173, 181, 0.25);
 }
 
+@supports not (timeline-scope: none) {
+  .supports-sda\:block {
+    display: none !important;
+  }
+  .supports-sda\:flex {
+    display: none !important;
+  }
+  .supports-sda\:hidden {
+    display: block !important;
+  }
+  .supports-sda\:pointer-events-none {
+    pointer-events: auto !important;
+  }
+}
+
 @supports (timeline-scope: none) {
-  .supports-sda {
+  .supports-sda\:block {
     display: block;
   }
+  .supports-sda\:flex {
+    display: flex;
+  }
+  .supports-sda\:hidden {
+    display: none;
+  }
+  .supports-sda\:pointer-events-none {
+    pointer-events: none;
+  }
+}
+
+.carousel-container {
+  container-type: inline-size;
+}
+
+.font-serif {
+  font-family: var(--font-cardo), Georgia, serif;
 }
 
 .scrollbar-hidden {
