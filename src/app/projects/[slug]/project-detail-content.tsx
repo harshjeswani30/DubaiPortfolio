@@ -177,9 +177,9 @@ function FloatingParticle({ delay }: { delay: number }) {
 }
 
 export function ProjectDetailContent({ project }: { project: Project }) {
-  const { completeTransition, isTransitioning } = usePageTransition()
+  const { completeTransition } = usePageTransition()
   const router = useRouter()
-  const [isRevealed, setIsRevealed] = useState(false)
+  const [isRevealed, setIsRevealed] = useState(true)
   const [backUrl, setBackUrl] = useState("/projects")
   const [backLabel, setBackLabel] = useState("Back to Projects")
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
@@ -190,7 +190,6 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const isContentInView = useInView(contentRef, { once: true, margin: "-100px" })
   const isFeaturesInView = useInView(featuresRef, { once: true, margin: "-100px" })
   const isGalleryInView = useInView(galleryRef, { once: true, margin: "-100px" })
-  const hasInitialized = useRef(false)
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -205,22 +204,13 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const imageBlur = useTransform(smoothProgress, [0, 0.5], [0, 10])
 
   useEffect(() => {
-    if (hasInitialized.current) return
-    hasInitialized.current = true
-
     const source = sessionStorage.getItem('projectSource')
     if (source === 'home') {
       setBackUrl('/#projects')
       setBackLabel('Back to Home')
     }
-    
-    const delay = isTransitioning ? 300 : 50
-    const timer = setTimeout(() => {
-      setIsRevealed(true)
-      completeTransition()
-    }, delay)
-    return () => clearTimeout(timer)
-  }, [completeTransition, isTransitioning])
+    completeTransition()
+  }, [completeTransition])
 
   const handleBack = () => {
     sessionStorage.removeItem('projectSource')
