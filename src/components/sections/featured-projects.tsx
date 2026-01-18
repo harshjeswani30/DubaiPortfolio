@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { motion, useInView } from "framer-motion"
+import { motion, useInView, useScroll, useTransform, useSpring } from "framer-motion"
 import Link from "next/link"
 import { ArrowUpRight, Folder, ExternalLink, Github } from "lucide-react"
 
@@ -24,17 +24,36 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  })
+
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const bgY = useTransform(smoothProgress, [0, 1], ["0%", "15%"])
+  const titleY = useTransform(smoothProgress, [0, 1], [50, -30])
+  const orbY = useTransform(smoothProgress, [0, 1], ["0%", "30%"])
+  const card1Y = useTransform(smoothProgress, [0, 1], [80, -40])
+  const card2Y = useTransform(smoothProgress, [0, 1], [100, -20])
+  const card3Y = useTransform(smoothProgress, [0, 1], [60, -60])
+  const card4Y = useTransform(smoothProgress, [0, 1], [120, -30])
+  const cardParallax = [card1Y, card2Y, card3Y, card4Y]
+
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#222831] py-32">
-      <div className="absolute inset-0 dot-background opacity-50" />
+      <motion.div className="absolute inset-0 dot-background opacity-50" style={{ y: bgY }} />
       
-      <div className="absolute right-0 top-1/3 h-[600px] w-[600px] rounded-full bg-[#393E46]/10 blur-[150px]" />
+      <motion.div 
+        style={{ y: orbY }}
+        className="absolute right-0 top-1/3 h-[600px] w-[600px] rounded-full bg-[#393E46]/10 blur-[150px]" 
+      />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
+          style={{ y: titleY }}
           className="mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end"
         >
           <div>
@@ -74,6 +93,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               initial={{ opacity: 0, y: 60 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: i * 0.15 }}
+              style={{ y: cardParallax[i % 4] }}
               onMouseEnter={() => setHoveredIndex(i)}
               onMouseLeave={() => setHoveredIndex(null)}
             >

@@ -5,6 +5,10 @@ import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, 
 import Link from "next/link"
 import { ArrowRight, Code, Cpu, Database, Palette, Sparkles, Layers, Zap, Globe } from "lucide-react"
 
+function useParallax(value: ReturnType<typeof useSpring>, distance: number) {
+  return useTransform(value, [0, 1], [-distance, distance])
+}
+
 const services = [
   {
     icon: Code,
@@ -72,6 +76,13 @@ export function ServicesSection() {
   const bgY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
   const orb1X = useTransform(smoothProgress, [0, 1], ["-10%", "10%"])
   const orb2Y = useTransform(smoothProgress, [0, 1], ["10%", "-10%"])
+  
+  const titleY = useParallax(smoothProgress, -30)
+  const leftColY = useParallax(smoothProgress, -20)
+  const rightColY = useParallax(smoothProgress, 30)
+  const statsY = useParallax(smoothProgress, 40)
+  const floatingParallax1 = useParallax(smoothProgress, -50)
+  const floatingParallax2 = useParallax(smoothProgress, 60)
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -161,20 +172,20 @@ export function ServicesSection() {
         className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#00ADB5]/10 blur-[120px]" 
       />
 
-      {floatingIcons.map((item, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={isInView ? { opacity: 0.3, scale: 1 } : {}}
-          transition={{ delay: item.delay, duration: 0.5 }}
-          style={{ 
-            left: item.x, 
-            top: item.y,
-            x: smoothMouseX,
-            y: smoothMouseY,
-          }}
-          className="absolute hidden lg:block"
-        >
+        {floatingIcons.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={isInView ? { opacity: 0.3, scale: 1 } : {}}
+            transition={{ delay: item.delay, duration: 0.5 }}
+            style={{ 
+              left: item.x, 
+              top: item.y,
+              x: smoothMouseX,
+              y: i % 2 === 0 ? floatingParallax1 : floatingParallax2,
+            }}
+            className="absolute hidden lg:block"
+          >
           <motion.div
             animate={{ 
               y: [0, -15, 0],
@@ -191,13 +202,14 @@ export function ServicesSection() {
         </motion.div>
       ))}
 
-      <div className="relative mx-auto max-w-7xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="mb-20 flex flex-col items-center text-center"
-        >
+        <div className="relative mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6 }}
+            style={{ y: titleY }}
+            className="mb-20 flex flex-col items-center text-center"
+          >
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={isInView ? { scale: 1, rotate: 0 } : {}}
@@ -263,9 +275,9 @@ export function ServicesSection() {
           </motion.div>
         </motion.div>
 
-        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-5">
-            <div className="sticky top-32 space-y-4">
+          <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+            <motion.div className="lg:col-span-5" style={{ y: leftColY }}>
+              <div className="sticky top-32 space-y-4">
 {services.map((service, i) => (
                   <motion.div
                     key={service.title}
@@ -344,11 +356,11 @@ export function ServicesSection() {
                   </motion.div>
                 </motion.div>
               ))}
-            </div>
-          </div>
+              </div>
+            </motion.div>
 
-          <div className="lg:col-span-7">
-            <motion.div
+            <motion.div className="lg:col-span-7" style={{ y: rightColY }}>
+              <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.3 }}
@@ -550,17 +562,18 @@ export function ServicesSection() {
                     <div className="text-xs text-[#00ADB5]/60">{stat.label}</div>
                   </motion.div>
                 ))}
+                </motion.div>
               </motion.div>
             </motion.div>
           </div>
-        </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.7, duration: 0.6 }}
-          className="mt-20 flex justify-center"
-        >
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            style={{ y: statsY }}
+            className="mt-20 flex justify-center"
+          >
           <Link href="/skills">
             <motion.button
               whileHover={{ scale: 1.02, y: -2 }}

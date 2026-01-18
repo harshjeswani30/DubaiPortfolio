@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
+import { motion, useInView, useMotionValue, useSpring, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, MessageCircle, Rocket, Sparkles, Send } from "lucide-react"
 
@@ -15,6 +15,19 @@ export function CTASection() {
   const smoothX = useSpring(mouseX, { stiffness: 100, damping: 30 })
   const smoothY = useSpring(mouseY, { stiffness: 100, damping: 30 })
 
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  })
+
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const bgY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
+  const cardY = useTransform(smoothProgress, [0, 1], [60, -40])
+  const orb1Y = useTransform(smoothProgress, [0, 1], [0, 80])
+  const orb2Y = useTransform(smoothProgress, [0, 1], [0, -60])
+  const floatingLeftY = useTransform(smoothProgress, [0, 1], [30, -50])
+  const floatingRightY = useTransform(smoothProgress, [0, 1], [-20, 60])
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const x = e.clientX - rect.left - rect.width / 2
@@ -25,7 +38,7 @@ export function CTASection() {
 
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#222831] py-32">
-      <div className="absolute inset-0 grid-background" />
+      <motion.div className="absolute inset-0 grid-background" style={{ y: bgY }} />
       
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
@@ -34,6 +47,7 @@ export function CTASection() {
             opacity: [0.15, 0.25, 0.15],
           }}
           transition={{ duration: 8, repeat: Infinity }}
+          style={{ y: orb1Y }}
           className="absolute left-1/4 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#393E46]/30 blur-[120px]"
         />
         <motion.div
@@ -42,6 +56,7 @@ export function CTASection() {
             opacity: [0.1, 0.2, 0.1],
           }}
           transition={{ duration: 10, repeat: Infinity, delay: 2 }}
+          style={{ y: orb2Y }}
           className="absolute right-1/4 top-1/2 h-[400px] w-[400px] -translate-y-1/2 translate-x-1/2 rounded-full bg-[#00ADB5]/20 blur-[100px]"
         />
       </div>
@@ -51,7 +66,7 @@ export function CTASection() {
         onMouseMove={handleMouseMove}
       >
         <motion.div
-          style={{ x: smoothX, y: smoothY }}
+          style={{ x: smoothX, y: cardY }}
           className="relative"
         >
           <motion.div
@@ -187,6 +202,7 @@ export function CTASection() {
             <motion.div
               animate={{ y: [0, -8, 0], rotate: [0, 5, 0] }}
               transition={{ duration: 4, repeat: Infinity }}
+              style={{ y: floatingRightY }}
               className="absolute -right-2 top-1/4 hidden lg:block"
             >
               <div className="rounded-2xl border border-[#393E46] bg-[#222831]/90 p-3 backdrop-blur-sm glow-sm">
@@ -197,6 +213,7 @@ export function CTASection() {
             <motion.div
               animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
               transition={{ duration: 5, repeat: Infinity, delay: 1 }}
+              style={{ y: floatingLeftY }}
               className="absolute -left-2 bottom-1/4 hidden lg:block"
             >
               <div className="rounded-2xl border border-[#393E46] bg-[#222831]/90 p-3 backdrop-blur-sm glow-sm">
