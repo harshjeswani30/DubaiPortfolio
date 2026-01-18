@@ -93,18 +93,22 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
-  return (
-    <div
-      ref={navRef}
-      className="fixed inset-0 z-[100] hidden"
-      style={{ width: '100%', height: '100vh' }}
-    >
+    return (
       <div
-        ref={overlayRef}
-        onClick={onClose}
-        className="absolute inset-0 z-0 cursor-pointer bg-[#131313]/40"
-        style={{ opacity: 0 }}
-      />
+        ref={navRef}
+        className="fixed inset-0 z-[100] hidden"
+        style={{ width: '100%', height: '100vh', overscrollBehavior: 'contain' }}
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+        <div
+          ref={overlayRef}
+          onClick={onClose}
+          className="absolute inset-0 z-0 cursor-pointer bg-[#131313]/40"
+          style={{ opacity: 0 }}
+          onWheel={(e) => e.preventDefault()}
+          onTouchMove={(e) => e.preventDefault()}
+        />
 
       <nav
         ref={menuRef}
