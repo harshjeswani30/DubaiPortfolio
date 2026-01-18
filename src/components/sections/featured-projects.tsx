@@ -4,7 +4,7 @@ import { useRef, useState } from "react"
 import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Eye, Zap } from "lucide-react"
+import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Zap } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -15,6 +15,7 @@ interface Project {
   tech_stack: string[]
   category: string
   featured_image?: string
+  preview_video?: string
   live_url?: string
   github_url?: string
 }
@@ -25,6 +26,7 @@ interface FeaturedProjectsProps {
 
 function ProjectCard({ project, index, isInView, totalProjects }: { project: Project; index: number; isInView: boolean; totalProjects: number }) {
   const cardRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const { startTransition } = usePageTransition()
@@ -51,6 +53,9 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const handleMouseEnter = () => {
     setIsHovered(true)
     glowOpacity.set(1)
+    if (videoRef.current && project.preview_video) {
+      videoRef.current.play().catch(() => {})
+    }
   }
 
   const handleMouseLeave = () => {
@@ -58,6 +63,10 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     rotateY.set(0)
     setIsHovered(false)
     glowOpacity.set(0)
+    if (videoRef.current && project.preview_video) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+    }
   }
 
   const handleProjectClick = (e: React.MouseEvent) => {
@@ -126,118 +135,133 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
             </div>
 
             <div className="relative aspect-[16/10] overflow-hidden">
-              {project.featured_image ? (
-                <motion.div
-                  className="h-full w-full"
-                  animate={{ scale: isHovered ? 1.1 : 1 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <Image
-                    src={project.featured_image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  />
-                </motion.div>
-              ) : (
-                <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
-                  <div className="absolute inset-0">
+                {project.preview_video ? (
+                  <motion.div
+                    className="h-full w-full"
+                    animate={{ scale: isHovered ? 1.05 : 1 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    {project.featured_image && (
+                      <Image
+                        src={project.featured_image}
+                        alt={project.title}
+                        fill
+                        className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      />
+                    )}
+                    <video
+                      ref={videoRef}
+                      src={project.preview_video}
+                      muted
+                      loop
+                      playsInline
+                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                    />
+                  </motion.div>
+                ) : project.featured_image ? (
+                  <motion.div
+                    className="h-full w-full"
+                    animate={{ scale: isHovered ? 1.1 : 1 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <Image
+                      src={project.featured_image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </motion.div>
+                ) : (
+                  <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
+                    <div className="absolute inset-0">
+                      <motion.div
+                        className="absolute inset-0"
+                        animate={{ 
+                          backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                        style={{
+                          backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
+                          backgroundSize: '200% 200%'
+                        }}
+                      />
+                    </div>
+                    
                     <motion.div
-                      className="absolute inset-0"
                       animate={{ 
-                        backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
+                        scale: isHovered ? 1.15 : 1,
+                        rotate: isHovered ? 5 : 0
                       }}
-                      transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                      style={{
-                        backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
-                        backgroundSize: '200% 200%'
-                      }}
-                    />
-                  </div>
-                  
-                  <motion.div
-                    animate={{ 
-                      scale: isHovered ? 1.15 : 1,
-                      rotate: isHovered ? 5 : 0
-                    }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative z-10"
-                  >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                      className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
-                    />
-                    <motion.div
-                      animate={{ rotate: -360 }}
-                      transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                      className="absolute -inset-8 rounded-full border border-[#393E46]/30"
-                    />
-                    <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
-                      {project.title.charAt(0)}
-                    </span>
-                  </motion.div>
-                </div>
-              )}
-
-              <motion.div 
-                className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-transparent"
-                animate={{ opacity: isHovered ? 0.95 : 0.75 }}
-                transition={{ duration: 0.3 }}
-              />
-
-              <AnimatePresence>
-                {isHovered && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="absolute inset-0 flex items-center justify-center gap-3"
-                  >
-                    <motion.div
-                      initial={{ scale: 0, y: 15 }}
-                      animate={{ scale: 1, y: 0 }}
-                      exit={{ scale: 0, y: 15 }}
-                      transition={{ duration: 0.25, delay: 0.05, type: "spring", stiffness: 400 }}
-                      className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00ADB5] text-[#222831] shadow-lg shadow-[#00ADB5]/30 hover:bg-[#00c4cc] transition-colors"
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                      className="relative z-10"
                     >
-                      <Eye className="h-5 w-5" />
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                        className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
+                      />
+                      <motion.div
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                        className="absolute -inset-8 rounded-full border border-[#393E46]/30"
+                      />
+                      <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
+                        {project.title.charAt(0)}
+                      </span>
                     </motion.div>
-                    {project.github_url && (
-                      <motion.div
-                        initial={{ scale: 0, y: 15 }}
-                        animate={{ scale: 1, y: 0 }}
-                        exit={{ scale: 0, y: 15 }}
-                        transition={{ duration: 0.25, delay: 0.1, type: "spring", stiffness: 400 }}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          window.open(project.github_url, '_blank')
-                        }}
-                        className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
-                      >
-                        <Github className="h-5 w-5 text-[#EEEEEE]" />
-                      </motion.div>
-                    )}
-                    {project.live_url && (
-                      <motion.div
-                        initial={{ scale: 0, y: 15 }}
-                        animate={{ scale: 1, y: 0 }}
-                        exit={{ scale: 0, y: 15 }}
-                        transition={{ duration: 0.25, delay: 0.15, type: "spring", stiffness: 400 }}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          window.open(project.live_url, '_blank')
-                        }}
-                        className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
-                      >
-                        <ExternalLink className="h-5 w-5 text-[#EEEEEE]" />
-                      </motion.div>
-                    )}
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+
+                <motion.div 
+                  className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-transparent"
+                  animate={{ opacity: isHovered ? 0.85 : 0.75 }}
+                  transition={{ duration: 0.3 }}
+                />
+
+                <AnimatePresence>
+                  {isHovered && (project.github_url || project.live_url) && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="absolute bottom-3 right-3 flex items-center gap-2"
+                    >
+                      {project.github_url && (
+                        <motion.div
+                          initial={{ scale: 0, y: 10 }}
+                          animate={{ scale: 1, y: 0 }}
+                          exit={{ scale: 0, y: 10 }}
+                          transition={{ duration: 0.25, delay: 0.05, type: "spring", stiffness: 400 }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            window.open(project.github_url, '_blank')
+                          }}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
+                        >
+                          <Github className="h-4 w-4 text-[#EEEEEE]" />
+                        </motion.div>
+                      )}
+                      {project.live_url && (
+                        <motion.div
+                          initial={{ scale: 0, y: 10 }}
+                          animate={{ scale: 1, y: 0 }}
+                          exit={{ scale: 0, y: 10 }}
+                          transition={{ duration: 0.25, delay: 0.1, type: "spring", stiffness: 400 }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            window.open(project.live_url, '_blank')
+                          }}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
+                        >
+                          <ExternalLink className="h-4 w-4 text-[#EEEEEE]" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
               <div className="absolute left-3 top-3">
                 <motion.div
