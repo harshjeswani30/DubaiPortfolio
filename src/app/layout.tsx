@@ -8,6 +8,7 @@ import { Footer } from "@/components/layout/footer"
 import { FloatingNav } from "@/components/layout/floating-nav"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
+import { BlobCursor } from "@/components/ui/blob-cursor"
 
 
 const geistSans = Geist({
@@ -61,15 +62,33 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-black antialiased`}
       >
-        <ThemeProvider>
-          <SmoothScrollProvider>
-            <ScrollProgress />
-            <CommandPalette />
-            <FloatingNav />
-            <main className="min-h-screen">{children}</main>
-            <Footer />
-          </SmoothScrollProvider>
-        </ThemeProvider>
+<ThemeProvider>
+            <SmoothScrollProvider>
+              <BlobCursor
+                blobType="circle"
+                fillColor="#5227FF"
+                trailCount={3}
+                sizes={[60, 125, 75]}
+                innerSizes={[20, 35, 25]}
+                innerColor="rgba(255,255,255,0.8)"
+                opacities={[0.6, 0.6, 0.6]}
+                shadowColor="rgba(0,0,0,0.75)"
+                shadowBlur={5}
+                shadowOffsetX={10}
+                shadowOffsetY={10}
+                filterStdDeviation={30}
+                useFilter={true}
+                fastDuration={0.1}
+                slowDuration={0.5}
+                zIndex={100}
+              />
+              <ScrollProgress />
+              <CommandPalette />
+              <FloatingNav />
+              <main className="min-h-screen">{children}</main>
+              <Footer />
+            </SmoothScrollProvider>
+          </ThemeProvider>
       </body>
     </html>
   )
