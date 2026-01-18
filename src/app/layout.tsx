@@ -8,7 +8,7 @@ import { Footer } from "@/components/layout/footer"
 import { FloatingNav } from "@/components/layout/floating-nav"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
-import { BlobCursor } from "@/components/ui/blob-cursor"
+import { CircleTrailCursor } from "@/components/ui/circle-trail-cursor"
 
 
 const geistSans = Geist({
@@ -64,24 +64,7 @@ export default function RootLayout({
       >
 <ThemeProvider>
             <SmoothScrollProvider>
-                <BlobCursor
-                  blobType="circle"
-                  fillColor="#00ADB5"
-                  trailCount={3}
-                  sizes={[20, 40, 30]}
-                  innerSizes={[6, 12, 8]}
-                  innerColor="rgba(255,255,255,0.8)"
-                  opacities={[0.6, 0.6, 0.6]}
-                  shadowColor="rgba(0,0,0,0.75)"
-                  shadowBlur={3}
-                  shadowOffsetX={4}
-                  shadowOffsetY={4}
-                  filterStdDeviation={12}
-                  useFilter={true}
-                  fastDuration={0.1}
-                  slowDuration={0.5}
-                  zIndex={100}
-                />
+                <CircleTrailCursor strokeColor="#00ADB5" />
               <ScrollProgress />
               <CommandPalette />
               <FloatingNav />
