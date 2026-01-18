@@ -125,16 +125,16 @@ export function HeroSection() {
     timelineRef.current
       .to(vinePaths, {
         opacity: 1,
-        duration: 0.1,
-        stagger: 0.03,
+        duration: 0.05,
+        stagger: 0.01,
       })
       .to(
         vinePaths,
         {
           strokeDashoffset: 0,
-          duration: 1.2,
-          stagger: 0.06,
-          ease: "power2.out",
+          duration: 0.4,
+          stagger: 0.02,
+          ease: "power3.out",
         },
         "<"
       )
@@ -143,11 +143,11 @@ export function HeroSection() {
         {
           scale: 1,
           opacity: 1,
-          duration: 0.5,
-          stagger: 0.04,
-          ease: "back.out(2)",
+          duration: 0.2,
+          stagger: 0.015,
+          ease: "back.out(1.5)",
         },
-        "-=0.6"
+        "-=0.2"
       )
 
     return () => {
@@ -157,9 +157,9 @@ export function HeroSection() {
 
   useEffect(() => {
     if (isCardHovered) {
-      timelineRef.current?.play()
+      timelineRef.current?.timeScale(1).play()
     } else {
-      timelineRef.current?.reverse()
+      timelineRef.current?.timeScale(1.5).reverse()
     }
   }, [isCardHovered])
 
