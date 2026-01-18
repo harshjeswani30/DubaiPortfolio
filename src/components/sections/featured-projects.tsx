@@ -91,6 +91,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   return (
     <motion.div
       ref={cardRef}
+      data-project-slug={project.slug}
       initial={{ opacity: 0, y: 60, scale: 0.95 }}
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ 
@@ -380,7 +381,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     : projects
 
   return (
-    <section id="projects" ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
+    <section id="featured-projects" ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
       <motion.div className="absolute inset-0 dot-background opacity-25" style={{ y: bgY }} />
       
       <motion.div 
