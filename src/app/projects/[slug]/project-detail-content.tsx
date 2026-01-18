@@ -1,11 +1,10 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "framer-motion"
-import Link from "next/link"
+import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ExternalLink, Github, Calendar, Clock, ChevronRight, Layers, Code2, Sparkles, Eye, ArrowUpRight } from "lucide-react"
+import { ArrowLeft, ExternalLink, Github, Layers, Code2, Sparkles, Eye, ArrowUpRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -24,15 +23,15 @@ interface Project {
 }
 
 export function ProjectDetailContent({ project }: { project: Project }) {
-  const { completeTransition } = usePageTransition()
+  const { completeTransition, isTransitioning } = usePageTransition()
   const router = useRouter()
   const [isRevealed, setIsRevealed] = useState(false)
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [backUrl, setBackUrl] = useState("/projects")
   const [backLabel, setBackLabel] = useState("Back to Projects")
   const heroRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const isContentInView = useInView(contentRef, { once: true, margin: "-100px" })
+  const hasInitialized = useRef(false)
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -46,18 +45,22 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const imageScale = useTransform(smoothProgress, [0, 0.5], [1, 1.1])
 
   useEffect(() => {
+    if (hasInitialized.current) return
+    hasInitialized.current = true
+
     const source = sessionStorage.getItem('projectSource')
     if (source === 'home') {
       setBackUrl('/#projects')
       setBackLabel('Back to Home')
     }
     
+    const delay = isTransitioning ? 300 : 50
     const timer = setTimeout(() => {
       setIsRevealed(true)
       completeTransition()
-    }, 100)
+    }, delay)
     return () => clearTimeout(timer)
-  }, [completeTransition])
+  }, [completeTransition, isTransitioning])
 
   const handleBack = () => {
     sessionStorage.removeItem('projectSource')
@@ -69,9 +72,9 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   return (
     <div className="min-h-screen bg-[#222831] overflow-hidden">
       <motion.div
-        initial={{ clipPath: "inset(100% 0 0 0)" }}
-        animate={{ clipPath: "inset(0% 0 0 0)" }}
-        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1] }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isRevealed ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
         className="relative"
       >
         <section ref={heroRef} className="relative min-h-[100vh] overflow-hidden">
@@ -133,29 +136,29 @@ export function ProjectDetailContent({ project }: { project: Project }) {
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           >
             <div className="mx-auto w-full max-w-6xl">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isRevealed ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <button
+                  onClick={handleBack}
+                  className="group mb-10 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
                 >
-                  <button
-                    onClick={handleBack}
-                    className="group mb-10 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
+                  <motion.div
+                    whileHover={{ x: -4 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
                   >
-                    <motion.div
-                      whileHover={{ x: -4 }}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </motion.div>
-                    <span className="font-medium tracking-wide">{backLabel}</span>
-                  </button>
-                </motion.div>
+                    <ArrowLeft className="h-4 w-4" />
+                  </motion.div>
+                  <span className="font-medium tracking-wide">{backLabel}</span>
+                </button>
+              </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isRevealed ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.5, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
                 className="mb-6 inline-flex items-center gap-3 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-5 py-2.5 backdrop-blur-sm"
               >
                 <motion.span
@@ -172,22 +175,15 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     <motion.span
                       key={i}
                       className="inline-block mr-4 md:mr-6"
-                      initial={{ y: 120, opacity: 0, scale: 1.1 }}
-                      animate={isRevealed ? { y: 0, opacity: 1, scale: 1 } : {}}
+                      initial={{ y: 120, opacity: 0 }}
+                      animate={isRevealed ? { y: 0, opacity: 1 } : {}}
                       transition={{
-                        duration: 1,
-                        delay: 0.4 + i * 0.1,
+                        duration: 0.8,
+                        delay: 0.2 + i * 0.08,
                         ease: [0.16, 1, 0.3, 1],
                       }}
                     >
-                      <motion.span
-                        className="inline-block"
-                        initial={{ letterSpacing: "0.05em" }}
-                        animate={isRevealed ? { letterSpacing: "0em" } : {}}
-                        transition={{ duration: 0.8, delay: 0.5 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                      >
-                        {word}
-                      </motion.span>
+                      {word}
                     </motion.span>
                   ))}
                 </h1>
@@ -197,7 +193,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 className="mt-8 max-w-2xl text-lg text-[#EEEEEE]/55 leading-relaxed md:text-xl"
                 initial={{ opacity: 0, y: 25 }}
                 animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
                 {project.description}
               </motion.p>
@@ -206,7 +202,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 className="mt-10 flex flex-wrap gap-4"
                 initial={{ opacity: 0, y: 25 }}
                 animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.7, delay: 0.85, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
                 {project.live_url && (
                   <motion.a
@@ -246,7 +242,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 className="mt-16 h-px w-full max-w-md bg-gradient-to-r from-[#00ADB5] via-[#00ADB5]/40 to-transparent"
                 initial={{ scaleX: 0, originX: 0 }}
                 animate={isRevealed ? { scaleX: 1 } : {}}
-                transition={{ duration: 1.2, delay: 1, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>
           </motion.div>
@@ -255,7 +251,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
             initial={{ opacity: 0, y: -10 }}
             animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 1.2, duration: 0.5 }}
+            transition={{ delay: 0.8, duration: 0.5 }}
           >
             <motion.div
               animate={{ y: [0, 8, 0] }}
@@ -388,22 +384,22 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               </motion.div>
             )}
 
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="flex justify-center"
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="flex justify-center"
+            >
+              <motion.button
+                onClick={handleBack}
+                whileHover={{ scale: 1.03, x: -5 }}
+                whileTap={{ scale: 0.98 }}
+                className="group inline-flex items-center gap-4 rounded-2xl border border-[#393E46]/60 bg-[#2a2f38]/50 px-8 py-4 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
               >
-                <motion.button
-                  onClick={handleBack}
-                  whileHover={{ scale: 1.03, x: -5 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="group inline-flex items-center gap-4 rounded-2xl border border-[#393E46]/60 bg-[#2a2f38]/50 px-8 py-4 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
-                >
-                  <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
-                  <span className="font-semibold">{backLabel}</span>
-                </motion.button>
-              </motion.div>
+                <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                <span className="font-semibold">{backLabel}</span>
+              </motion.button>
+            </motion.div>
           </div>
         </section>
       </motion.div>
