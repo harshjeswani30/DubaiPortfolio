@@ -2,10 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { useState, useEffect } from "react"
-import { Menu, X, Command, Code2 } from "lucide-react"
+import { Command, Code2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { SideMenu, MenuButton } from "@/components/ui/side-menu"
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -19,7 +20,7 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -30,6 +31,17 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMenuOpen])
+
   return (
     <>
       <motion.header
@@ -37,7 +49,7 @@ export function Navbar() {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
-          "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
+          "fixed left-0 right-0 top-0 z-[110] transition-all duration-300",
           scrolled && "bg-[#222831]/80 backdrop-blur-xl"
         )}
       >
@@ -99,62 +111,16 @@ export function Navbar() {
               <span>K</span>
             </motion.button>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsOpen(!isOpen)}
-              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 text-[#EEEEEE] backdrop-blur-xl md:hidden"
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </motion.button>
+            <MenuButton
+              isOpen={isMenuOpen}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="relative z-[120]"
+            />
           </div>
         </nav>
       </motion.header>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#222831]/95 backdrop-blur-xl md:hidden"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ delay: 0.1 }}
-              className="flex h-full flex-col items-center justify-center gap-6"
-            >
-              {navItems.map((item, i) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "relative block text-3xl font-bold transition-colors",
-                      pathname === item.href ? "text-[#00ADB5]" : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
-                    )}
-                  >
-                    {pathname === item.href && (
-                      <motion.span
-                        layoutId="mobile-indicator"
-                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#00ADB5]"
-                      />
-                    )}
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   )
 }

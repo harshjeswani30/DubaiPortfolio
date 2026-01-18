@@ -1,11 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Code2, Command, Menu, X } from "lucide-react"
+import { Code2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { SideMenu, MenuButton } from "@/components/ui/side-menu"
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -42,7 +43,7 @@ export function FloatingNav() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
         style={{ y: floatY }}
-        className="fixed top-6 left-0 right-0 z-50 px-4 md:px-8"
+        className="fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <motion.div
@@ -108,86 +109,16 @@ export function FloatingNav() {
             transition={{ duration: 0.5, delay: 0.5 }}
             className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-3 py-3 shadow-xl backdrop-blur-xl"
           >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden h-9 w-9 items-center justify-center rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 text-xs font-semibold text-[#00ADB5]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5] md:flex"
-            >
-              <span>K</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <MenuButton
+              isOpen={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 text-[#EEEEEE] md:hidden"
-            >
-              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </motion.button>
+              className="relative z-[120]"
+            />
           </motion.div>
         </div>
       </motion.nav>
 
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#222831]/98 backdrop-blur-xl md:hidden"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ delay: 0.1 }}
-              className="flex h-full flex-col items-center justify-center gap-6"
-            >
-              {navItems.map((item, i) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.05 }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={cn(
-                      "relative block text-3xl font-bold transition-colors",
-                      pathname === item.href ? "text-[#00ADB5]" : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
-                    )}
-                  >
-                    {pathname === item.href && (
-                      <motion.span
-                        layoutId="mobile-nav-indicator"
-                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#00ADB5]"
-                      />
-                    )}
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
-              
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-8"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-4 py-2 text-sm text-[#00ADB5]"
-                >
-                  <Command className="h-4 w-4" />
-                  <span>Press K for search</span>
-                </motion.button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>
   )
 }
