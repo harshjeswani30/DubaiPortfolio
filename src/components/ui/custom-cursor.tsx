@@ -47,7 +47,7 @@ export function CustomCursor() {
         }}
       >
         <div
-          className="rounded-full bg-[#A5C9CA] transition-transform duration-150 ease-out"
+          className="rounded-full bg-[#00ADB5] transition-transform duration-150 ease-out"
           style={{
             width: isHovering ? 32 : 16,
             height: isHovering ? 32 : 16,

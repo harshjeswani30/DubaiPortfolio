@@ -38,7 +38,7 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           "fixed left-0 right-0 top-0 z-50 transition-all duration-300",
-          scrolled && "bg-[#2C3333]/80 backdrop-blur-xl"
+          scrolled && "bg-[#222831]/80 backdrop-blur-xl"
         )}
       >
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -51,23 +51,23 @@ export function Navbar() {
               <motion.div
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#393E46] glow-sm"
               >
-                  <Code2 className="h-5 w-5 text-[#A5C9CA]" />
+                  <Code2 className="h-5 w-5 text-[#00ADB5]" />
               </motion.div>
-              <span className="text-xl font-bold text-[#E7F6F2]">Portfolio</span>
+              <span className="text-xl font-bold text-[#EEEEEE]">Portfolio</span>
             </motion.div>
           </Link>
 
-          <div className="hidden items-center gap-1 rounded-2xl border border-[#395B64]/50 bg-[#395B64]/10 px-2 py-2 backdrop-blur-xl md:flex">
+          <div className="hidden items-center gap-1 rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 px-2 py-2 backdrop-blur-xl md:flex">
             {navItems.map((item) => (
               <Link key={item.href} href={item.href}>
                 <motion.div
                   className={cn(
                     "relative rounded-xl px-4 py-2 text-sm font-medium transition-colors",
                     pathname === item.href
-                      ? "text-[#E7F6F2]"
-                      : "text-[#A5C9CA]/70 hover:text-[#E7F6F2]"
+                      ? "text-[#EEEEEE]"
+                      : "text-[#00ADB5]/70 hover:text-[#EEEEEE]"
                   )}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -75,7 +75,7 @@ export function Navbar() {
                   {pathname === item.href && (
                     <motion.div
                       layoutId="navbar-indicator"
-                      className="absolute inset-0 rounded-xl bg-[#395B64]"
+                      className="absolute inset-0 rounded-xl bg-[#393E46]"
                       transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     />
                   )}
@@ -93,7 +93,7 @@ export function Navbar() {
                 const event = new KeyboardEvent("keydown", { key: "k", metaKey: true })
                 document.dispatchEvent(event)
               }}
-              className="hidden items-center gap-2 rounded-xl border border-[#395B64]/50 bg-[#395B64]/10 px-3 py-2 text-sm text-[#A5C9CA]/70 backdrop-blur-xl transition-all hover:border-[#A5C9CA]/50 hover:text-[#A5C9CA] md:flex"
+              className="hidden items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 px-3 py-2 text-sm text-[#00ADB5]/70 backdrop-blur-xl transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5] md:flex"
             >
               <Command className="h-3 w-3" />
               <span>K</span>
@@ -103,7 +103,7 @@ export function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-[#395B64]/50 bg-[#395B64]/10 text-[#E7F6F2] backdrop-blur-xl md:hidden"
+              className="relative z-50 flex h-10 w-10 items-center justify-center rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 text-[#EEEEEE] backdrop-blur-xl md:hidden"
             >
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </motion.button>
@@ -117,7 +117,7 @@ export function Navbar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#2C3333]/95 backdrop-blur-xl md:hidden"
+            className="fixed inset-0 z-40 bg-[#222831]/95 backdrop-blur-xl md:hidden"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -138,13 +138,13 @@ export function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className={cn(
                       "relative block text-3xl font-bold transition-colors",
-                      pathname === item.href ? "text-[#A5C9CA]" : "text-[#E7F6F2]/60 hover:text-[#E7F6F2]"
+                      pathname === item.href ? "text-[#00ADB5]" : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
                     )}
                   >
                     {pathname === item.href && (
                       <motion.span
                         layoutId="mobile-indicator"
-                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#A5C9CA]"
+                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#00ADB5]"
                       />
                     )}
                     {item.label}

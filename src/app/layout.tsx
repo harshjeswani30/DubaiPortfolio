@@ -64,9 +64,9 @@ export default function RootLayout({
       >
 <ThemeProvider>
             <SmoothScrollProvider>
-              <BlobCursor
-                blobType="circle"
-                fillColor="#5227FF"
+                <BlobCursor
+                  blobType="circle"
+                  fillColor="#00ADB5"
                 trailCount={3}
                 sizes={[60, 125, 75]}
                 innerSizes={[20, 35, 25]}

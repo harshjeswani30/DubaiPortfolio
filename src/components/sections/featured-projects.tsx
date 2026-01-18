@@ -25,10 +25,10 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-[#2C3333] py-32">
+    <section ref={ref} className="relative overflow-hidden bg-[#222831] py-32">
       <div className="absolute inset-0 dot-background opacity-50" />
       
-      <div className="absolute right-0 top-1/3 h-[600px] w-[600px] rounded-full bg-[#395B64]/10 blur-[150px]" />
+      <div className="absolute right-0 top-1/3 h-[600px] w-[600px] rounded-full bg-[#393E46]/10 blur-[150px]" />
 
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
@@ -42,15 +42,15 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               initial={{ scale: 0 }}
               animate={isInView ? { scale: 1 } : {}}
               transition={{ type: "spring", duration: 0.6 }}
-              className="mb-6 flex items-center gap-2 rounded-full border border-[#395B64] bg-[#395B64]/20 px-4 py-2"
+              className="mb-6 flex items-center gap-2 rounded-full border border-[#393E46] bg-[#393E46]/20 px-4 py-2"
             >
-              <Folder className="h-4 w-4 text-[#A5C9CA]" />
-              <span className="text-sm font-medium text-[#A5C9CA]">Portfolio</span>
+              <Folder className="h-4 w-4 text-[#00ADB5]" />
+              <span className="text-sm font-medium text-[#00ADB5]">Portfolio</span>
             </motion.div>
-            <h2 className="text-4xl font-bold text-[#E7F6F2] md:text-5xl lg:text-6xl">
+            <h2 className="text-4xl font-bold text-[#EEEEEE] md:text-5xl lg:text-6xl">
               Featured <span className="gradient-text">Projects</span>
             </h2>
-            <p className="mt-4 max-w-lg text-[#A5C9CA]/70">
+            <p className="mt-4 max-w-lg text-[#00ADB5]/70">
               A selection of my recent work. Each project showcases different skills and technologies.
             </p>
           </div>
@@ -59,7 +59,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             <motion.button
               whileHover={{ scale: 1.02, x: 4 }}
               whileTap={{ scale: 0.98 }}
-              className="group flex items-center gap-2 rounded-xl border border-[#395B64] bg-[#395B64]/20 px-5 py-3 text-sm font-medium text-[#A5C9CA] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/30"
+              className="group flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-5 py-3 text-sm font-medium text-[#00ADB5] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/30"
             >
               View All Projects
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -81,7 +81,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                 <motion.div
                   whileHover={{ y: -8 }}
                   transition={{ type: "spring", stiffness: 300 }}
-                  className="group relative h-full overflow-hidden rounded-3xl border border-[#395B64]/50 bg-gradient-to-br from-[#395B64]/10 to-[#2C3333]"
+                  className="group relative h-full overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/10 to-[#222831]"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     {project.featured_image ? (
@@ -91,21 +91,21 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#395B64]/30 to-[#2C3333]">
+                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/30 to-[#222831]">
                         <motion.span
                           animate={{ 
                             scale: hoveredIndex === i ? [1, 1.1, 1] : 1,
                             rotate: hoveredIndex === i ? [0, 5, -5, 0] : 0
                           }}
                           transition={{ duration: 0.5 }}
-                          className="text-6xl font-bold text-[#A5C9CA]/20"
+                          className="text-6xl font-bold text-[#00ADB5]/20"
                         >
                           {project.title.charAt(0)}
                         </motion.span>
                       </div>
                     )}
                     
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-[#2C3333]/20 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/20 to-transparent" />
                     
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
@@ -114,15 +114,15 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                     >
                       <motion.div
                         whileHover={{ scale: 1.1 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2C3333]/80 backdrop-blur-sm"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#222831]/80 backdrop-blur-sm"
                       >
-                        <Github className="h-5 w-5 text-[#A5C9CA]" />
+                        <Github className="h-5 w-5 text-[#00ADB5]" />
                       </motion.div>
                       <motion.div
                         whileHover={{ scale: 1.1 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#2C3333]/80 backdrop-blur-sm"
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#222831]/80 backdrop-blur-sm"
                       >
-                        <ExternalLink className="h-5 w-5 text-[#A5C9CA]" />
+                        <ExternalLink className="h-5 w-5 text-[#00ADB5]" />
                       </motion.div>
                     </motion.div>
 
@@ -131,21 +131,21 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={isInView ? { scale: 1, opacity: 1 } : {}}
                         transition={{ delay: 0.3 + i * 0.1 }}
-                        className="flex items-center gap-2 rounded-full bg-[#2C3333]/80 px-3 py-1.5 backdrop-blur-sm"
+                        className="flex items-center gap-2 rounded-full bg-[#222831]/80 px-3 py-1.5 backdrop-blur-sm"
                       >
-                        <span className="flex h-2 w-2 items-center justify-center rounded-full bg-[#A5C9CA]">
-                          <span className="h-1 w-1 rounded-full bg-[#E7F6F2]" />
+                        <span className="flex h-2 w-2 items-center justify-center rounded-full bg-[#00ADB5]">
+                          <span className="h-1 w-1 rounded-full bg-[#EEEEEE]" />
                         </span>
-                        <span className="text-xs font-medium text-[#A5C9CA]">{project.category}</span>
+                        <span className="text-xs font-medium text-[#00ADB5]">{project.category}</span>
                       </motion.div>
                     </div>
                   </div>
 
                   <div className="relative p-6">
-                    <h3 className="mb-2 text-xl font-bold text-[#E7F6F2] transition-colors group-hover:text-[#A5C9CA]">
+                    <h3 className="mb-2 text-xl font-bold text-[#EEEEEE] transition-colors group-hover:text-[#00ADB5]">
                       {project.title}
                     </h3>
-                    <p className="mb-4 line-clamp-2 text-sm text-[#A5C9CA]/70 leading-relaxed">
+                    <p className="mb-4 line-clamp-2 text-sm text-[#00ADB5]/70 leading-relaxed">
                       {project.description}
                     </p>
 
@@ -156,13 +156,13 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                           initial={{ opacity: 0, scale: 0.8 }}
                           animate={isInView ? { opacity: 1, scale: 1 } : {}}
                           transition={{ delay: 0.4 + i * 0.1 + techIndex * 0.05 }}
-                          className="rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 px-3 py-1 text-xs font-medium text-[#A5C9CA]"
+                          className="rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 px-3 py-1 text-xs font-medium text-[#00ADB5]"
                         >
                           {tech}
                         </motion.span>
                       ))}
                       {project.tech_stack.length > 4 && (
-                        <span className="rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 px-3 py-1 text-xs font-medium text-[#A5C9CA]/60">
+                        <span className="rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 px-3 py-1 text-xs font-medium text-[#00ADB5]/60">
                           +{project.tech_stack.length - 4}
                         </span>
                       )}
@@ -172,7 +172,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                       initial={{ width: "0%" }}
                       animate={isInView ? { width: "100%" } : {}}
                       transition={{ duration: 1, delay: 0.5 + i * 0.2 }}
-                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#A5C9CA] to-[#E7F6F2]"
+                      className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#00ADB5] to-[#EEEEEE]"
                     />
                   </div>
                 </motion.div>
@@ -187,11 +187,11 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             animate={isInView ? { opacity: 1 } : {}}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#395B64]/20">
-              <Folder className="h-10 w-10 text-[#A5C9CA]/50" />
+            <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#393E46]/20">
+              <Folder className="h-10 w-10 text-[#00ADB5]/50" />
             </div>
-            <h3 className="text-xl font-semibold text-[#E7F6F2]">No projects yet</h3>
-            <p className="mt-2 text-[#A5C9CA]/60">Featured projects will appear here.</p>
+            <h3 className="text-xl font-semibold text-[#EEEEEE]">No projects yet</h3>
+            <p className="mt-2 text-[#00ADB5]/60">Featured projects will appear here.</p>
           </motion.div>
         )}
 
@@ -205,7 +205,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex items-center gap-2 rounded-2xl border-2 border-[#395B64] bg-[#395B64]/20 px-6 py-3 font-semibold text-[#E7F6F2] transition-colors hover:border-[#A5C9CA]"
+              className="flex items-center gap-2 rounded-2xl border-2 border-[#393E46] bg-[#393E46]/20 px-6 py-3 font-semibold text-[#EEEEEE] transition-colors hover:border-[#00ADB5]"
             >
               View All Projects
               <ArrowUpRight className="h-4 w-4" />

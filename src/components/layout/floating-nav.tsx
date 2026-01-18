@@ -49,7 +49,7 @@ export function FloatingNav() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="rounded-2xl border border-[#395B64]/50 bg-[#2C3333]/80 px-4 py-3 shadow-xl backdrop-blur-xl"
+            className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl"
           >
             <Link href="/">
               <motion.div
@@ -60,11 +60,11 @@ export function FloatingNav() {
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0] }}
                   transition={{ duration: 4, repeat: Infinity }}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#395B64] glow-sm"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#393E46] glow-sm"
                 >
-                  <Code2 className="h-4 w-4 text-[#A5C9CA]" />
+                  <Code2 className="h-4 w-4 text-[#00ADB5]" />
                 </motion.div>
-                <span className="hidden text-lg font-bold text-[#E7F6F2] sm:block">Portfolio</span>
+                <span className="hidden text-lg font-bold text-[#EEEEEE] sm:block">Portfolio</span>
               </motion.div>
             </Link>
           </motion.div>
@@ -73,7 +73,7 @@ export function FloatingNav() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="hidden rounded-2xl border border-[#395B64]/50 bg-[#2C3333]/80 px-4 py-3 shadow-xl backdrop-blur-xl md:block"
+            className="hidden rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl md:block"
           >
             <div className="flex items-center gap-1">
               {navItems.map((item) => (
@@ -82,8 +82,8 @@ export function FloatingNav() {
                     className={cn(
                       "relative rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                       pathname === item.href
-                        ? "text-[#E7F6F2]"
-                        : "text-[#A5C9CA]/70 hover:text-[#E7F6F2]"
+                        ? "text-[#EEEEEE]"
+                        : "text-[#00ADB5]/70 hover:text-[#EEEEEE]"
                     )}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -91,7 +91,7 @@ export function FloatingNav() {
                     {pathname === item.href && (
                       <motion.div
                         layoutId="floating-nav-indicator"
-                        className="absolute inset-0 rounded-lg bg-[#395B64]"
+                        className="absolute inset-0 rounded-lg bg-[#393E46]"
                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                       />
                     )}
@@ -106,12 +106,12 @@ export function FloatingNav() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="rounded-2xl border border-[#395B64]/50 bg-[#2C3333]/80 px-3 py-3 shadow-xl backdrop-blur-xl"
+            className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-3 py-3 shadow-xl backdrop-blur-xl"
           >
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="hidden h-9 w-9 items-center justify-center rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 text-xs font-semibold text-[#A5C9CA]/70 transition-all hover:border-[#A5C9CA]/50 hover:text-[#A5C9CA] md:flex"
+              className="hidden h-9 w-9 items-center justify-center rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 text-xs font-semibold text-[#00ADB5]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5] md:flex"
             >
               <span>K</span>
             </motion.button>
@@ -120,7 +120,7 @@ export function FloatingNav() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#395B64]/50 bg-[#395B64]/20 text-[#E7F6F2] md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#393E46]/50 bg-[#393E46]/20 text-[#EEEEEE] md:hidden"
             >
               {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </motion.button>
@@ -134,7 +134,7 @@ export function FloatingNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#2C3333]/98 backdrop-blur-xl md:hidden"
+            className="fixed inset-0 z-40 bg-[#222831]/98 backdrop-blur-xl md:hidden"
           >
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -155,13 +155,13 @@ export function FloatingNav() {
                     onClick={() => setIsMenuOpen(false)}
                     className={cn(
                       "relative block text-3xl font-bold transition-colors",
-                      pathname === item.href ? "text-[#A5C9CA]" : "text-[#E7F6F2]/60 hover:text-[#E7F6F2]"
+                      pathname === item.href ? "text-[#00ADB5]" : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
                     )}
                   >
                     {pathname === item.href && (
                       <motion.span
                         layoutId="mobile-nav-indicator"
-                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#A5C9CA]"
+                        className="absolute -left-6 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-[#00ADB5]"
                       />
                     )}
                     {item.label}
@@ -178,7 +178,7 @@ export function FloatingNav() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 rounded-xl border border-[#395B64] bg-[#395B64]/20 px-4 py-2 text-sm text-[#A5C9CA]"
+                  className="flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-4 py-2 text-sm text-[#00ADB5]"
                 >
                   <Command className="h-4 w-4" />
                   <span>Press K for search</span>

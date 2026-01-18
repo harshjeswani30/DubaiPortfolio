@@ -16,7 +16,7 @@ const stats = [
 const floatingTags = [
   { icon: Code2, text: "React", color: "#61DAFB" },
   { icon: Palette, text: "UI/UX", color: "#FF6B6B" },
-  { icon: Sparkles, text: "Creative", color: "#A5C9CA" },
+  { icon: Sparkles, text: "Creative", color: "#00ADB5" },
 ]
 
 function useParallax(value: MotionValue<number>, distance: number) {
@@ -95,7 +95,7 @@ export function HeroSection() {
   return (
     <section
       ref={containerRef}
-      className="relative h-[120vh] overflow-hidden bg-[#2C3333]"
+      className="relative h-[120vh] overflow-hidden bg-[#222831]"
     >
       <motion.div 
         className="absolute inset-0 dot-background"
@@ -109,31 +109,31 @@ export function HeroSection() {
           style={{ scale: circleScale, opacity: circleOpacity }}
           className="absolute -right-[400px] -top-[400px] h-[800px] w-[800px]"
         >
-          <div className="absolute inset-0 rounded-full border border-[#395B64]/20" />
-          <div className="absolute inset-[100px] rounded-full border border-[#A5C9CA]/10" />
-          <div className="absolute inset-[200px] rounded-full border border-[#E7F6F2]/5" />
+          <div className="absolute inset-0 rounded-full border border-[#393E46]/20" />
+          <div className="absolute inset-[100px] rounded-full border border-[#00ADB5]/10" />
+          <div className="absolute inset-[200px] rounded-full border border-[#EEEEEE]/5" />
         </motion.div>
         
         <motion.div
           style={{ x: smoothX, y: smoothY }}
-          className="absolute left-1/4 top-1/3 h-[400px] w-[400px] rounded-full bg-[#395B64]/20 blur-[100px]"
+          className="absolute left-1/4 top-1/3 h-[400px] w-[400px] rounded-full bg-[#393E46]/20 blur-[100px]"
         />
         <motion.div
           style={{ x: smoothX, y: smoothY }}
-          className="absolute bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full bg-[#A5C9CA]/10 blur-[80px]"
+          className="absolute bottom-1/4 right-1/4 h-[300px] w-[300px] rounded-full bg-[#00ADB5]/10 blur-[80px]"
         />
 
         <motion.div
           style={{ y: bgY, opacity: circleOpacity }}
-          className="absolute left-10 top-1/4 h-2 w-2 rounded-full bg-[#A5C9CA]"
+          className="absolute left-10 top-1/4 h-2 w-2 rounded-full bg-[#00ADB5]"
         />
         <motion.div
           style={{ y: floatingY1 }}
-          className="absolute right-1/4 top-1/3 h-3 w-3 rounded-full bg-[#395B64]"
+          className="absolute right-1/4 top-1/3 h-3 w-3 rounded-full bg-[#393E46]"
         />
         <motion.div
           style={{ y: floatingY2 }}
-          className="absolute left-1/3 bottom-1/4 h-1.5 w-1.5 rounded-full bg-[#E7F6F2]/50"
+          className="absolute left-1/3 bottom-1/4 h-1.5 w-1.5 rounded-full bg-[#EEEEEE]/50"
         />
       </div>
 
@@ -155,20 +155,20 @@ export function HeroSection() {
               transition={{ duration: 0.5 }}
               className="mb-4"
             >
-              <div className="group relative inline-flex items-center gap-3 rounded-full border border-[#395B64] bg-[#395B64]/20 px-5 py-2.5 overflow-hidden cursor-pointer hover:border-[#A5C9CA]/50 transition-colors">
+              <div className="group relative inline-flex items-center gap-3 rounded-full border border-[#393E46] bg-[#393E46]/20 px-5 py-2.5 overflow-hidden cursor-pointer hover:border-[#00ADB5]/50 transition-colors">
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
+                  className="absolute inset-0 bg-gradient-to-r from-[#00ADB5]/0 via-[#00ADB5]/10 to-[#00ADB5]/0"
                   animate={{ x: ["-100%", "100%"] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 />
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#A5C9CA] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#A5C9CA]" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ADB5] opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ADB5]" />
                 </span>
                 <div className="relative flex items-center">
                   <RotatingText
                     texts={['Full-Stack Web Developer', 'Creative UI/UX Designer', 'Software Engineer']}
-                    mainClassName="overflow-hidden justify-center text-sm font-medium text-[#E7F6F2]"
+                    mainClassName="overflow-hidden justify-center text-sm font-medium text-[#EEEEEE]"
                     staggerFrom="last"
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
@@ -186,7 +186,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-3xl font-bold leading-[1.1] tracking-tight text-[#E7F6F2] sm:text-4xl md:text-5xl lg:text-6xl"
+              className="text-3xl font-bold leading-[1.1] tracking-tight text-[#EEEEEE] sm:text-4xl md:text-5xl lg:text-6xl"
             >
               Crafting
               <span className="relative mx-2 inline-block">
@@ -194,7 +194,7 @@ export function HeroSection() {
                 <motion.span
                   animate={{ width: ["0%", "100%", "100%", "0%"] }}
                   transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
-                  className="absolute -bottom-1 left-0 h-1 rounded-full bg-gradient-to-r from-[#A5C9CA] to-[#E7F6F2]"
+                  className="absolute -bottom-1 left-0 h-1 rounded-full bg-gradient-to-r from-[#00ADB5] to-[#EEEEEE]"
                 />
               </span>
               <br />
@@ -205,7 +205,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-4 max-w-md text-sm text-[#A5C9CA]/80 md:text-base leading-relaxed"
+              className="mt-4 max-w-md text-sm text-[#00ADB5]/80 md:text-base leading-relaxed"
             >
               Full-stack developer based in Dubai, turning complex problems into elegant solutions. Let&apos;s build something extraordinary together.
             </motion.p>
@@ -222,7 +222,7 @@ export function HeroSection() {
                   whileTap={{ scale: 0.98 }}
                   onHoverStart={() => setIsHovering(true)}
                   onHoverEnd={() => setIsHovering(false)}
-                  className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#A5C9CA] px-5 py-3 text-sm font-semibold text-[#2C3333] transition-all"
+                  className="group relative flex items-center gap-2 overflow-hidden rounded-xl bg-[#00ADB5] px-5 py-3 text-sm font-semibold text-[#222831] transition-all"
                 >
                   <motion.div
                     animate={{ x: isHovering ? "100%" : "-100%" }}
@@ -237,7 +237,7 @@ export function HeroSection() {
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="rounded-xl border-2 border-[#395B64] bg-transparent px-5 py-3 text-sm font-semibold text-[#E7F6F2] transition-all hover:border-[#A5C9CA] hover:bg-[#395B64]/20"
+                  className="rounded-xl border-2 border-[#393E46] bg-transparent px-5 py-3 text-sm font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
                 >
                   Get in Touch
                 </motion.button>
@@ -261,14 +261,14 @@ export function HeroSection() {
                 >
                   <motion.div
                     whileHover={{ scale: 1.03, y: -2 }}
-                    className="flex items-center gap-2 rounded-xl border border-[#395B64]/50 bg-[#395B64]/20 px-3 py-2.5 backdrop-blur-sm transition-all hover:border-[#A5C9CA]/50 hover:bg-[#395B64]/30"
+                    className="flex items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/20 px-3 py-2.5 backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/30"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#395B64]">
-                      <stat.icon className="h-4 w-4 text-[#A5C9CA]" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#393E46]">
+                      <stat.icon className="h-4 w-4 text-[#00ADB5]" />
                     </div>
                     <div>
-                      <div className="text-lg font-bold text-[#E7F6F2]">{stat.value}</div>
-                      <div className="text-[10px] text-[#A5C9CA]/60 whitespace-nowrap">{stat.label}</div>
+                      <div className="text-lg font-bold text-[#EEEEEE]">{stat.value}</div>
+                      <div className="text-[10px] text-[#00ADB5]/60 whitespace-nowrap">{stat.label}</div>
                     </div>
                   </motion.div>
                 </motion.div>
@@ -315,7 +315,7 @@ export function HeroSection() {
                   className="relative h-[320px] w-[280px] sm:h-[380px] sm:w-[320px] lg:h-[450px] lg:w-[380px]"
                   style={{ clipPath: "url(#leafShape)" }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#395B64] to-[#2C3333]" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#393E46] to-[#222831]" />
                   <Image
                     src="/owner.jpg"
                     alt="Developer Portrait"
@@ -325,7 +325,7 @@ export function HeroSection() {
                     priority
                   />
                   <motion.div 
-                    className="absolute inset-0 bg-gradient-to-t from-[#2C3333] via-transparent to-transparent"
+                    className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent"
                     animate={{ opacity: imageHover ? 0.2 : 0.5 }}
                   />
                   
@@ -375,7 +375,7 @@ export function HeroSection() {
                   whileHover={{ scale: 1.15, rotate: 10 }}
                   className="group relative cursor-pointer"
                 >
-                  <div className="relative rounded-2xl border border-green-400/30 bg-[#2C3333]/90 px-4 py-3 backdrop-blur-xl shadow-[0_0_30px_rgba(74,222,128,0.2)]">
+                  <div className="relative rounded-2xl border border-green-400/30 bg-[#222831]/90 px-4 py-3 backdrop-blur-xl shadow-[0_0_30px_rgba(74,222,128,0.2)]">
                     <motion.div
                       className="absolute inset-0 rounded-2xl"
                       animate={{ 
@@ -433,7 +433,7 @@ export function HeroSection() {
                     className="group relative cursor-pointer"
                   >
                     <motion.div 
-                      className="relative flex items-center gap-2 rounded-xl border bg-[#2C3333]/95 px-3 py-2 backdrop-blur-xl shadow-lg"
+                      className="relative flex items-center gap-2 rounded-xl border bg-[#222831]/95 px-3 py-2 backdrop-blur-xl shadow-lg"
                       style={{ 
                         borderColor: activeTag === index ? tag.color : "rgba(57, 91, 100, 0.6)",
                       }}
@@ -459,7 +459,7 @@ export function HeroSection() {
                       </motion.div>
                       <span 
                         className="text-xs font-semibold relative z-10 transition-colors"
-                        style={{ color: activeTag === index ? tag.color : "#E7F6F2" }}
+                        style={{ color: activeTag === index ? tag.color : "#EEEEEE" }}
                       >
                         {tag.text}
                       </span>
@@ -484,9 +484,9 @@ export function HeroSection() {
                   whileHover={{ scale: 1.1, rotate: -8 }}
                   className="group relative cursor-pointer"
                 >
-                  <div className="relative rounded-2xl border border-[#395B64]/60 bg-[#2C3333]/95 px-4 py-3 backdrop-blur-xl shadow-xl overflow-hidden">
+                  <div className="relative rounded-2xl border border-[#393E46]/60 bg-[#222831]/95 px-4 py-3 backdrop-blur-xl shadow-xl overflow-hidden">
                     <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-[#A5C9CA]/0 via-[#A5C9CA]/10 to-[#A5C9CA]/0"
+                      className="absolute inset-0 bg-gradient-to-r from-[#00ADB5]/0 via-[#00ADB5]/10 to-[#00ADB5]/0"
                       animate={{ x: ["-100%", "100%"] }}
                       transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                     />
@@ -499,8 +499,8 @@ export function HeroSection() {
                         🇦🇪
                       </motion.div>
                       <div>
-                        <div className="text-[9px] text-[#A5C9CA]/60 uppercase tracking-widest font-medium">Based in</div>
-                        <div className="text-base font-bold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Dubai</div>
+                        <div className="text-[9px] text-[#00ADB5]/60 uppercase tracking-widest font-medium">Based in</div>
+                        <div className="text-base font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">Dubai</div>
                       </div>
                     </div>
                   </div>
@@ -523,22 +523,22 @@ export function HeroSection() {
                     className="group relative cursor-pointer"
                   >
                     <motion.div
-                      className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#A5C9CA] via-[#395B64] to-[#A5C9CA] opacity-50 blur-sm"
+                      className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#00ADB5] via-[#393E46] to-[#00ADB5] opacity-50 blur-sm"
                       animate={{ 
                         backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                       }}
                       transition={{ duration: 3, repeat: Infinity }}
                       style={{ backgroundSize: "200% 200%" }}
                     />
-                    <div className="relative flex items-center gap-3 rounded-2xl border border-[#A5C9CA]/30 bg-[#2C3333] px-5 py-3 backdrop-blur-xl">
+                    <div className="relative flex items-center gap-3 rounded-2xl border border-[#00ADB5]/30 bg-[#222831] px-5 py-3 backdrop-blur-xl">
                       <motion.div
                         animate={{ rotate: [0, 15, -15, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: 2 }}
                       >
-                        <MessageCircle className="h-5 w-5 text-[#A5C9CA] group-hover:text-[#E7F6F2] transition-colors" />
+                        <MessageCircle className="h-5 w-5 text-[#00ADB5] group-hover:text-[#EEEEEE] transition-colors" />
                       </motion.div>
-                      <span className="text-sm font-bold text-[#E7F6F2] group-hover:text-[#A5C9CA] transition-colors">Let&apos;s Connect</span>
-                      <ArrowRight className="h-4 w-4 text-[#A5C9CA] transition-transform group-hover:translate-x-1" />
+                      <span className="text-sm font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">Let&apos;s Connect</span>
+                      <ArrowRight className="h-4 w-4 text-[#00ADB5] transition-transform group-hover:translate-x-1" />
                     </div>
                   </motion.div>
                 </Link>
@@ -559,12 +559,12 @@ export function HeroSection() {
             transition={{ duration: 2, repeat: Infinity }}
             className="flex flex-col items-center gap-1"
           >
-            <span className="text-[10px] text-[#A5C9CA]/60">Scroll</span>
-            <div className="h-8 w-4 rounded-full border border-[#395B64] p-0.5">
+            <span className="text-[10px] text-[#00ADB5]/60">Scroll</span>
+            <div className="h-8 w-4 rounded-full border border-[#393E46] p-0.5">
               <motion.div
                 animate={{ y: [0, 12, 0] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="h-1.5 w-1.5 rounded-full bg-[#A5C9CA]"
+                className="h-1.5 w-1.5 rounded-full bg-[#00ADB5]"
               />
             </div>
           </motion.div>
