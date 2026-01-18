@@ -112,50 +112,28 @@ export function ContactContent() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#222831] pt-20 overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <FloatingParticle delay={0} duration={8} size={6} left="10%" top="20%" />
-        <FloatingParticle delay={1} duration={10} size={8} left="80%" top="15%" />
-        <FloatingParticle delay={2} duration={12} size={4} left="60%" top="70%" />
-        <FloatingParticle delay={3} duration={9} size={10} left="25%" top="80%" />
-        <FloatingParticle delay={4} duration={11} size={5} left="90%" top="50%" />
-        <FloatingParticle delay={5} duration={7} size={7} left="5%" top="60%" />
-        
-        <motion.div
-          className="absolute -left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-[#00ADB5]/10 blur-[150px]"
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -right-1/4 bottom-1/4 h-[500px] w-[500px] rounded-full bg-purple-500/10 blur-[150px]"
-          animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
-          transition={{ duration: 12, repeat: Infinity, delay: 2 }}
-        />
-      </div>
-
-      <section className="relative py-16 md:py-24">
-        <div className="relative mx-auto max-w-7xl px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              className="text-center"
-            >
-              <h1 className="text-4xl font-bold text-[#EEEEEE] md:text-6xl lg:text-7xl">
-                <motion.span
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
-                  className="block bg-gradient-to-r from-[#00ADB5] to-[#00CED6] bg-clip-text text-transparent"
-                >
-                  Contact
-                </motion.span>
-              </h1>
-            </motion.div>
+      <div className="min-h-screen bg-[#222831] pt-32 overflow-hidden">
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <FloatingParticle delay={0} duration={8} size={6} left="10%" top="20%" />
+          <FloatingParticle delay={1} duration={10} size={8} left="80%" top="15%" />
+          <FloatingParticle delay={2} duration={12} size={4} left="60%" top="70%" />
+          <FloatingParticle delay={3} duration={9} size={10} left="25%" top="80%" />
+          <FloatingParticle delay={4} duration={11} size={5} left="90%" top="50%" />
+          <FloatingParticle delay={5} duration={7} size={7} left="5%" top="60%" />
+          
+          <motion.div
+            className="absolute -left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-[#00ADB5]/10 blur-[150px]"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+            transition={{ duration: 10, repeat: Infinity }}
+          />
+          <motion.div
+            className="absolute -right-1/4 bottom-1/4 h-[500px] w-[500px] rounded-full bg-purple-500/10 blur-[150px]"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.15, 0.08] }}
+            transition={{ duration: 12, repeat: Infinity, delay: 2 }}
+          />
         </div>
-      </section>
 
-      <section className="relative pb-24">
+        <section className="relative pb-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
             <motion.div
