@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from "react"
+import { createContext, useContext, useState, useCallback, ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
@@ -27,25 +27,18 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [transitionData, setTransitionData] = useState<TransitionData | null>(null)
   const [showOverlay, setShowOverlay] = useState(false)
-  const [isReverse, setIsReverse] = useState(false)
   const [targetRect, setTargetRect] = useState<{ left: number; top: number; width: number; height: number } | null>(null)
-  const [reverseAnimationStarted, setReverseAnimationStarted] = useState(false)
   const router = useRouter()
 
   const startTransition = useCallback((data: TransitionData, href: string) => {
     if (data.originRect) {
+      const scrollY = window.scrollY
       sessionStorage.setItem('lastProjectSlug', data.targetSlug)
-      sessionStorage.setItem('lastProjectData', JSON.stringify({
-        targetSlug: data.targetSlug,
-        projectTitle: data.projectTitle,
-        projectCategory: data.projectCategory,
-        projectImage: data.projectImage,
-      }))
+      sessionStorage.setItem('lastScrollPosition', scrollY.toString())
     }
     setTransitionData(data)
     setIsTransitioning(true)
     setShowOverlay(true)
-    setIsReverse(false)
     setTargetRect(data.originRect ? {
       left: data.originRect.left,
       top: data.originRect.top,
@@ -59,84 +52,20 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   }, [router])
 
   const startReverseTransition = useCallback((href: string) => {
-    const savedData = sessionStorage.getItem('lastProjectData')
-    const savedSlug = sessionStorage.getItem('lastProjectSlug')
+    const scrollPosition = sessionStorage.getItem('lastScrollPosition')
     
-    if (savedData && savedSlug) {
-      const data = JSON.parse(savedData)
-      
-      setTransitionData({
-        originRect: null,
-        targetSlug: data.targetSlug,
-        projectTitle: data.projectTitle,
-        projectCategory: data.projectCategory,
-        projectImage: data.projectImage,
-      })
-      setIsTransitioning(true)
-      setShowOverlay(true)
-      setIsReverse(true)
-      setReverseAnimationStarted(false)
-      setTargetRect(null)
-      
-      router.push(href + '#featured-projects')
-      
-      sessionStorage.setItem('pendingReverseTransition', savedSlug)
+    sessionStorage.removeItem('lastProjectSlug')
+    sessionStorage.removeItem('lastScrollPosition')
+    
+    if (scrollPosition) {
+      router.push(href)
+      setTimeout(() => {
+        window.scrollTo(0, parseInt(scrollPosition))
+      }, 100)
     } else {
       router.push(href)
     }
   }, [router])
-
-  useEffect(() => {
-    const checkForCard = () => {
-      const pendingSlug = sessionStorage.getItem('pendingReverseTransition')
-      if (pendingSlug && isReverse && !reverseAnimationStarted) {
-        const card = document.querySelector(`[data-project-slug="${pendingSlug}"]`)
-        if (card) {
-          const rect = card.getBoundingClientRect()
-          setTargetRect({
-            left: rect.left,
-            top: rect.top,
-            width: rect.width,
-            height: rect.height,
-          })
-          setReverseAnimationStarted(true)
-          
-          setTimeout(() => {
-            setShowOverlay(false)
-            setIsTransitioning(false)
-            setTransitionData(null)
-            setIsReverse(false)
-            setTargetRect(null)
-            setReverseAnimationStarted(false)
-            sessionStorage.removeItem('pendingReverseTransition')
-            sessionStorage.removeItem('lastProjectData')
-            sessionStorage.removeItem('lastProjectSlug')
-          }, 600)
-        }
-      }
-    }
-
-    if (isReverse && !reverseAnimationStarted) {
-      const interval = setInterval(checkForCard, 50)
-      const timeout = setTimeout(() => {
-        clearInterval(interval)
-        if (!reverseAnimationStarted) {
-          setShowOverlay(false)
-          setIsTransitioning(false)
-          setTransitionData(null)
-          setIsReverse(false)
-          sessionStorage.removeItem('pendingReverseTransition')
-          sessionStorage.removeItem('lastProjectData')
-          sessionStorage.removeItem('lastProjectSlug')
-        }
-      }, 2000)
-      
-      return () => {
-        clearInterval(interval)
-        clearTimeout(timeout)
-      }
-    }
-  }, [isReverse, reverseAnimationStarted])
 
   const completeTransition = useCallback(() => {
     setShowOverlay(false)
@@ -162,13 +91,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
           >
             <motion.div
               className="absolute bg-[#222831] overflow-hidden"
-              initial={isReverse ? {
-                left: 0,
-                top: 0,
-                width: "100vw",
-                height: "100vh",
-                borderRadius: 0,
-              } : targetRect ? {
+              initial={targetRect ? {
                 left: targetRect.left,
                 top: targetRect.top,
                 width: targetRect.width,
@@ -181,19 +104,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
                 height: "100vh",
                 borderRadius: 0,
               }}
-              animate={isReverse && targetRect && reverseAnimationStarted ? {
-                left: targetRect.left,
-                top: targetRect.top,
-                width: targetRect.width,
-                height: targetRect.height,
-                borderRadius: 16,
-              } : isReverse ? {
-                left: 0,
-                top: 0,
-                width: "100vw",
-                height: "100vh",
-                borderRadius: 0,
-              } : {
+              animate={{
                 left: 0,
                 top: 0,
                 width: "100vw",
