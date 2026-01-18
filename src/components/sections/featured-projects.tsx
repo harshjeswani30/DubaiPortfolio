@@ -5,6 +5,7 @@ import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, 
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Eye, Zap } from "lucide-react"
+import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
   id: string
@@ -26,6 +27,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const cardRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const { startTransition } = usePageTransition()
   
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
@@ -58,6 +60,23 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     glowOpacity.set(0)
   }
 
+  const handleProjectClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (!cardRef.current) return
+    
+    const rect = cardRef.current.getBoundingClientRect()
+    startTransition(
+      {
+        originRect: rect,
+        targetSlug: project.slug,
+        projectTitle: project.title,
+        projectCategory: project.category,
+        projectImage: project.featured_image,
+      },
+      `/projects/${project.slug}`
+    )
+  }
+
   return (
     <motion.div
       ref={cardRef}
@@ -74,7 +93,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       className="relative"
       style={{ perspective: 1200 }}
     >
-      <Link href={`/projects/${project.slug}`}>
+      <div onClick={handleProjectClick} className="cursor-pointer">
         <motion.div
           style={{
             rotateX: smoothRotateX,
@@ -193,7 +212,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                         exit={{ scale: 0, y: 15 }}
                         transition={{ duration: 0.25, delay: 0.1, type: "spring", stiffness: 400 }}
                         onClick={(e) => {
-                          e.preventDefault()
+                          e.stopPropagation()
                           window.open(project.github_url, '_blank')
                         }}
                         className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
@@ -208,7 +227,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                         exit={{ scale: 0, y: 15 }}
                         transition={{ duration: 0.25, delay: 0.15, type: "spring", stiffness: 400 }}
                         onClick={(e) => {
-                          e.preventDefault()
+                          e.stopPropagation()
                           window.open(project.live_url, '_blank')
                         }}
                         className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#393E46] bg-[#222831]/95 backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/60 cursor-pointer"
@@ -308,7 +327,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
             </div>
           </div>
         </motion.div>
-      </Link>
+      </div>
     </motion.div>
   )
 }

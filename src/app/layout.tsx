@@ -3,12 +3,14 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
+import { PageTransitionProvider } from "@/components/providers/page-transition-provider"
 
 import { Footer } from "@/components/layout/footer"
 import { FloatingNav } from "@/components/layout/floating-nav"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
 import { CircleTrailCursor } from "@/components/ui/circle-trail-cursor"
+import { PageTransitionOverlay } from "@/components/ui/page-transition-overlay"
 
 
 const geistSans = Geist({
@@ -63,15 +65,18 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-black antialiased`}
       >
 <ThemeProvider>
-            <SmoothScrollProvider>
-                <CircleTrailCursor strokeColor="#00ADB5" />
-              <ScrollProgress />
-              <CommandPalette />
-              <FloatingNav />
-              <main className="min-h-screen">{children}</main>
-              <Footer />
-            </SmoothScrollProvider>
-          </ThemeProvider>
+          <PageTransitionProvider>
+              <SmoothScrollProvider>
+                  <CircleTrailCursor strokeColor="#00ADB5" />
+                <ScrollProgress />
+                <CommandPalette />
+                <FloatingNav />
+                <PageTransitionOverlay />
+                <main className="min-h-screen">{children}</main>
+                <Footer />
+              </SmoothScrollProvider>
+            </PageTransitionProvider>
+            </ThemeProvider>
       </body>
     </html>
   )
