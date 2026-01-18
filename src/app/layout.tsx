@@ -10,7 +10,7 @@ import { FloatingNav } from "@/components/layout/floating-nav"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
 import { CircleTrailCursor } from "@/components/ui/circle-trail-cursor"
-import { PageTransitionOverlay } from "@/components/ui/page-transition-overlay"
+
 
 
 const geistSans = Geist({
@@ -71,7 +71,6 @@ export default function RootLayout({
                 <ScrollProgress />
                 <CommandPalette />
                 <FloatingNav />
-                <PageTransitionOverlay />
                 <main className="min-h-screen">{children}</main>
                 <Footer />
               </SmoothScrollProvider>
