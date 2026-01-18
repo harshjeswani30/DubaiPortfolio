@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useState, useCallback } from "react"
-import { motion, useInView, useMotionValue, useSpring } from "framer-motion"
+import { useRef, useState, useCallback, useEffect } from "react"
+import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Mail, FolderOpen, Clock, CheckCircle2, TrendingUp } from "lucide-react"
+import { ArrowRight, Clock, CheckCircle2, TrendingUp, Sparkles } from "lucide-react"
 
 interface MagneticButtonProps {
   children: React.ReactNode
@@ -25,8 +25,8 @@ function MagneticButton({ children, href, variant = "primary" }: MagneticButtonP
     const rect = buttonRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
-    x.set((e.clientX - centerX) * 0.25)
-    y.set((e.clientY - centerY) * 0.25)
+    x.set((e.clientX - centerX) * 0.3)
+    y.set((e.clientY - centerY) * 0.3)
   }, [x, y])
 
   const handleMouseLeave = useCallback(() => {
@@ -49,7 +49,7 @@ function MagneticButton({ children, href, variant = "primary" }: MagneticButtonP
         <motion.div
           className={`relative flex items-center gap-3 rounded-full px-8 py-4 font-semibold transition-all duration-300 ${
             variant === "primary"
-              ? "bg-[#00ADB5] text-[#222831]"
+              ? "bg-gradient-to-r from-[#00ADB5] to-[#00CED6] text-[#222831]"
               : "border border-[#393E46] bg-transparent text-[#EEEEEE] hover:border-[#00ADB5]/50"
           }`}
           animate={{
@@ -110,7 +110,33 @@ function StatItem({ value, label, icon, delay, isInView }: StatItemProps) {
 
 export function CTASection() {
   const ref = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [4, -4]), { stiffness: 100, damping: 20 })
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-4, 4]), { stiffness: 100, damping: 20 })
+  const translateX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), { stiffness: 100, damping: 20 })
+  const translateY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-10, 10]), { stiffness: 100, damping: 20 })
+
+  const glowX = useSpring(useTransform(mouseX, [-0.5, 0.5], [20, 80]), { stiffness: 100, damping: 20 })
+  const glowY = useSpring(useTransform(mouseY, [-0.5, 0.5], [20, 80]), { stiffness: 100, damping: 20 })
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    mouseX.set(x)
+    mouseY.set(y)
+  }, [mouseX, mouseY])
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }, [mouseX, mouseY])
 
   const stats = [
     { value: "< 24hrs", label: "Response Time", icon: <Clock className="h-5 w-5" /> },
@@ -124,27 +150,55 @@ export function CTASection() {
       
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          animate={{ opacity: [0.15, 0.25, 0.15] }}
+          animate={{ opacity: [0.15, 0.25, 0.15], scale: [1, 1.1, 1] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute left-1/4 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00ADB5]/10 blur-[120px]"
         />
         <motion.div
-          animate={{ opacity: [0.1, 0.2, 0.1] }}
+          animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.15, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="absolute right-1/4 top-1/2 h-[400px] w-[400px] translate-x-1/2 -translate-y-1/2 rounded-full bg-[#393E46]/30 blur-[100px]"
         />
       </div>
 
-      <div className="relative mx-auto max-w-5xl px-6">
+      <div className="relative mx-auto max-w-5xl px-6" style={{ perspective: 1000 }}>
         <motion.div
+          ref={cardRef}
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          style={{
+            rotateX,
+            rotateY,
+            x: translateX,
+            y: translateY,
+            transformStyle: "preserve-3d",
+          }}
           className="relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#2a2f38]/80 to-[#222831]/90 p-10 backdrop-blur-xl md:p-16"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(0,173,181,0.05),transparent_50%)]" />
+          <motion.div
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              background: `radial-gradient(600px circle at ${glowX}% ${glowY}%, rgba(0, 173, 181, 0.15), transparent 40%)`,
+            }}
+          />
           
-          <div className="relative text-center">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(0,173,181,0.05),transparent_50%)]" />
+          
+          <motion.div
+            className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-[#00ADB5]/5 blur-3xl"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-[#00ADB5]/5 blur-3xl"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          />
+          
+          <div className="relative text-center" style={{ transform: "translateZ(20px)" }}>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
@@ -157,6 +211,7 @@ export function CTASection() {
                 className="h-2 w-2 rounded-full bg-[#00ADB5]"
               />
               <span className="text-sm font-medium text-[#00ADB5]">Available for work</span>
+              <Sparkles className="h-3.5 w-3.5 text-[#00ADB5]/70" />
             </motion.div>
 
             <motion.h2
