@@ -51,8 +51,8 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     setIsReverse(false)
     
     setTimeout(() => {
-      router.push(href)
-    }, 800)
+        router.push(href)
+      }, 500)
   }, [router])
 
   const startReverseTransition = useCallback((href: string) => {
@@ -140,85 +140,28 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
                 height: "100vh",
                 borderRadius: 0,
               }}
-              transition={{
-                duration: 0.7,
-                ease: [0.76, 0, 0.24, 1],
-              }}
+            transition={{
+                  duration: 0.5,
+                  ease: [0.76, 0, 0.24, 1],
+                }}
             >
               {transitionData.projectImage && (
-                <motion.div 
-                  className="absolute inset-0"
-                  initial={{ opacity: isReverse ? 0.4 : 0.8 }}
-                  animate={{ opacity: isReverse ? 0.8 : 0.4 }}
-                  transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-                >
-                  <Image
-                    src={transitionData.projectImage}
-                    alt={transitionData.projectTitle}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/70 to-[#222831]/40" />
-                </motion.div>
-              )}
-
-              <motion.div
-                className="absolute inset-0 flex flex-col items-center justify-center px-6"
-                initial={{ opacity: isReverse ? 1 : 0, y: isReverse ? 0 : 20 }}
-                animate={{ opacity: isReverse ? 0 : 1, y: isReverse ? -20 : 0 }}
-                transition={{ delay: isReverse ? 0 : 0.3, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <motion.div
-                  className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
-                  initial={{ scale: isReverse ? 1 : 0.8, opacity: isReverse ? 1 : 0 }}
-                  animate={{ scale: isReverse ? 0.8 : 1, opacity: isReverse ? 0 : 1 }}
-                  transition={{ delay: isReverse ? 0 : 0.4, duration: 0.3 }}
-                >
-                  <motion.span
-                    className="h-2 w-2 rounded-full bg-[#00ADB5]"
-                    animate={{ scale: [1, 1.3, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
-                  />
-                  <span className="text-sm font-semibold text-[#00ADB5] uppercase tracking-wider">
-                    {transitionData.projectCategory}
-                  </span>
-                </motion.div>
-
-                <motion.h2
-                  className="text-center text-4xl font-bold text-[#EEEEEE] md:text-6xl lg:text-7xl"
-                  initial={{ y: isReverse ? 0 : 30, opacity: isReverse ? 1 : 0 }}
-                  animate={{ y: isReverse ? -30 : 0, opacity: isReverse ? 0 : 1 }}
-                  transition={{ delay: isReverse ? 0 : 0.45, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {transitionData.projectTitle}
-                </motion.h2>
-
-                {!isReverse && (
-                  <motion.div
-                    className="mt-8 flex items-center gap-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.55, duration: 0.3 }}
+                  <motion.div 
+                    className="absolute inset-0"
+                    initial={{ opacity: 0.8 }}
+                    animate={{ opacity: 0.6 }}
+                    transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
                   >
-                    <motion.div
-                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                    <Image
+                      src={transitionData.projectImage}
+                      alt={transitionData.projectTitle}
+                      fill
+                      className="object-cover"
+                      priority
                     />
-                    <motion.div
-                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                    />
-                    <motion.div
-                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-[#222831]/30" />
                   </motion.div>
                 )}
-              </motion.div>
             </motion.div>
           </motion.div>
         )}
