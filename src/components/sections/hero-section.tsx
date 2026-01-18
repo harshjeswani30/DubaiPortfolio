@@ -18,38 +18,42 @@ function useParallax(value: MotionValue<number>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance])
 }
 
-const vinePathsData = [
-  { d: "M 0 0 Q -80 -40 -150 -100 Q -200 -150 -280 -180 Q -350 -200 -450 -220", origin: "right" },
-  { d: "M 0 0 Q -60 -80 -100 -160 Q -130 -220 -180 -300 Q -220 -360 -260 -420", origin: "right" },
-  { d: "M 0 0 Q -100 -20 -180 -60 Q -250 -90 -350 -100 Q -420 -110 -520 -80", origin: "right" },
-  { d: "M 0 0 Q -40 60 -80 120 Q -120 180 -180 250 Q -230 300 -300 380", origin: "right" },
-  { d: "M 0 0 Q -90 40 -160 100 Q -220 150 -300 200 Q -360 240 -450 260", origin: "right" },
-  { d: "M 0 0 Q 80 -60 150 -120 Q 200 -170 280 -240 Q 340 -290 420 -340", origin: "left" },
-  { d: "M 0 0 Q 60 -100 100 -180 Q 140 -250 200 -340 Q 250 -400 300 -480", origin: "left" },
-  { d: "M 0 0 Q 100 -30 180 -80 Q 250 -120 350 -150 Q 420 -170 520 -160", origin: "left" },
-  { d: "M 0 0 Q 50 80 100 160 Q 150 230 220 320 Q 280 390 350 480", origin: "left" },
-  { d: "M 0 0 Q 90 50 170 120 Q 240 180 330 250 Q 400 300 500 340", origin: "left" },
-  { d: "M 0 0 Q -30 -100 -50 -200 Q -60 -280 -40 -380 Q -20 -450 20 -520", origin: "top" },
-  { d: "M 0 0 Q 40 -90 80 -180 Q 110 -250 120 -350 Q 130 -420 100 -500", origin: "top" },
-  { d: "M 0 0 Q -20 100 -60 200 Q -100 280 -120 380 Q -130 450 -100 540", origin: "bottom" },
-  { d: "M 0 0 Q 30 120 80 220 Q 120 300 140 400 Q 150 470 120 560", origin: "bottom" },
+const neuronPathsData = [
+  { d: "M 0 0 L -120 -80 L -200 -60 L -280 -100", branches: [{ from: [-120, -80], to: [-150, -140] }, { from: [-200, -60], to: [-240, -20] }] },
+  { d: "M 0 0 L -80 -140 L -60 -240 L -100 -340", branches: [{ from: [-80, -140], to: [-140, -160] }, { from: [-60, -240], to: [-20, -280] }] },
+  { d: "M 0 0 L -140 -40 L -260 -30 L -380 -60", branches: [{ from: [-140, -40], to: [-160, -100] }, { from: [-260, -30], to: [-280, 40] }] },
+  { d: "M 0 0 L -100 60 L -180 140 L -280 200", branches: [{ from: [-100, 60], to: [-140, 20] }, { from: [-180, 140], to: [-220, 100] }] },
+  { d: "M 0 0 L -60 120 L -40 220 L -80 320", branches: [{ from: [-60, 120], to: [-120, 140] }, { from: [-40, 220], to: [20, 260] }] },
+  { d: "M 0 0 L 120 -100 L 220 -160 L 340 -200", branches: [{ from: [120, -100], to: [140, -160] }, { from: [220, -160], to: [260, -100] }] },
+  { d: "M 0 0 L 80 -160 L 120 -280 L 100 -400", branches: [{ from: [80, -160], to: [140, -180] }, { from: [120, -280], to: [60, -320] }] },
+  { d: "M 0 0 L 160 -40 L 280 -20 L 400 -60", branches: [{ from: [160, -40], to: [180, -100] }, { from: [280, -20], to: [300, 50] }] },
+  { d: "M 0 0 L 100 80 L 200 140 L 320 180", branches: [{ from: [100, 80], to: [120, 20] }, { from: [200, 140], to: [240, 80] }] },
+  { d: "M 0 0 L 60 140 L 100 260 L 80 380", branches: [{ from: [60, 140], to: [120, 160] }, { from: [100, 260], to: [40, 300] }] },
+  { d: "M 0 0 L -40 -160 L 20 -280 L -20 -400", branches: [{ from: [-40, -160], to: [-100, -180] }, { from: [20, -280], to: [80, -300] }] },
+  { d: "M 0 0 L 40 160 L -20 280 L 40 400", branches: [{ from: [40, 160], to: [100, 180] }, { from: [-20, 280], to: [-80, 300] }] },
 ]
 
-const leafPathsData = [
-  { cx: -280, cy: -180, origin: "right" },
-  { cx: -180, cy: -300, origin: "right" },
-  { cx: -350, cy: -100, origin: "right" },
-  { cx: -180, cy: 250, origin: "right" },
-  { cx: -300, cy: 200, origin: "right" },
-  { cx: 280, cy: -240, origin: "left" },
-  { cx: 200, cy: -340, origin: "left" },
-  { cx: 350, cy: -150, origin: "left" },
-  { cx: 220, cy: 320, origin: "left" },
-  { cx: 330, cy: 250, origin: "left" },
-  { cx: -40, cy: -380, origin: "top" },
-  { cx: 120, cy: -350, origin: "top" },
-  { cx: -120, cy: 380, origin: "bottom" },
-  { cx: 140, cy: 400, origin: "bottom" },
+const synapseNodesData = [
+  { cx: -280, cy: -100, size: 6 },
+  { cx: -100, cy: -340, size: 5 },
+  { cx: -380, cy: -60, size: 7 },
+  { cx: -280, cy: 200, size: 6 },
+  { cx: -80, cy: 320, size: 5 },
+  { cx: 340, cy: -200, size: 6 },
+  { cx: 100, cy: -400, size: 5 },
+  { cx: 400, cy: -60, size: 7 },
+  { cx: 320, cy: 180, size: 6 },
+  { cx: 80, cy: 380, size: 5 },
+  { cx: -20, cy: -400, size: 6 },
+  { cx: 40, cy: 400, size: 6 },
+  { cx: -150, cy: -140, size: 4 },
+  { cx: -140, cy: -160, size: 4 },
+  { cx: -160, cy: -100, size: 4 },
+  { cx: 140, cy: -160, size: 4 },
+  { cx: 140, cy: -180, size: 4 },
+  { cx: 180, cy: -100, size: 4 },
+  { cx: -120, cy: 140, size: 4 },
+  { cx: 120, cy: 160, size: 4 },
 ]
 
 export function HeroSection() {
@@ -102,10 +106,12 @@ export function HeroSection() {
 
     timelineRef.current = gsap.timeline({ paused: true })
 
-    const vinePaths = svgRef.current.querySelectorAll(".vine-path")
-    const leafPaths = svgRef.current.querySelectorAll(".leaf-shape")
+    const axonPaths = svgRef.current.querySelectorAll(".axon-path")
+    const branchPaths = svgRef.current.querySelectorAll(".branch-path")
+    const synapseNodes = svgRef.current.querySelectorAll(".synapse-node")
+    const pulseCircles = svgRef.current.querySelectorAll(".pulse-circle")
 
-    vinePaths.forEach((path) => {
+    axonPaths.forEach((path) => {
       const length = (path as SVGPathElement).getTotalLength()
       gsap.set(path, {
         strokeDasharray: length,
@@ -114,8 +120,25 @@ export function HeroSection() {
       })
     })
 
-    leafPaths.forEach((leaf) => {
-      gsap.set(leaf, {
+    branchPaths.forEach((path) => {
+      const length = (path as SVGPathElement).getTotalLength()
+      gsap.set(path, {
+        strokeDasharray: length,
+        strokeDashoffset: length,
+        opacity: 0,
+      })
+    })
+
+    synapseNodes.forEach((node) => {
+      gsap.set(node, {
+        scale: 0,
+        opacity: 0,
+        transformOrigin: "center center",
+      })
+    })
+
+    pulseCircles.forEach((circle) => {
+      gsap.set(circle, {
         scale: 0,
         opacity: 0,
         transformOrigin: "center center",
@@ -123,31 +146,53 @@ export function HeroSection() {
     })
 
     timelineRef.current
-      .to(vinePaths, {
+      .to(axonPaths, {
         opacity: 1,
         duration: 0.05,
-        stagger: 0.01,
+        stagger: 0.015,
       })
       .to(
-        vinePaths,
+        axonPaths,
         {
           strokeDashoffset: 0,
-          duration: 0.4,
+          duration: 0.35,
           stagger: 0.02,
-          ease: "power3.out",
+          ease: "power2.out",
         },
         "<"
       )
       .to(
-        leafPaths,
+        branchPaths,
+        {
+          opacity: 1,
+          strokeDashoffset: 0,
+          duration: 0.25,
+          stagger: 0.01,
+          ease: "power2.out",
+        },
+        "-=0.15"
+      )
+      .to(
+        synapseNodes,
         {
           scale: 1,
           opacity: 1,
           duration: 0.2,
-          stagger: 0.015,
-          ease: "back.out(1.5)",
+          stagger: 0.01,
+          ease: "back.out(2)",
         },
-        "-=0.2"
+        "-=0.15"
+      )
+      .to(
+        pulseCircles,
+        {
+          scale: 1.5,
+          opacity: 0.6,
+          duration: 0.3,
+          stagger: 0.02,
+          ease: "power1.out",
+        },
+        "-=0.1"
       )
 
     return () => {
