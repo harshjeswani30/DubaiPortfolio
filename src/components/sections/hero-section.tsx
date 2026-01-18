@@ -56,6 +56,10 @@ const synapseNodesData = [
   { cx: 120, cy: 160, size: 4 },
 ]
 
+const vinePathsData = neuronPathsData
+
+const leafPathsData = synapseNodesData
+
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
