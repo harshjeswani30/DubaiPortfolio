@@ -177,11 +177,12 @@ function FloatingParticle({ delay }: { delay: number }) {
 }
 
 export function ProjectDetailContent({ project }: { project: Project }) {
-  const { completeTransition } = usePageTransition()
+  const { completeTransition, startReverseTransition } = usePageTransition()
   const router = useRouter()
   const [isRevealed, setIsRevealed] = useState(true)
   const [backUrl, setBackUrl] = useState("/projects")
   const [backLabel, setBackLabel] = useState("Back to Projects")
+  const [fromHome, setFromHome] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -208,13 +209,18 @@ export function ProjectDetailContent({ project }: { project: Project }) {
     if (source === 'home') {
       setBackUrl('/#projects')
       setBackLabel('Back to Home')
+      setFromHome(true)
     }
     completeTransition()
   }, [completeTransition])
 
   const handleBack = () => {
-    sessionStorage.removeItem('projectSource')
-    router.push(backUrl)
+    if (fromHome) {
+      startReverseTransition('/#projects')
+    } else {
+      sessionStorage.removeItem('projectSource')
+      router.push(backUrl)
+    }
   }
 
   const titleWords = project.title.split(" ")

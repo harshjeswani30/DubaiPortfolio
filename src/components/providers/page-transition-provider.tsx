@@ -17,6 +17,7 @@ interface PageTransitionContextType {
   isTransitioning: boolean
   transitionData: TransitionData | null
   startTransition: (data: TransitionData, href: string) => void
+  startReverseTransition: (href: string) => void
   completeTransition: () => void
 }
 
@@ -26,16 +27,67 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [transitionData, setTransitionData] = useState<TransitionData | null>(null)
   const [showOverlay, setShowOverlay] = useState(false)
+  const [isReverse, setIsReverse] = useState(false)
   const router = useRouter()
 
   const startTransition = useCallback((data: TransitionData, href: string) => {
+    if (data.originRect) {
+      sessionStorage.setItem('lastCardRect', JSON.stringify({
+        left: data.originRect.left,
+        top: data.originRect.top,
+        width: data.originRect.width,
+        height: data.originRect.height,
+      }))
+      sessionStorage.setItem('lastProjectData', JSON.stringify({
+        targetSlug: data.targetSlug,
+        projectTitle: data.projectTitle,
+        projectCategory: data.projectCategory,
+        projectImage: data.projectImage,
+      }))
+    }
     setTransitionData(data)
     setIsTransitioning(true)
     setShowOverlay(true)
+    setIsReverse(false)
     
     setTimeout(() => {
       router.push(href)
     }, 800)
+  }, [router])
+
+  const startReverseTransition = useCallback((href: string) => {
+    const savedRect = sessionStorage.getItem('lastCardRect')
+    const savedData = sessionStorage.getItem('lastProjectData')
+    
+    if (savedRect && savedData) {
+      const rect = JSON.parse(savedRect)
+      const data = JSON.parse(savedData)
+      
+      setTransitionData({
+        originRect: rect as DOMRect,
+        targetSlug: data.targetSlug,
+        projectTitle: data.projectTitle,
+        projectCategory: data.projectCategory,
+        projectImage: data.projectImage,
+      })
+      setIsTransitioning(true)
+      setShowOverlay(true)
+      setIsReverse(true)
+      
+      setTimeout(() => {
+        router.push(href)
+        setTimeout(() => {
+          setShowOverlay(false)
+          setIsTransitioning(false)
+          setTransitionData(null)
+          setIsReverse(false)
+          sessionStorage.removeItem('lastCardRect')
+          sessionStorage.removeItem('lastProjectData')
+        }, 700)
+      }, 100)
+    } else {
+      router.push(href)
+    }
   }, [router])
 
   const completeTransition = useCallback(() => {
@@ -49,7 +101,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   const originRect = transitionData?.originRect
 
   return (
-    <PageTransitionContext.Provider value={{ isTransitioning, transitionData, startTransition, completeTransition }}>
+    <PageTransitionContext.Provider value={{ isTransitioning, transitionData, startTransition, startReverseTransition, completeTransition }}>
       {children}
       
       <AnimatePresence>
@@ -62,14 +114,26 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
           >
             <motion.div
               className="absolute bg-[#222831]"
-              initial={{
+              initial={isReverse ? {
+                left: 0,
+                top: 0,
+                width: "100vw",
+                height: "100vh",
+                borderRadius: 0,
+              } : {
                 left: originRect.left,
                 top: originRect.top,
                 width: originRect.width,
                 height: originRect.height,
                 borderRadius: 16,
               }}
-              animate={{
+              animate={isReverse ? {
+                left: originRect.left,
+                top: originRect.top,
+                width: originRect.width,
+                height: originRect.height,
+                borderRadius: 16,
+              } : {
                 left: 0,
                 top: 0,
                 width: "100vw",
@@ -84,8 +148,8 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
               {transitionData.projectImage && (
                 <motion.div 
                   className="absolute inset-0"
-                  initial={{ opacity: 0.8 }}
-                  animate={{ opacity: 0.4 }}
+                  initial={{ opacity: isReverse ? 0.4 : 0.8 }}
+                  animate={{ opacity: isReverse ? 0.8 : 0.4 }}
                   transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
                 >
                   <Image
@@ -101,15 +165,15 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 
               <motion.div
                 className="absolute inset-0 flex flex-col items-center justify-center px-6"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: isReverse ? 1 : 0, y: isReverse ? 0 : 20 }}
+                animate={{ opacity: isReverse ? 0 : 1, y: isReverse ? -20 : 0 }}
+                transition={{ delay: isReverse ? 0 : 0.3, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
                 <motion.div
                   className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.4, duration: 0.3 }}
+                  initial={{ scale: isReverse ? 1 : 0.8, opacity: isReverse ? 1 : 0 }}
+                  animate={{ scale: isReverse ? 0.8 : 1, opacity: isReverse ? 0 : 1 }}
+                  transition={{ delay: isReverse ? 0 : 0.4, duration: 0.3 }}
                 >
                   <motion.span
                     className="h-2 w-2 rounded-full bg-[#00ADB5]"
@@ -123,35 +187,37 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 
                 <motion.h2
                   className="text-center text-4xl font-bold text-[#EEEEEE] md:text-6xl lg:text-7xl"
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.45, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ y: isReverse ? 0 : 30, opacity: isReverse ? 1 : 0 }}
+                  animate={{ y: isReverse ? -30 : 0, opacity: isReverse ? 0 : 1 }}
+                  transition={{ delay: isReverse ? 0 : 0.45, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {transitionData.projectTitle}
                 </motion.h2>
 
-                <motion.div
-                  className="mt-8 flex items-center gap-2"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.55, duration: 0.3 }}
-                >
+                {!isReverse && (
                   <motion.div
-                    className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                  />
-                  <motion.div
-                    className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                  />
-                  <motion.div
-                    className="h-1 w-1 rounded-full bg-[#00ADB5]"
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                  />
-                </motion.div>
+                    className="mt-8 flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.55, duration: 0.3 }}
+                  >
+                    <motion.div
+                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                    />
+                    <motion.div
+                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                    />
+                    <motion.div
+                      className="h-1 w-1 rounded-full bg-[#00ADB5]"
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                    />
+                  </motion.div>
+                )}
               </motion.div>
             </motion.div>
           </motion.div>
