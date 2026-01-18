@@ -305,7 +305,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
           </div>
 
           <motion.div 
-            className="relative z-10 flex min-h-[100vh] flex-col justify-end px-6 pb-24 pt-32 lg:px-12"
+            className="relative z-10 flex h-screen flex-col justify-center px-6 pb-12 pt-20 lg:px-12"
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           >
             <div className="mx-auto w-full max-w-6xl">
@@ -316,11 +316,11 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               >
                 <button
                   onClick={handleBack}
-                  className="group mb-10 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
+                  className="group mb-6 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
                 >
                   <motion.div
                     whileHover={{ x: -4 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </motion.div>
@@ -328,19 +328,19 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                 </button>
               </motion.div>
 
-              <div className="flex flex-wrap items-center gap-4 mb-6">
+              <div className="flex flex-wrap items-center gap-4 mb-4">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={isRevealed ? { opacity: 1, scale: 1 } : {}}
                   transition={{ duration: 0.5, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  className="inline-flex items-center gap-3 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-5 py-2.5 backdrop-blur-sm"
+                  className="inline-flex items-center gap-2.5 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-1.5 backdrop-blur-sm"
                 >
                   <motion.span
-                    className="h-2.5 w-2.5 rounded-full bg-[#00ADB5]"
+                    className="h-2 w-2 rounded-full bg-[#00ADB5]"
                     animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
-                  <span className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">{project.category}</span>
+                  <span className="text-xs font-semibold text-[#00ADB5] uppercase tracking-widest">{project.category}</span>
                 </motion.div>
 
                 {project.created_at && (
@@ -348,16 +348,16 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     initial={{ opacity: 0, x: -10 }}
                     animate={isRevealed ? { opacity: 1, x: 0 } : {}}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="flex items-center gap-2 text-sm text-[#EEEEEE]/40"
+                    className="flex items-center gap-2 text-xs text-[#EEEEEE]/40"
                   >
-                    <Calendar className="h-4 w-4" />
+                    <Calendar className="h-3.5 w-3.5" />
                     <span>{new Date(project.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
                   </motion.div>
                 )}
               </div>
 
               <div className="overflow-hidden">
-                <h1 className="text-5xl font-bold text-[#EEEEEE] md:text-7xl lg:text-8xl xl:text-9xl leading-[0.9] tracking-tight">
+                <h1 className="text-4xl font-bold text-[#EEEEEE] md:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-tight">
                   {titleWords.map((word, i) => (
                     <motion.span
                       key={i}
@@ -377,7 +377,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               </div>
 
               <motion.p
-                className="mt-8 max-w-2xl text-lg text-[#EEEEEE]/55 leading-relaxed md:text-xl"
+                className="mt-4 max-w-2xl text-base text-[#EEEEEE]/55 leading-relaxed md:text-lg"
                 initial={{ opacity: 0, y: 25 }}
                 animate={isRevealed ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -386,7 +386,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               </motion.p>
 
               <motion.div
-                className="mt-10 flex flex-wrap gap-4"
+                className="mt-8 flex flex-wrap gap-4"
                 initial={{ opacity: 0, y: 25 }}
                 animate={isRevealed ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -398,11 +398,11 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className="group relative inline-flex items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-r from-[#00ADB5] to-[#00CED6] px-8 py-4 font-semibold text-[#222831] shadow-xl shadow-[#00ADB5]/20 transition-all hover:shadow-2xl hover:shadow-[#00ADB5]/30"
+                    className="group relative inline-flex items-center gap-3 overflow-hidden rounded-xl bg-gradient-to-r from-[#00ADB5] to-[#00CED6] px-6 py-3 font-semibold text-[#222831] shadow-xl shadow-[#00ADB5]/20 transition-all hover:shadow-2xl hover:shadow-[#00ADB5]/30"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                    <Eye className="h-5 w-5" />
-                    <span>View Live Project</span>
+                    <Eye className="h-4 w-4" />
+                    <span className="text-sm">View Live Project</span>
                     <motion.div
                       animate={{ x: [0, 4, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
@@ -418,16 +418,16 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className="inline-flex items-center gap-3 rounded-2xl border border-[#393E46]/60 bg-[#222831]/60 px-8 py-4 font-semibold text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
+                    className="inline-flex items-center gap-3 rounded-xl border border-[#393E46]/60 bg-[#222831]/60 px-6 py-3 font-semibold text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
                   >
-                    <Github className="h-5 w-5" />
-                    <span>View Source Code</span>
+                    <Github className="h-4 w-4" />
+                    <span className="text-sm">View Source Code</span>
                   </motion.a>
                 )}
               </motion.div>
 
               <motion.div
-                className="mt-16"
+                className="mt-12"
                 initial={{ opacity: 0 }}
                 animate={isRevealed ? { opacity: 1 } : {}}
                 transition={{ delay: 0.7 }}
@@ -441,12 +441,12 @@ export function ProjectDetailContent({ project }: { project: Project }) {
                       transition={{ delay: 0.7 + i * 0.1, duration: 0.5 }}
                       className="flex items-center gap-3"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10 text-[#00ADB5]">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#00ADB5]/10 text-[#00ADB5]">
                         {feature.icon}
                       </div>
                       <div className="hidden sm:block">
-                        <div className="text-sm font-semibold text-[#EEEEEE]">{feature.label}</div>
-                        <div className="text-xs text-[#EEEEEE]/40">{feature.desc}</div>
+                        <div className="text-xs font-semibold text-[#EEEEEE]">{feature.label}</div>
+                        <div className="text-[10px] text-[#EEEEEE]/40">{feature.desc}</div>
                       </div>
                     </motion.div>
                   ))}
