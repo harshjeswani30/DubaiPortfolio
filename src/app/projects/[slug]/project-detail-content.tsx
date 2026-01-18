@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useTransform, useSpring, useInView, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { ArrowLeft, ExternalLink, Github, Calendar, Clock, ChevronRight, Layers, Code2, Sparkles, Eye, ArrowUpRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
@@ -24,8 +25,11 @@ interface Project {
 
 export function ProjectDetailContent({ project }: { project: Project }) {
   const { completeTransition } = usePageTransition()
+  const router = useRouter()
   const [isRevealed, setIsRevealed] = useState(false)
   const [activeImageIndex, setActiveImageIndex] = useState(0)
+  const [backUrl, setBackUrl] = useState("/projects")
+  const [backLabel, setBackLabel] = useState("Back to Projects")
   const heroRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const isContentInView = useInView(contentRef, { once: true, margin: "-100px" })
@@ -42,12 +46,23 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   const imageScale = useTransform(smoothProgress, [0, 0.5], [1, 1.1])
 
   useEffect(() => {
+    const source = sessionStorage.getItem('projectSource')
+    if (source === 'home') {
+      setBackUrl('/#projects')
+      setBackLabel('Back to Home')
+    }
+    
     const timer = setTimeout(() => {
       setIsRevealed(true)
       completeTransition()
     }, 100)
     return () => clearTimeout(timer)
   }, [completeTransition])
+
+  const handleBack = () => {
+    sessionStorage.removeItem('projectSource')
+    router.push(backUrl)
+  }
 
   const titleWords = project.title.split(" ")
 
@@ -118,24 +133,24 @@ export function ProjectDetailContent({ project }: { project: Project }) {
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           >
             <div className="mx-auto w-full max-w-6xl">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={isRevealed ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <Link
-                  href="/projects"
-                  className="group mb-10 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isRevealed ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <motion.div
-                    whileHover={{ x: -4 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
+                  <button
+                    onClick={handleBack}
+                    className="group mb-10 inline-flex items-center gap-3 text-sm text-[#EEEEEE]/60 transition-all hover:text-[#00ADB5]"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                  </motion.div>
-                  <span className="font-medium tracking-wide">Back to Projects</span>
-                </Link>
-              </motion.div>
+                    <motion.div
+                      whileHover={{ x: -4 }}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-[#393E46]/60 bg-[#222831]/50 backdrop-blur-sm transition-all group-hover:border-[#00ADB5]/50 group-hover:bg-[#00ADB5]/10"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </motion.div>
+                    <span className="font-medium tracking-wide">{backLabel}</span>
+                  </button>
+                </motion.div>
 
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -373,23 +388,22 @@ export function ProjectDetailContent({ project }: { project: Project }) {
               </motion.div>
             )}
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isContentInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex justify-center"
-            >
-              <Link href="/projects">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="flex justify-center"
+              >
                 <motion.button
+                  onClick={handleBack}
                   whileHover={{ scale: 1.03, x: -5 }}
                   whileTap={{ scale: 0.98 }}
                   className="group inline-flex items-center gap-4 rounded-2xl border border-[#393E46]/60 bg-[#2a2f38]/50 px-8 py-4 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
                 >
                   <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
-                  <span className="font-semibold">Back to All Projects</span>
+                  <span className="font-semibold">{backLabel}</span>
                 </motion.button>
-              </Link>
-            </motion.div>
+              </motion.div>
           </div>
         </section>
       </motion.div>

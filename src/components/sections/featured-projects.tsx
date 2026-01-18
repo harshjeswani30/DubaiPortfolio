@@ -69,22 +69,24 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     }
   }
 
-  const handleProjectClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    if (!cardRef.current) return
-    
-    const rect = cardRef.current.getBoundingClientRect()
-    startTransition(
-      {
-        originRect: rect,
-        targetSlug: project.slug,
-        projectTitle: project.title,
-        projectCategory: project.category,
-        projectImage: project.featured_image,
-      },
-      `/projects/${project.slug}`
-    )
-  }
+    const handleProjectClick = (e: React.MouseEvent) => {
+      e.preventDefault()
+      if (!cardRef.current) return
+      
+      sessionStorage.setItem('projectSource', 'home')
+      
+      const rect = cardRef.current.getBoundingClientRect()
+      startTransition(
+        {
+          originRect: rect,
+          targetSlug: project.slug,
+          projectTitle: project.title,
+          projectCategory: project.category,
+          projectImage: project.featured_image,
+        },
+        `/projects/${project.slug}`
+      )
+    }
 
   return (
     <motion.div
@@ -378,7 +380,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     : projects
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
+    <section id="projects" ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
       <motion.div className="absolute inset-0 dot-background opacity-25" style={{ y: bgY }} />
       
       <motion.div 
