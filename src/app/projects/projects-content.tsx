@@ -82,15 +82,20 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         "--slides": slideCount,
       }}
     >
-      {displayProjects.map((project, index) => (
+      <div className="absolute -z-20 inset-0 h-full w-full overlap">
+        {displayProjects.map((project, index) => (
           <img
             key={project.id}
-            className={`absolute -z-20 inset-0 h-full w-full object-cover ${index === 0 ? 'block' : 'hidden supports-sda:block'} supports-sda:animate-grow`}
-            style={{ animationTimeline: `--slide-${index + 1}` }}
+            className="h-full w-full object-cover animate-grow"
+            style={{ 
+              animationTimeline: `--slide-${index + 1}`,
+              zIndex: displayProjects.length - index,
+            }}
             src={project.featured_image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80`}
             alt={project.title}
           />
         ))}
+      </div>
 
       <div
         className="absolute -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
