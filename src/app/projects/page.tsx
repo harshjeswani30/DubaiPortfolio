@@ -1,24 +1,10 @@
 import { Metadata } from "next"
-import { createAdminClient } from "@/lib/supabase/server"
+import { getProjects } from "@/lib/data"
 import { ProjectsContent } from "./projects-content"
 
 export const metadata: Metadata = {
   title: "Projects",
   description: "Explore my portfolio of web development projects and applications.",
-}
-
-async function getProjects() {
-  try {
-    const supabase = await createAdminClient()
-    const { data } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("is_published", true)
-      .order("display_order", { ascending: true })
-    return data || []
-  } catch {
-    return []
-  }
 }
 
 export default async function ProjectsPage() {

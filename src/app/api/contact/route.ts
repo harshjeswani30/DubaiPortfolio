@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createAdminClient } from "@/lib/supabase/server"
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,22 +12,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = await createAdminClient()
-    const { error } = await supabase.from("contact_submissions").insert({
-      name,
-      email,
-      subject,
-      message,
-    })
-
-    if (error) {
-      console.error("Supabase error:", error)
-      return NextResponse.json(
-        { error: "Failed to submit message" },
-        { status: 500 }
-      )
-    }
-
+    console.log("Contact submission received:", { name, email, subject, message })
+    // In a real frontend-only site, you might use a service like Formspree or just log it.
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Contact submission error:", error)
