@@ -195,28 +195,28 @@ interface MenuButtonProps {
 }
 
 export function MenuButton({ isOpen, onClick, className }: MenuButtonProps) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "group flex items-center gap-2.5 border-none bg-transparent p-4 -m-4",
-        className
-      )}
-    >
-      <div className="flex h-[1.125rem] flex-col items-end justify-start overflow-hidden">
-        <p 
-          className="m-0 text-lg text-[#EEEEEE] transition-transform duration-300"
-          style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
-        >
-          Menu
-        </p>
-        <p 
-          className="m-0 text-lg text-[#EEEEEE] transition-transform duration-300"
-          style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
-        >
-          Close
-        </p>
-      </div>
+    return (
+      <button
+        onClick={onClick}
+        className={cn(
+          "group flex items-center gap-2.5 border-none bg-transparent p-4 -m-4",
+          className
+        )}
+      >
+        <div className="flex h-5 flex-col items-end justify-start overflow-hidden">
+          <p 
+            className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
+            style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
+          >
+            Menu
+          </p>
+          <p 
+            className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
+            style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
+          >
+            Close
+          </p>
+        </div>
       <div 
         className="transition-transform duration-300"
         style={{ transform: isOpen ? 'rotate(315deg)' : 'rotate(0deg)' }}

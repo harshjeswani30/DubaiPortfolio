@@ -232,8 +232,8 @@ export function ProjectDetailContent({ project }: { project: Project }) {
     { icon: <CheckCircle2 className="h-5 w-5" />, label: "Fully Tested", desc: "Production ready" },
   ]
 
-  return (
-    <div className="min-h-screen bg-[#222831] overflow-hidden">
+return (
+      <div className="min-h-screen bg-[#222831] overflow-hidden pt-20">
       <AnimatePresence>
         {lightboxIndex !== null && allImages.length > 0 && (
           <Lightbox
@@ -252,7 +252,7 @@ export function ProjectDetailContent({ project }: { project: Project }) {
         transition={{ duration: 0.5 }}
         className="relative"
       >
-        <section ref={heroRef} className="relative min-h-[100vh] overflow-hidden">
+        <section ref={heroRef} className="relative min-h-[calc(100vh-5rem)] overflow-hidden">
           <motion.div 
             className="absolute inset-0"
             style={{ scale: imageScale, filter: `blur(${imageBlur}px)` }}
@@ -310,8 +310,8 @@ export function ProjectDetailContent({ project }: { project: Project }) {
             </motion.div>
           </div>
 
-          <motion.div 
-            className="relative z-10 flex h-screen flex-col justify-center px-6 pb-12 pt-20 lg:px-12"
+<motion.div 
+              className="relative z-10 flex min-h-[calc(100vh-5rem)] flex-col justify-center px-6 pb-12 pt-8 lg:px-12"
             style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
           >
             <div className="mx-auto w-full max-w-6xl">
