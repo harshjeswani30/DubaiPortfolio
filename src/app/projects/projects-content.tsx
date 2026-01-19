@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Code2 } from "lucide-react"
+import { Code2, Github, ExternalLink, ArrowUpRight } from "lucide-react"
 import { SideMenu, MenuButton } from "@/components/ui/side-menu"
 
 const navItems = [
@@ -216,23 +216,100 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-      <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col gap-[inherit]">
-        <div className="overlap w-[17rem]">
-          {displayProjects.map((project, index) => (
-            <p
-              key={project.id}
-              className="animate-text translate-y-[50%] skew-y-[1.5deg]"
-              style={{
-                animationTimeline: `--slide-${index + 1}`,
-                animationRangeStart: "30cqw",
-              }}
-            >
-              {project.description}
-            </p>
-          ))}
-        </div>
+        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col gap-[inherit]">
+          <div className="overlap w-[17rem]">
+            {displayProjects.map((project, index) => (
+              <p
+                key={project.id}
+                className="animate-text translate-y-[50%] skew-y-[1.5deg]"
+                style={{
+                  animationTimeline: `--slide-${index + 1}`,
+                  animationRangeStart: "30cqw",
+                }}
+              >
+                {project.description}
+              </p>
+            ))}
+          </div>
 
-        <div className="w-60 my-auto">
+          <div className="overlap w-[20rem] mt-4">
+            {displayProjects.map((project, index) => (
+              <div
+                key={project.id}
+                className="flex flex-wrap gap-2 animate-text translate-y-[50%]"
+                style={{
+                  animationTimeline: `--slide-${index + 1}`,
+                  animationRangeStart: "30cqw",
+                }}
+              >
+                {project.tech_stack.slice(0, 4).map((tech) => (
+                  <span
+                    key={tech}
+                    className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm"
+                  >
+                    {tech}
+                  </span>
+                ))}
+                {project.tech_stack.length > 4 && (
+                  <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-white/50">
+                    +{project.tech_stack.length - 4}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="overlap w-[22rem] mt-4">
+            {displayProjects.map((project, index) => (
+              <div
+                key={project.id}
+                className="flex items-center gap-3 animate-text translate-y-[50%] pointer-events-auto"
+                style={{
+                  animationTimeline: `--slide-${index + 1}`,
+                  animationRangeStart: "30cqw",
+                }}
+              >
+                <Link href={`/projects/${project.slug}`}>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+                  >
+                    <span>View Details</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </motion.button>
+                </Link>
+                
+                {project.github_url && (
+                  <motion.a
+                    href={project.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                  >
+                    <Github className="h-4 w-4" />
+                  </motion.a>
+                )}
+                
+                {project.live_url && (
+                  <motion.a
+                    href={project.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </motion.a>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="w-60 my-auto">
           <nav className="flex font-medium text-sm gap-5">
             {displayProjects.map((_, index) => (
               <a
