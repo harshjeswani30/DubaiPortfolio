@@ -51,40 +51,32 @@ const mockProjects = [
 
 export function ProjectsContent({ projects }: ProjectsContentProps) {
   const displayProjects = projects.length > 0 ? projects : mockProjects
-
   const slideCount = displayProjects.length
   const timelineScope = `--scroller, ${displayProjects.map((_, i) => `--slide-${i + 1}`).join(", ")}`
 
   return (
     <div
-      className="carousel-container h-screen relative isolate flex flex-col gap-8 overflow-clip pointer-events-none bg-black text-white"
+      className="carousel-container min-h-screen relative isolate flex flex-col gap-8 supports-sda:pointer-events-none overflow-clip bg-black text-white antialiased"
       style={{
-        // @ts-expect-error CSS custom properties
         timelineScope: timelineScope,
         "--slides": slideCount,
-      }}
+      } as React.CSSProperties}
     >
       {displayProjects.map((project, index) => (
         <img
           key={project.id}
-          className="bg-image absolute inset-0 h-full w-full object-cover -z-20 animate-grow"
+          className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
           style={{ animationTimeline: `--slide-${index + 1}` }}
-          src={project.featured_image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80`}
+          src={project.featured_image || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"}
           alt={project.title}
         />
       ))}
 
       <div
-        className="scroller absolute inset-0 h-full w-full overflow-x-auto snap-x snap-mandatory scroll-smooth -z-10 scrollbar-hidden pointer-events-auto"
+        className="absolute hidden supports-sda:block -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
         style={{ scrollTimeline: "--scroller x" }}
       >
-        <div
-          className="grid grid-flow-col h-full w-fit"
-          style={{
-            gridAutoColumns: "70cqw",
-            paddingRight: "30cqw",
-          }}
-        >
+        <div className="grid grid-flow-col auto-cols-[70cqw] pr-[30cqw] h-full w-fit">
           {displayProjects.map((_, index) => (
             <div
               key={index}
@@ -97,16 +89,24 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </div>
 
-      <div className="content flex-1 px-7 relative flex flex-col gap-8">
+      <header className="relative z-50 mx-7 flex max-lg:flex-col justify-between py-6 border-b gap-2 border-white/60 pointer-events-auto">
+        <div className="whitespace-nowrap">
+          <h1 className="font-bold inline align-middle">Projects</h1>
+        </div>
+        <Link href="/" className="text-sm font-medium hover:text-white/100">
+          Back to Home
+        </Link>
+      </header>
+
+      <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col gap-[inherit]">
         <div className="overlap w-[17rem]">
           {displayProjects.map((project, index) => (
             <p
               key={project.id}
-              className="animate-text text-sm leading-relaxed"
+              className="animate-text translate-y-[50%] skew-y-[1.5deg]"
               style={{
                 animationTimeline: `--slide-${index + 1}`,
                 animationRangeStart: "30cqw",
-                transform: "translateY(50%) skewY(1.5deg)",
               }}
             >
               {project.description}
@@ -120,7 +120,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
               <a
                 key={index}
                 href={`#slide-${index + 1}`}
-                className="animate-page pointer-events-auto"
+                className="animate-page !text-white pointer-events-auto"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
@@ -138,26 +138,26 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
           </div>
         </div>
 
-        <div className="overlap items-end w-[31rem] flex gap-8">
+        <div className="overlap items-end w-[31rem]">
           {displayProjects.map((project, index) => (
             <div key={project.id}>
-              <span className="block overlap">
+              <span className="block overflow-clip">
                 <span
-                  className="block uppercase font-medium tracking-[0.3em] mb-4 text-sm animate-text-up"
+                  className="block uppercase font-medium tracking-widest mb-4 animate-text-up"
                   style={{
                     animationTimeline: `--slide-${index + 1}`,
                     animationRangeStart: "30cqw",
+                    letterSpacing: "0.3em",
                   }}
                 >
                   {project.category}
                 </span>
               </span>
               <p
-                className="pb-7 font-serif text-6xl md:text-7xl lg:text-8xl animate-text"
+                className="pb-7 font-serif text-8xl animate-text translate-y-[205%] skew-y-6"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
-                  transform: "translateY(205%) skewY(6deg)",
                 }}
               >
                 {project.title.split(" ").slice(0, -1).join(" ")}{" "}
@@ -166,27 +166,18 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             </div>
           ))}
         </div>
-
-        <Link
-          href="/"
-          className="absolute z-50 bottom-7 right-7 pointer-events-auto font-medium hover:opacity-100 opacity-60 transition-opacity"
-        >
-          Back to Home
-        </Link>
       </div>
 
-      <noscript>
-        <div className="px-7 pb-7 pointer-events-auto">
-          Your browser does not support scroll-driven animations. See{" "}
-          <a
-            className="underline"
-            href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll-driven_animations"
-          >
-            MDN
-          </a>{" "}
-          for browser compatibility tables.
-        </div>
-      </noscript>
+      <div className="supports-sda:hidden px-7 pb-7">
+        Your browser does not support scroll-driven animations. See{" "}
+        <a
+          href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll-driven_animations"
+          className="underline"
+        >
+          MDN
+        </a>{" "}
+        for browser compatibility tables.
+      </div>
     </div>
   )
 }
