@@ -27,7 +27,7 @@ const mockProjects = [
     description: "Move around your city safely and comfortably, while reducing your carbon footprint and helping to keep the air we breathe clean.",
     tech_stack: ["React", "Next.js"],
     category: "Commuter Helmet",
-    featured_image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80",
+    featured_image: "https://picsum.photos/seed/project1/1920/1080",
   },
   {
     id: "2",
@@ -36,7 +36,7 @@ const mockProjects = [
     description: "Let's do it responsibly and avoid having more plastic in the sea than fish. Take your refillable bottle with you and say no to plastic when drinking water.",
     tech_stack: ["TypeScript", "Node.js"],
     category: "Smart bottle",
-    featured_image: "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=1920&q=80",
+    featured_image: "https://picsum.photos/seed/project2/1920/1080",
   },
   {
     id: "3",
@@ -45,7 +45,7 @@ const mockProjects = [
     description: "The Reflective Helmet seamlessly integrates reflective technology, ensuring visibility without drawing unnecessary attention. The perfect choice for the mindful cyclist.",
     tech_stack: ["Python", "FastAPI"],
     category: "Reflective Helmet",
-    featured_image: "https://images.unsplash.com/photo-1557843555-ca2d9f4e0830?w=1920&q=80",
+    featured_image: "https://picsum.photos/seed/project3/1920/1080",
   },
 ]
 
@@ -59,7 +59,8 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       className="carousel-container min-h-screen relative isolate flex flex-col gap-8 supports-sda:pointer-events-none overflow-clip bg-black text-white antialiased"
       style={{
         timelineScope: timelineScope,
-        "--slides": slideCount,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ["--slides" as any]: slideCount,
       } as React.CSSProperties}
     >
       {displayProjects.map((project, index) => (

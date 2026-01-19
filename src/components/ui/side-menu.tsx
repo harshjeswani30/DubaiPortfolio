@@ -96,7 +96,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     return (
       <div
         ref={navRef}
-        className="fixed inset-0 z-[100] hidden"
+        className="side-menu fixed inset-0 z-[100] hidden"
         style={{ width: '100%', height: '100vh', overscrollBehavior: 'contain' }}
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
