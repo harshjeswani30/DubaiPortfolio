@@ -90,27 +90,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </div>
 
-      <header className="relative z-50 mx-7 flex items-center justify-between py-6 border-b border-white/30 pointer-events-auto">
-          <Link href="/" className="text-sm font-medium hover:text-white transition-colors">
-            Home
-          </Link>
-          
-          <nav className="flex items-center gap-8">
-            <Link href="/about" className="text-sm font-medium hover:text-white transition-colors">
-              About
-            </Link>
-            <Link href="/projects" className="text-sm font-medium text-white">
-              Projects
-            </Link>
-            <Link href="/skills" className="text-sm font-medium hover:text-white transition-colors">
-              Skills
-            </Link>
-          </nav>
-          
-          <Link href="/contact" className="text-sm font-medium hover:text-white transition-colors">
-            Contact
-          </Link>
-        </header>
+
 
       <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col gap-[inherit]">
         <div className="overlap w-[17rem]">
