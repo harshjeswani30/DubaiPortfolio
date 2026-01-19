@@ -253,16 +253,15 @@ body {
 
 @keyframes grow {
   0% {
-    clip-path: inset(10% 10% 10% 70% round 20px);
-    opacity: 1;
+    clip-path: inset(0 25% round 35cqmin);
+    transform: translateX(70%) scale(0.15);
   }
-  50% {
+  58.75% {
     clip-path: inset(0 round 0);
-    opacity: 1;
+    transform: none;
   }
   100% {
-    clip-path: inset(0 70% 0 0 round 0);
-    opacity: 0;
+    transform: scale(1.5) translateX(-16%);
   }
 }
 
