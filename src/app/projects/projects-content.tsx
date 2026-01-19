@@ -84,16 +84,14 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       }}
     >
       {displayProjects.map((project, index) => (
-        <Image
-          key={project.id}
-          className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
-          style={{ animationTimeline: `--slide-${index + 1}` }}
-          src={project.featured_image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80`}
-          alt={project.title}
-          fill
-          priority={index === 0}
-        />
-      ))}
+          <img
+            key={project.id}
+            className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
+            style={{ animationTimeline: `--slide-${index + 1}` }}
+            src={project.featured_image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80`}
+            alt={project.title}
+          />
+        ))}
 
       <div
         className="absolute hidden supports-sda:block -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
@@ -117,18 +115,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </div>
 
-      <header className="relative z-50 mx-7 flex items-center justify-between py-6 border-b border-white/60 pointer-events-auto flex-shrink-0">
-        <div className="whitespace-nowrap">
-          <h1 className="font-bold text-lg">Projects</h1>
-        </div>
-        <nav className="flex items-center gap-6 md:gap-10 text-sm">
-          <Link href="/" className="hover:text-white transition-colors text-white/60">Home</Link>
-          <Link href="/about" className="hover:text-white transition-colors text-white/60">About</Link>
-          <Link href="/contact" className="hover:text-white transition-colors text-white/60">Contact</Link>
-        </nav>
-      </header>
-
-      <div className="flex-1 px-7 py-8 relative hidden supports-sda:flex flex-col justify-between min-h-0">
+        <div className="flex-1 px-7 py-8 relative hidden supports-sda:flex flex-col justify-between min-h-0">
         <div className="overlap w-[17rem]">
           {displayProjects.map((project, index) => (
             <p
