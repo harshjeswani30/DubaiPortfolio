@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 
 interface Project {
@@ -86,7 +85,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       {displayProjects.map((project, index) => (
           <img
             key={project.id}
-            className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
+            className={`absolute -z-20 inset-0 h-full w-full object-cover ${index === 0 ? 'block' : 'hidden supports-sda:block'} supports-sda:animate-grow`}
             style={{ animationTimeline: `--slide-${index + 1}` }}
             src={project.featured_image || `https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80`}
             alt={project.title}
@@ -94,7 +93,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         ))}
 
       <div
-        className="absolute hidden supports-sda:block -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
+        className="absolute -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
         style={{ scrollTimeline: "--scroller x" }}
       >
         <div
@@ -115,7 +114,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </div>
 
-        <div className="flex-1 px-7 py-8 relative hidden supports-sda:flex flex-col justify-between min-h-0">
+        <div className="flex-1 px-7 py-8 relative flex flex-col justify-between min-h-0">
         <div className="overlap w-[17rem]">
           {displayProjects.map((project, index) => (
             <p
@@ -194,40 +193,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         </div>
       </div>
 
-      <div className="supports-sda:hidden flex-1 px-7 pb-7 pt-10 overflow-y-auto">
-        <p className="mb-8 text-white/60">
-          Your browser does not support scroll-driven animations.
-        </p>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {displayProjects.map((project) => (
-            <Link
-              key={project.id}
-              href={`/projects/${project.slug}`}
-              className="group block rounded-2xl border border-white/10 bg-white/5 overflow-hidden hover:border-white/30 transition-colors"
-            >
-              <div className="relative aspect-video">
-                {project.featured_image ? (
-                  <Image
-                    src={project.featured_image}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
-                    <span className="text-4xl font-bold text-white/20">{project.title.charAt(0)}</span>
-                  </div>
-                )}
-              </div>
-              <div className="p-6">
-                <span className="text-xs uppercase tracking-wider text-white/50">{project.category}</span>
-                <h3 className="mt-2 text-lg font-semibold group-hover:text-white/80 transition-colors">{project.title}</h3>
-                <p className="mt-2 text-sm text-white/60 line-clamp-2">{project.description}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
+
     </div>
   )
 }
