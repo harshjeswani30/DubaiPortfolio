@@ -199,13 +199,19 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
               className="group block rounded-2xl border border-white/10 bg-white/5 overflow-hidden hover:border-white/30 transition-colors"
             >
               <div className="relative aspect-video">
-                <Image
-                  src={project.featured_image || ""}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                />
-              </div>
+                  {project.featured_image ? (
+                    <Image
+                      src={project.featured_image}
+                      alt={project.title}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center">
+                      <span className="text-4xl font-bold text-white/20">{project.title.charAt(0)}</span>
+                    </div>
+                  )}
+                </div>
               <div className="p-6">
                 <span className="text-xs uppercase tracking-wider text-white/50">{project.category}</span>
                 <h3 className="mt-2 text-lg font-semibold group-hover:text-white/80 transition-colors">{project.title}</h3>
