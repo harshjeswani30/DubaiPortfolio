@@ -232,28 +232,43 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="overlap w-[20rem] mt-4">
+          <div className="overlap w-[24rem] mt-4">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
-                className="flex flex-wrap gap-2 animate-text translate-y-[50%]"
+                className="flex flex-wrap gap-2.5 animate-text translate-y-[50%] pointer-events-auto"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
                 }}
               >
-                {project.tech_stack.slice(0, 4).map((tech) => (
-                  <span
+                {project.tech_stack.slice(0, 5).map((tech, techIndex) => (
+                  <motion.span
                     key={tech}
-                    className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur-sm"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: techIndex * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.1, 
+                      y: -3,
+                      boxShadow: "0 8px 25px rgba(255,255,255,0.15)"
+                    }}
+                    className="group relative cursor-pointer rounded-xl bg-gradient-to-br from-white/15 to-white/5 border border-white/25 px-4 py-2 text-xs font-semibold text-white backdrop-blur-md transition-all duration-300 hover:from-white/25 hover:to-white/10 hover:border-white/40"
                   >
-                    {tech}
-                  </span>
+                    <span className="relative z-10 flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {tech}
+                    </span>
+                    <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </motion.span>
                 ))}
-                {project.tech_stack.length > 4 && (
-                  <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-white/50">
-                    +{project.tech_stack.length - 4}
-                  </span>
+                {project.tech_stack.length > 5 && (
+                  <motion.span 
+                    whileHover={{ scale: 1.05 }}
+                    className="rounded-xl bg-white/5 border border-white/15 px-4 py-2 text-xs font-medium text-white/60 backdrop-blur-sm cursor-pointer hover:bg-white/10 hover:text-white/80 transition-all"
+                  >
+                    +{project.tech_stack.length - 5} more
+                  </motion.span>
                 )}
               </div>
             ))}
