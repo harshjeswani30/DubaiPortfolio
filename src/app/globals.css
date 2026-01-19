@@ -319,3 +319,22 @@ body:has(.carousel-container) .side-menu {
     transform: translateY(-105%);
   }
 }
+
+.animate-tech {
+  animation: tech linear both;
+}
+
+@keyframes tech {
+  0%, 25% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  75%, 100% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+}
