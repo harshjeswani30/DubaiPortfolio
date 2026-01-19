@@ -268,7 +268,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                   )}
                 </AnimatePresence>
 
-<div className="absolute left-3 top-3 flex flex-col items-start gap-2">
+<div className="absolute left-4 top-4 flex flex-col items-start gap-3 max-w-[85%]">
                   <motion.div
                     initial={{ x: -15, opacity: 0 }}
                     animate={isInView ? { x: 0, opacity: 1 } : {}}
@@ -285,15 +285,15 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
 
                   {project.tagline && (
                     <motion.div
-                      initial={{ y: 20, opacity: 0, skewY: 6 }}
+                      initial={{ y: 30, opacity: 0, skewY: 6 }}
                       animate={isInView ? { y: 0, opacity: 1, skewY: 0 } : {}}
                       transition={{ delay: 0.5 + index * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                       className="overflow-hidden"
                     >
-                      <p className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#EEEEEE] leading-tight drop-shadow-lg">
+                      <p className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-medium leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5)' }}>
                         {project.tagline}{" "}
                         {project.tagline_highlight && (
-                          <em className="text-[#00ADB5] not-italic">{project.tagline_highlight}</em>
+                          <em className="text-[#00ADB5] italic">{project.tagline_highlight}</em>
                         )}
                       </p>
                     </motion.div>
