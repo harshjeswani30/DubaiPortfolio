@@ -36,30 +36,48 @@ interface ProjectsContentProps {
 const mockProjects = [
   {
     id: "1",
-    title: "E-Commerce Platform",
-    slug: "ecommerce-platform",
-    description: "A full-featured e-commerce platform with real-time inventory, payment processing, and admin dashboard.",
-    tech_stack: ["Next.js", "TypeScript", "Stripe", "PostgreSQL"],
-    category: "Web App",
-    featured_image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1920&q=80",
+    title: "Luxury Real Estate Portal",
+    slug: "luxury-real-estate",
+    description: "A premium property listing platform for high-end real estate in Dubai.",
+    tech_stack: ["Next.js", "PostgreSQL", "Three.js", "Tailwind CSS"],
+    category: "Web Development",
+    featured_image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop",
   },
   {
     id: "2",
-    title: "AI Content Generator",
-    slug: "ai-content-generator",
-    description: "An AI-powered content generation tool using GPT-4 for creating marketing copy and blog posts.",
-    tech_stack: ["React", "Node.js", "OpenAI", "MongoDB"],
-    category: "AI/ML",
-    featured_image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1920&q=80",
+    title: "FinTech Investment Dashboard",
+    slug: "fintech-dashboard",
+    description: "Real-time portfolio tracking and investment analytics for modern traders.",
+    tech_stack: ["React", "D3.js", "Node.js", "Redis"],
+    category: "FinTech",
+    featured_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop",
   },
   {
     id: "3",
-    title: "Real-time Chat App",
-    slug: "realtime-chat",
-    description: "A modern chat application with real-time messaging, file sharing, and video calls.",
-    tech_stack: ["Next.js", "Socket.io", "WebRTC", "Redis"],
-    category: "Web App",
-    featured_image: "https://images.unsplash.com/photo-1611746872915-64382b5c76da?w=1920&q=80",
+    title: "Smart City IoT Platform",
+    slug: "smart-city-iot",
+    description: "Centralized monitoring and management for urban infrastructure and IoT sensors.",
+    tech_stack: ["Python", "FastAPI", "MQTT", "TimescaleDB"],
+    category: "IoT / AI",
+    featured_image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=800&fit=crop",
+  },
+  {
+    id: "4",
+    title: "AI Healthcare Diagnostics",
+    slug: "ai-healthcare",
+    description: "Predictive diagnostic tools for medical professionals using machine learning.",
+    tech_stack: ["Python", "PyTorch", "Next.js", "MongoDB"],
+    category: "Healthcare",
+    featured_image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=800&fit=crop",
+  },
+  {
+    id: "5",
+    title: "Sustainable Lifestyle E-commerce",
+    slug: "eco-lifestyle",
+    description: "An eco-friendly marketplace focused on sustainable products and conscious living.",
+    tech_stack: ["Next.js", "Shopify", "TypeScript", "Prisma"],
+    category: "E-commerce",
+    featured_image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1200&h=800&fit=crop",
   },
 ]
 
@@ -174,7 +192,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
           key={project.id}
           className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
           style={{ animationTimeline: `--slide-${index + 1}` }}
-          src={project.featured_image || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80"}
+          src={project.featured_image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80"}
           alt={project.title}
         />
       ))}
