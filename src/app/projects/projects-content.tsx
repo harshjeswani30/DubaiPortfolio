@@ -232,33 +232,28 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="overlap w-[24rem] mt-4">
+          <div className="overlap max-w-2xl mt-6">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
-                className="flex flex-wrap gap-2.5 animate-tech pointer-events-auto"
+                className="flex flex-wrap gap-3 animate-tech pointer-events-auto pb-4"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
                 }}
               >
-                {project.tech_stack.slice(0, 5).map((tech) => (
+                {project.tech_stack.map((tech) => (
                   <span
                     key={tech}
-                    className="group relative cursor-pointer rounded-xl bg-gradient-to-br from-white/15 to-white/5 border border-white/25 px-4 py-2 text-xs font-semibold text-white backdrop-blur-md transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:shadow-[0_8px_25px_rgba(255,255,255,0.15)] hover:from-white/25 hover:to-white/10 hover:border-white/40"
+                    className="group relative cursor-pointer rounded-xl bg-white/5 border border-white/15 px-4 py-2 text-[11px] font-bold text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:border-[#00ADB5]/50 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(0,173,181,0.25)] hover:text-white"
                   >
-                    <span className="relative z-10 flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="relative z-10 flex items-center gap-2 uppercase tracking-widest">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#00ADB5] shadow-[0_0_10px_#00ADB5] animate-pulse" />
                       {tech}
                     </span>
-                    <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/20 via-transparent to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00ADB5]/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </span>
                 ))}
-                {project.tech_stack.length > 5 && (
-                  <span className="rounded-xl bg-white/5 border border-white/15 px-4 py-2 text-xs font-medium text-white/60 backdrop-blur-sm cursor-pointer hover:bg-white/10 hover:text-white/80 hover:scale-105 transition-all">
-                    +{project.tech_stack.length - 5} more
-                  </span>
-                )}
               </div>
             ))}
           </div>
