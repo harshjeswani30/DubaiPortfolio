@@ -14,6 +14,8 @@ interface Project {
   description: string
   tech_stack: string[]
   category: string
+  tagline?: string
+  tagline_highlight?: string
   featured_image?: string
   preview_video?: string
   live_url?: string
@@ -266,21 +268,37 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                   )}
                 </AnimatePresence>
 
-              <div className="absolute left-3 top-3">
-                <motion.div
-                  initial={{ x: -15, opacity: 0 }}
-                  animate={isInView ? { x: 0, opacity: 1 } : {}}
-                  transition={{ delay: 0.3 + index * 0.08, duration: 0.4 }}
-                  className="flex items-center gap-2 rounded-lg bg-[#222831]/85 px-2.5 py-1.5 backdrop-blur-md border border-[#393E46]/40"
-                >
-                  <motion.span 
-                    className="flex h-2 w-2 rounded-full bg-[#00ADB5]"
-                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                  <span className="text-[10px] font-semibold text-[#EEEEEE]/80 uppercase tracking-wider">{project.category}</span>
-                </motion.div>
-              </div>
+<div className="absolute left-3 top-3 flex flex-col items-start gap-2">
+                  <motion.div
+                    initial={{ x: -15, opacity: 0 }}
+                    animate={isInView ? { x: 0, opacity: 1 } : {}}
+                    transition={{ delay: 0.3 + index * 0.08, duration: 0.4 }}
+                    className="flex items-center gap-2 rounded-lg bg-[#222831]/85 px-2.5 py-1.5 backdrop-blur-md border border-[#393E46]/40"
+                  >
+                    <motion.span 
+                      className="flex h-2 w-2 rounded-full bg-[#00ADB5]"
+                      animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    <span className="text-[10px] font-semibold text-[#EEEEEE]/80 uppercase tracking-wider">{project.category}</span>
+                  </motion.div>
+
+                  {project.tagline && (
+                    <motion.div
+                      initial={{ y: 20, opacity: 0, skewY: 6 }}
+                      animate={isInView ? { y: 0, opacity: 1, skewY: 0 } : {}}
+                      transition={{ delay: 0.5 + index * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <p className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#EEEEEE] leading-tight drop-shadow-lg">
+                        {project.tagline}{" "}
+                        {project.tagline_highlight && (
+                          <em className="text-[#00ADB5] not-italic">{project.tagline_highlight}</em>
+                        )}
+                      </p>
+                    </motion.div>
+                  )}
+                </div>
 
               <motion.div 
                 className="absolute right-3 top-3"

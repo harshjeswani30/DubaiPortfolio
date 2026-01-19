@@ -5,6 +5,8 @@ export interface Project {
   description: string
   tech_stack: string[]
   category: string
+  tagline?: string
+  tagline_highlight?: string
   featured_image?: string
   live_url?: string
   github_url?: string
@@ -32,9 +34,11 @@ export const projects: Project[] = [
     id: "1",
     title: "Luxury Real Estate Portal",
     slug: "luxury-real-estate",
-    description: "A premium property listing platform designed for Dubai's elite real estate market. Features include interactive 3D property tours powered by Three.js, advanced search filters for luxury amenities, virtual staging capabilities, and seamless integration with leading property management systems. The platform handles high-resolution media galleries, mortgage calculators, and direct booking for property viewings. Built with performance in mind, achieving 95+ Lighthouse scores while delivering stunning visual experiences.",
+    description: "A premium property listing platform for high-end real estate in Dubai with immersive 3D views.",
     tech_stack: ["Next.js", "PostgreSQL", "Three.js", "Tailwind CSS"],
     category: "Web Development",
+    tagline: "Perfect for luxury",
+    tagline_highlight: "living",
     featured_image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop",
     live_url: "https://example.com",
     github_url: "https://github.com",
@@ -46,9 +50,11 @@ export const projects: Project[] = [
     id: "2",
     title: "FinTech Investment Dashboard",
     slug: "fintech-dashboard",
-    description: "A comprehensive investment tracking platform built for modern traders and crypto enthusiasts. Real-time portfolio analytics display live market data with sub-second latency using WebSocket connections. Interactive D3.js charts visualize portfolio performance, asset allocation, and historical trends. Features include automated trade alerts, risk assessment tools, multi-currency support, and integration with major exchanges. The dashboard processes thousands of data points per second while maintaining a smooth 60fps user experience.",
+    description: "Real-time portfolio tracking and investment analytics for modern traders and crypto enthusiasts.",
     tech_stack: ["React", "D3.js", "Node.js", "Redis"],
     category: "FinTech",
+    tagline: "Built for modern",
+    tagline_highlight: "traders",
     featured_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop",
     live_url: "https://example.com",
     github_url: "https://github.com",
@@ -60,9 +66,11 @@ export const projects: Project[] = [
     id: "3",
     title: "Smart City IoT Platform",
     slug: "smart-city-iot",
-    description: "An enterprise-grade IoT management platform designed for smart city infrastructure. The system monitors and controls thousands of connected sensors across traffic systems, environmental monitoring stations, and public utilities. Built on a scalable microservices architecture, it processes millions of data points daily using TimescaleDB for time-series analytics. Features real-time alerting, predictive maintenance algorithms, interactive city-wide dashboards, and integration APIs for municipal systems. Reduced city operational costs by 30% through intelligent automation.",
+    description: "Centralized monitoring and management for urban infrastructure and IoT sensors in smart cities.",
     tech_stack: ["Python", "FastAPI", "MQTT", "TimescaleDB"],
     category: "IoT / AI",
+    tagline: "Powering smart",
+    tagline_highlight: "cities",
     featured_image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=800&fit=crop",
     live_url: "https://example.com",
     github_url: "https://github.com",
@@ -74,9 +82,11 @@ export const projects: Project[] = [
     id: "4",
     title: "AI Healthcare Diagnostics",
     slug: "ai-healthcare",
-    description: "A cutting-edge diagnostic assistance platform leveraging deep learning for medical imaging analysis. The system uses PyTorch-based convolutional neural networks trained on millions of medical images to detect anomalies in X-rays, MRIs, and CT scans with 97% accuracy. Features include HIPAA-compliant data handling, integration with existing hospital PACS systems, real-time inference with results in under 2 seconds, and detailed confidence scoring. The platform helps radiologists prioritize cases and catch potential issues early, improving patient outcomes significantly.",
+    description: "Predictive diagnostic tools for medical professionals using advanced machine learning models.",
     tech_stack: ["Python", "PyTorch", "Next.js", "MongoDB"],
     category: "Healthcare",
+    tagline: "Transforming patient",
+    tagline_highlight: "care",
     featured_image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=800&fit=crop",
     live_url: "https://example.com",
     github_url: "https://github.com",
