@@ -753,9 +753,12 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, delay: 0.1 }}
-              className="font-serif text-4xl sm:text-7xl md:text-8xl lg:text-[11rem] text-[#EEEEEE] whitespace-nowrap tracking-tight"
+              className="text-5xl font-bold text-[#EEEEEE] md:text-7xl lg:text-8xl"
             >
-              Skills & <em className="gradient-text">Expertise</em>
+              <span className="inline">Skills & </span>
+              <span className="bg-gradient-to-r from-[#00ADB5] via-[#00ADB5] to-[#EEEEEE] bg-clip-text text-transparent">
+                Expertise
+              </span>
             </motion.h1>
           
           <motion.p
