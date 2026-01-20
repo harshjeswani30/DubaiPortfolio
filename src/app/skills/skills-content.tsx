@@ -36,7 +36,6 @@ function BentoCard({
   glowColor?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-50px" })
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
 
@@ -49,25 +48,22 @@ function BentoCard({
     })
   }
 
-  return (
-    <HoverContext.Provider value={isHovered}>
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, y: 30, scale: 0.95 }}
-        animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-        whileHover={{ scale: 1.02, y: -5 }}
-        transition={{ 
-          duration: 0.4, 
-          delay: delay * 0.03,
-          ease: "easeOut"
-        }}
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/50 hover:shadow-2xl hover:shadow-[#00ADB5]/20 ${className}`}
-        style={{
-          background: isHovered 
-            ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}15, transparent 40%)` 
+    return (
+      <HoverContext.Provider value={isHovered}>
+        <motion.div
+          ref={ref}
+          whileHover={{ scale: 1.02, y: -5 }}
+          transition={{ 
+            duration: 0.3,
+            ease: "easeOut"
+          }}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/50 hover:shadow-2xl hover:shadow-[#00ADB5]/20 ${className}`}
+          style={{
+            background: isHovered 
+              ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}15, transparent 40%)` 
             : undefined,
         }}
       >
