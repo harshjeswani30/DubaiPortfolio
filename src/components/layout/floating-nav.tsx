@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { motion, useScroll, useTransform, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Code2, Zap } from "lucide-react"
@@ -20,7 +20,7 @@ const navItems = [
 
 const hasMountedRef = { current: false }
 
-function MagneticLink({ 
+function NavLink({ 
   children, 
   href, 
   isActive 
@@ -29,38 +29,9 @@ function MagneticLink({
   href: string, 
   isActive: boolean 
 }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-  
-  const springConfig = { damping: 15, stiffness: 150, mass: 0.1 }
-  const springX = useSpring(x, springConfig)
-  const springY = useSpring(y, springConfig)
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const { clientX, clientY } = e
-    const { left, top, width, height } = ref.current?.getBoundingClientRect() || { left: 0, top: 0, width: 0, height: 0 }
-    const centerX = left + width / 2
-    const centerY = top + height / 2
-    const distanceX = clientX - centerX
-    const distanceY = clientY - centerY
-    
-    x.set(distanceX * 0.4)
-    y.set(distanceY * 0.4)
-  }
-
-  const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
-  }
-
   return (
     <Link href={href}>
       <motion.div
-        ref={ref}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        style={{ x: springX, y: springY }}
         className={cn(
           "relative rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
           isActive
@@ -89,27 +60,6 @@ export function FloatingNav() {
   const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
   const pathname = usePathname()
   const { scrollY } = useScroll()
-  const containerRef = useRef<HTMLDivElement>(null)
-  
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const rotateX = useSpring(useTransform(mouseY, [-200, 200], [10, -10]), { damping: 20, stiffness: 150 })
-  const rotateY = useSpring(useTransform(mouseX, [-200, 200], [-10, 10]), { damping: 20, stiffness: 150 })
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = e.clientX - rect.left - rect.width / 2
-    const y = e.clientY - rect.top - rect.height / 2
-    mouseX.set(x)
-    mouseY.set(y)
-  }
-
-  const handleMouseLeave = () => {
-    mouseX.set(0)
-    mouseY.set(0)
-  }
   
   const floatY = useTransform(scrollY, [0, 100], [0, 8])
 
@@ -143,22 +93,16 @@ export function FloatingNav() {
     }
   }, [isMenuOpen])
 
-  return (
+    return (
     <>
       <motion.nav
         initial={hasMounted ? false : { opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2 }}
-        style={{ y: floatY, perspective: 1000 }}
+        style={{ y: floatY }}
         className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
-        <motion.div 
-          ref={containerRef}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{ rotateX, rotateY }}
-          className="mx-auto flex max-w-7xl items-center justify-between gap-4 transition-transform duration-200 ease-out"
-        >
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <motion.div
             initial={hasMounted ? false : { opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -193,13 +137,13 @@ export function FloatingNav() {
           >
             <div className="flex items-center gap-1">
               {navItems.map((item) => (
-                <MagneticLink 
+                <NavLink 
                   key={item.href} 
                   href={item.href} 
                   isActive={pathname === item.href}
                 >
                   {item.label}
-                </MagneticLink>
+                </NavLink>
               ))}
             </div>
           </motion.div>
@@ -216,7 +160,7 @@ export function FloatingNav() {
               className="relative z-[120]"
             />
           </motion.div>
-        </motion.div>
+        </div>
       </motion.nav>
 
       <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
