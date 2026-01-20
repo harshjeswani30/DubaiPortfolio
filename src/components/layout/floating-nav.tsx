@@ -94,44 +94,46 @@ function ExpandableTabs({
         }
 
         const Icon = tab.icon
-        const isActive = pathname === tab.href
-        const isHovered = hovered === index
-        const isExpanded = isHovered || (isActive && hovered === null)
+          const isActive = pathname === tab.href
+          const isHovered = hovered === index
+          const isExpanded = isActive || isHovered
 
-        return (
-          <motion.button
-            key={tab.title}
-            variants={buttonVariants}
-            initial={false}
-            animate="animate"
-            custom={isExpanded}
-            onClick={() => handleClick(tab.href)}
-            onMouseEnter={() => setHovered(index)}
-            transition={transition}
-            className={cn(
-              "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
-              isExpanded
-                ? cn("bg-[#393E46]", activeColor)
-                : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
-            )}
-          >
-            <Icon size={18} />
-            <AnimatePresence initial={false}>
-              {isExpanded && (
-                <motion.span
-                  variants={spanVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={transition}
-                  className="overflow-hidden whitespace-nowrap"
-                >
-                  {tab.title}
-                </motion.span>
+          return (
+            <motion.button
+              key={tab.title}
+              variants={buttonVariants}
+              initial={false}
+              animate="animate"
+              custom={isExpanded}
+              onClick={() => handleClick(tab.href)}
+              onMouseEnter={() => setHovered(index)}
+              transition={transition}
+              className={cn(
+                "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
+                isActive
+                  ? cn("bg-[#393E46]", activeColor)
+                  : isHovered
+                    ? "bg-[#393E46]/70 text-[#EEEEEE]"
+                    : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
               )}
-            </AnimatePresence>
-          </motion.button>
-        )
+            >
+              <Icon size={18} />
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <motion.span
+                    variants={spanVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={transition}
+                    className="overflow-hidden whitespace-nowrap"
+                  >
+                    {tab.title}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )
       })}
     </div>
   )
