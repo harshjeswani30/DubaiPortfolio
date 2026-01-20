@@ -116,41 +116,41 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-center">
           <div className="overlap w-full max-w-xl">
             {displayProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className="flex flex-col gap-4 animate-text translate-y-[30%]"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                <span
-                  className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+                <div
+                  key={project.id}
+                  className="flex flex-col gap-6 animate-text translate-y-[30%]"
+                  style={{
+                    animationTimeline: `--slide-${index + 1}`,
+                    animationRangeStart: "30cqw",
+                  }}
                 >
-                  {project.category}
-                </span>
+                  <span
+                    className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+                  >
+                    {project.category}
+                  </span>
 
-                <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
-                  {project.title.split(" ").slice(0, -1).join(" ")}{" "}
-                  <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
-                </h2>
+                  <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
+                    {project.title.split(" ").slice(0, -1).join(" ")}{" "}
+                    <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
+                  </h2>
 
-                <p className="text-white/70 text-base leading-relaxed max-w-md">
-                  {project.description}
-                </p>
+                  <p className="text-white/70 text-base leading-relaxed max-w-md">
+                    {project.description}
+                  </p>
 
-                <div className="flex flex-wrap gap-2 mt-1">
-                  {project.tech_stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {project.tech_stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
 
-                <div className="flex items-center gap-3 mt-2 pointer-events-auto">
+                  <div className="flex items-center gap-3 mt-6 pointer-events-auto">
                   <Link href={`/projects/${project.slug}`}>
                     <motion.button
                       whileHover={{ scale: 1.03 }}
