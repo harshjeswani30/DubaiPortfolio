@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export interface CircleTrailCursorProps {
   fillColor?: string;
@@ -15,51 +15,19 @@ export function CircleTrailCursor({
   baseRadius = 8,
   hoverRadius = 20,
   triggerSelector = 'a, button, [data-cursor-hover]',
-  proximityThreshold = 40
+  proximityThreshold = 50
 }: CircleTrailCursorProps) {
   const cursorRef = useRef<HTMLDivElement>(null);
-  const innerRef = useRef<HTMLDivElement>(null);
   const [isCoarse, setIsCoarse] = useState(true);
-  const posRef = useRef({ x: -100, y: -100 });
-  const targetRef = useRef({ x: -100, y: -100 });
-  const isExpandedRef = useRef(false);
-  const rafRef = useRef<number | null>(null);
-  const hoverCountRef = useRef(0);
+  const [isHovering, setIsHovering] = useState(false);
+  const posRef = useRef({ x: 0, y: 0 });
+  const shrinkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isNearTriggerRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setIsCoarse(window.matchMedia('(pointer: coarse)').matches);
   }, []);
-
-  const isOverTrigger = useCallback((x: number, y: number): boolean => {
-    const triggers = document.querySelectorAll(triggerSelector);
-    for (const trigger of triggers) {
-      const rect = trigger.getBoundingClientRect();
-      if (
-        x >= rect.left - proximityThreshold &&
-        x <= rect.right + proximityThreshold &&
-        y >= rect.top - proximityThreshold &&
-        y <= rect.bottom + proximityThreshold
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }, [triggerSelector, proximityThreshold]);
-
-  const updateCursorStyle = useCallback((expanded: boolean) => {
-    const cursor = cursorRef.current;
-    const inner = innerRef.current;
-    if (!cursor || !inner) return;
-
-    const radius = expanded ? hoverRadius : baseRadius;
-    cursor.style.width = `${radius * 2}px`;
-    cursor.style.height = `${radius * 2}px`;
-    cursor.style.backgroundColor = expanded ? 'transparent' : fillColor;
-    cursor.style.border = expanded ? `2px solid ${fillColor}` : 'none';
-    
-    inner.style.opacity = expanded ? '0' : '1';
-  }, [baseRadius, hoverRadius, fillColor]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || isCoarse) return;
@@ -67,103 +35,92 @@ export function CircleTrailCursor({
     const cursor = cursorRef.current;
     if (!cursor) return;
 
-    let currentRadius = baseRadius;
-
-    const animate = () => {
-      const dx = targetRef.current.x - posRef.current.x;
-      const dy = targetRef.current.y - posRef.current.y;
-      
-      posRef.current.x += dx * 0.15;
-      posRef.current.y += dy * 0.15;
-
-      currentRadius = isExpandedRef.current ? hoverRadius : baseRadius;
-      
-      cursor.style.transform = `translate(${posRef.current.x - currentRadius}px, ${posRef.current.y - currentRadius}px)`;
-      
-      rafRef.current = requestAnimationFrame(animate);
+    const checkProximity = (x: number, y: number) => {
+      const triggers = document.querySelectorAll(triggerSelector);
+      for (const trigger of triggers) {
+        const rect = trigger.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+        const threshold = Math.max(rect.width, rect.height) / 2 + proximityThreshold;
+        if (distance < threshold) {
+          return true;
+        }
+      }
+      return false;
     };
 
     const onMouseMove = (ev: MouseEvent) => {
-      targetRef.current = { x: ev.clientX, y: ev.clientY };
+      posRef.current = { x: ev.clientX, y: ev.clientY };
+      const currentRadius = isHovering ? hoverRadius : baseRadius;
+      cursor.style.transform = `translate(${ev.clientX - currentRadius}px, ${ev.clientY - currentRadius}px)`;
       cursor.style.opacity = '1';
-
-      const overTrigger = isOverTrigger(ev.clientX, ev.clientY);
       
-      if (overTrigger && !isExpandedRef.current) {
-        isExpandedRef.current = true;
-        updateCursorStyle(true);
-      } else if (!overTrigger && isExpandedRef.current && hoverCountRef.current === 0) {
-        isExpandedRef.current = false;
-        updateCursorStyle(false);
-      }
+      isNearTriggerRef.current = checkProximity(ev.clientX, ev.clientY);
     };
 
-    const onMouseEnter = () => {
-      hoverCountRef.current++;
-      if (!isExpandedRef.current) {
-        isExpandedRef.current = true;
-        updateCursorStyle(true);
+    const enter = () => {
+      if (shrinkTimeoutRef.current) {
+        clearTimeout(shrinkTimeoutRef.current);
+        shrinkTimeoutRef.current = null;
       }
+      setIsHovering(true);
     };
 
-    const onMouseLeave = () => {
-      hoverCountRef.current = Math.max(0, hoverCountRef.current - 1);
-      
-      setTimeout(() => {
-        if (hoverCountRef.current === 0) {
-          const stillOver = isOverTrigger(targetRef.current.x, targetRef.current.y);
-          if (!stillOver) {
-            isExpandedRef.current = false;
-            updateCursorStyle(false);
-          }
+    const leave = () => {
+      if (shrinkTimeoutRef.current) {
+        clearTimeout(shrinkTimeoutRef.current);
+      }
+      shrinkTimeoutRef.current = setTimeout(() => {
+        if (!isNearTriggerRef.current) {
+          setIsHovering(false);
+        } else {
+          const checkAndShrink = () => {
+            if (!isNearTriggerRef.current) {
+              setIsHovering(false);
+            } else {
+              shrinkTimeoutRef.current = setTimeout(checkAndShrink, 100);
+            }
+          };
+          shrinkTimeoutRef.current = setTimeout(checkAndShrink, 100);
         }
-      }, 50);
+      }, 150);
     };
 
-    const onMouseLeaveWindow = () => {
-      cursor.style.opacity = '0';
-    };
-
-    rafRef.current = requestAnimationFrame(animate);
     window.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseleave', onMouseLeaveWindow);
 
-    const attachListeners = () => {
-      const triggers = document.querySelectorAll(triggerSelector);
-      triggers.forEach((trigger) => {
-        trigger.addEventListener('mouseenter', onMouseEnter);
-        trigger.addEventListener('mouseleave', onMouseLeave);
-      });
-      return triggers;
-    };
-
-    let triggers = attachListeners();
-
-    const observer = new MutationObserver(() => {
-      triggers.forEach((trigger) => {
-        trigger.removeEventListener('mouseenter', onMouseEnter);
-        trigger.removeEventListener('mouseleave', onMouseLeave);
-      });
-      triggers = attachListeners();
+    const triggers = document.querySelectorAll(triggerSelector);
+    triggers.forEach((trigger) => {
+      trigger.addEventListener('mouseenter', enter);
+      trigger.addEventListener('mouseleave', leave);
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
-
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       window.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseleave', onMouseLeaveWindow);
       triggers.forEach((trigger) => {
-        trigger.removeEventListener('mouseenter', onMouseEnter);
-        trigger.removeEventListener('mouseleave', onMouseLeave);
+        trigger.removeEventListener('mouseenter', enter);
+        trigger.removeEventListener('mouseleave', leave);
       });
-      observer.disconnect();
+      if (shrinkTimeoutRef.current) {
+        clearTimeout(shrinkTimeoutRef.current);
+      }
     };
-  }, [baseRadius, hoverRadius, triggerSelector, isCoarse, proximityThreshold, isOverTrigger, updateCursorStyle]);
+  }, [baseRadius, hoverRadius, triggerSelector, isCoarse, isHovering, proximityThreshold]);
+
+  useEffect(() => {
+    if (isCoarse) return;
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+    
+    const currentRadius = isHovering ? hoverRadius : baseRadius;
+    cursor.style.transform = `translate(${posRef.current.x - currentRadius}px, ${posRef.current.y - currentRadius}px)`;
+  }, [isHovering, baseRadius, hoverRadius, isCoarse]);
 
   if (isCoarse) {
     return null;
   }
+
+  const currentRadius = isHovering ? hoverRadius : baseRadius;
 
   return (
     <>
@@ -178,33 +135,18 @@ export function CircleTrailCursor({
           position: 'fixed',
           top: 0,
           left: 0,
-          width: baseRadius * 2,
-          height: baseRadius * 2,
+          width: currentRadius * 2,
+          height: currentRadius * 2,
           borderRadius: '50%',
-          backgroundColor: fillColor,
-          border: 'none',
+          backgroundColor: isHovering ? 'transparent' : fillColor,
+          border: isHovering ? `2px solid ${fillColor}` : 'none',
           pointerEvents: 'none',
           zIndex: 10000,
           opacity: 0,
-          willChange: 'transform, width, height',
-          transition: 'width 0.25s cubic-bezier(0.25, 0.1, 0.25, 1), height 0.25s cubic-bezier(0.25, 0.1, 0.25, 1), background-color 0.2s ease, border 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          willChange: 'transform',
+          transition: 'width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border 0.2s ease',
         }}
-      >
-        <div
-          ref={innerRef}
-          style={{
-            width: 4,
-            height: 4,
-            borderRadius: '50%',
-            backgroundColor: '#fff',
-            transition: 'opacity 0.2s ease',
-            opacity: 1,
-          }}
-        />
-      </div>
+      />
     </>
   );
 }
