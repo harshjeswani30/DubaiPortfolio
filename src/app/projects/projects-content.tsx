@@ -139,7 +139,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                   {project.description}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mt-1">
+                <div className="flex flex-wrap gap-2 mt-4">
                   {project.tech_stack.map((tech) => (
                     <span
                       key={tech}
@@ -150,7 +150,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                   ))}
                 </div>
 
-                <div className="flex items-center gap-3 mt-2 pointer-events-auto">
+                <div className="flex items-center gap-3 mt-6 pointer-events-auto">
                   <Link href={`/projects/${project.slug}`}>
                     <motion.button
                       whileHover={{ scale: 1.03 }}
@@ -194,7 +194,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="w-60 mt-10">
+            <div className="w-60 mt-20">
             <nav className="flex font-medium text-sm gap-5">
               {displayProjects.map((_, index) => (
                 <a
