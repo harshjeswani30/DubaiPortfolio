@@ -76,7 +76,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
   return (
     <div
-      className="carousel-container min-h-screen relative flex flex-col gap-8 supports-sda:pointer-events-none overflow-clip bg-black text-white antialiased pt-24"
+      className="carousel-container min-h-screen relative isolate flex flex-col gap-8 supports-sda:pointer-events-none overflow-clip bg-black text-white antialiased pt-24"
       style={{
         timelineScope: timelineScope,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,7 +95,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       ))}
 
       <div
-        className="absolute hidden supports-sda:block -z-10 inset-0 top-24 h-[calc(100%-6rem)] w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
+        className="absolute hidden supports-sda:block -z-10 inset-0 h-full w-full overflow-x-auto snap-mandatory scroll-smooth snap-x scrollbar-hidden pointer-events-auto"
         style={{ scrollTimeline: "--scroller x" }}
       >
         <div className="grid grid-flow-col auto-cols-[70cqw] pr-[30cqw] h-full w-fit">
