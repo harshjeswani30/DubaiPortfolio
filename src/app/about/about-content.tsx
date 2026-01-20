@@ -226,6 +226,13 @@ export function AboutContent() {
           padding: 0;
           margin: 0;
           display: block;
+          position: relative;
+        }
+
+        .content--initial .one {
+          position: fixed;
+          top: 0;
+          left: 0;
         }
 
         .content--blend {
@@ -312,15 +319,16 @@ export function AboutContent() {
         }
 
         .one {
-          width: 100%;
+          width: 100vw;
           height: 100vh;
           height: 100dvh;
-          position: relative;
+          position: fixed;
+          top: 0;
+          left: 0;
           z-index: 10;
           background-size: cover;
           background-position: 50% 50%;
           will-change: transform, width, height, filter;
-          display: block;
         }
 
         .content__img {
