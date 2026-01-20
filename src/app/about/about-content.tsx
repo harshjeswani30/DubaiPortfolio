@@ -165,28 +165,22 @@ export function AboutContent() {
     <>
       <style jsx global>{`
         .about-page-wrapper {
-          --color-text: #503717;
-          --color-bg: rgb(234 234 234);
-          --color-link: #b19162;
-          --color-link-hover: #e1c093;
-          --color-title: #000;
+          --color-text: #EEEEEE;
+          --color-bg: #222831;
+          --color-accent: #00ADB5;
+          --color-medium: #393E46;
+          --color-title: #EEEEEE;
           --page-padding: 2rem;
-          --gradient-1: rgb(234 234 234 / 80%);
-          --gradient-2: rgb(229 134 27 / 30%);
         }
 
         .about-page-wrapper {
           color: var(--color-text);
           background-color: var(--color-bg);
-          font-family: "capitana", sans-serif;
+          font-family: inherit;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           width: 100vw;
           overflow-x: hidden;
-          background-image: radial-gradient(ellipse at top, var(--gradient-1), transparent),
-            radial-gradient(ellipse at bottom, var(--gradient-2), transparent);
-          background-size: 100%, 200%;
-          background-attachment: fixed;
           min-height: 100vh;
         }
 
@@ -223,6 +217,13 @@ export function AboutContent() {
           grid-template-areas: "content";
           position: relative;
           z-index: 90;
+        }
+
+        .content--initial {
+          width: 100vw;
+          height: 100vh;
+          padding: 0;
+          margin: 0;
         }
 
         .content--blend {
@@ -295,6 +296,11 @@ export function AboutContent() {
           font-weight: 400;
           position: relative;
           max-width: 500px;
+          color: var(--color-text);
+        }
+
+        .content__text strong {
+          color: var(--color-accent);
         }
 
         .content__text--large {
@@ -303,8 +309,8 @@ export function AboutContent() {
         }
 
         .one {
-          width: 100%;
-          height: 100%;
+          width: 100vw;
+          height: 100vh;
           position: relative;
           z-index: 10;
           background-size: cover;
@@ -374,6 +380,13 @@ export function AboutContent() {
           flex: none;
         }
 
+        .footer-text {
+          text-align: center;
+          padding: 10vh 0;
+          font-size: 1.5rem;
+          color: var(--color-accent);
+        }
+
         @media screen and (min-width: 53em) {
           .content--sides {
             grid-template-columns: 40% 1fr;
@@ -414,7 +427,7 @@ export function AboutContent() {
 
       <div className="about-page-wrapper">
         <main ref={mainRef} className="about-main">
-          <section className="content content--inital">
+          <section className="content content--initial">
             <div
               className="one"
               style={{
@@ -576,12 +589,7 @@ export function AboutContent() {
             />
           </section>
 
-          <div
-            style={{ textAlign: "center", padding: "10vh 0", fontSize: "1.5rem" }}
-            className="font-alt"
-          >
-            More you might like
-          </div>
+          <div className="footer-text font-alt">More you might like</div>
         </main>
       </div>
     </>
