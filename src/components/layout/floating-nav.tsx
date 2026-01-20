@@ -1,64 +1,143 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
+import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Code2, Zap } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Code2, Home, User, FolderKanban, Wrench, BookOpen, FileText, Mail } from "lucide-react"
+import { useOnClickOutside } from "usehooks-ts"
 import { cn } from "@/lib/utils"
 import { SideMenu, MenuButton } from "@/components/ui/side-menu"
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
-  { href: "/skills", label: "Skills" },
-  { href: "/blog", label: "Blog" },
-  { href: "/resume", label: "Resume" },
-  { href: "/contact", label: "Contact" },
+interface Tab {
+  title: string
+  icon: typeof Home
+  href: string
+  type?: never
+}
+
+interface Separator {
+  type: "separator"
+  title?: never
+  icon?: never
+  href?: never
+}
+
+type TabItem = Tab | Separator
+
+const tabs: TabItem[] = [
+  { title: "Home", icon: Home, href: "/" },
+  { title: "About", icon: User, href: "/about" },
+  { title: "Projects", icon: FolderKanban, href: "/projects" },
+  { type: "separator" },
+  { title: "Skills", icon: Wrench, href: "/skills" },
+  { title: "Blog", icon: BookOpen, href: "/blog" },
+  { type: "separator" },
+  { title: "Resume", icon: FileText, href: "/resume" },
+  { title: "Contact", icon: Mail, href: "/contact" },
 ]
 
 const hasMountedRef = { current: false }
 
-function NavLink({ 
-  children, 
-  href, 
-  isActive 
+const buttonVariants = {
+  initial: {
+    gap: 0,
+    paddingLeft: ".5rem",
+    paddingRight: ".5rem",
+  },
+  animate: (isSelected: boolean) => ({
+    gap: isSelected ? ".5rem" : 0,
+    paddingLeft: isSelected ? "1rem" : ".5rem",
+    paddingRight: isSelected ? "1rem" : ".5rem",
+  }),
+}
+
+const spanVariants = {
+  initial: { width: 0, opacity: 0 },
+  animate: { width: "auto", opacity: 1 },
+  exit: { width: 0, opacity: 0 },
+}
+
+const transition = { delay: 0.1, type: "spring", bounce: 0, duration: 0.6 }
+
+function ExpandableTabs({ 
+  activeColor = "text-[#00ADB5]" 
 }: { 
-  children: React.ReactNode, 
-  href: string, 
-  isActive: boolean 
+  activeColor?: string 
 }) {
+  const [selected, setSelected] = useState<number | null>(null)
+  const outsideClickRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useOnClickOutside(outsideClickRef as React.RefObject<HTMLElement>, () => {
+    setSelected(null)
+  })
+
+  const handleSelect = (index: number, href: string) => {
+    setSelected(index)
+    router.push(href)
+  }
+
+  const Separator = () => (
+    <div className="mx-1 h-[24px] w-[1.2px] bg-[#393E46]" aria-hidden="true" />
+  )
+
   return (
-    <Link href={href}>
-      <motion.div
-        className={cn(
-          "relative rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
-          isActive
-            ? "text-[#EEEEEE]"
-            : "text-[#00ADB5]/70 hover:text-[#EEEEEE]"
-        )}
-      >
-        {isActive && (
-          <motion.div
-            layoutId="floating-nav-indicator"
-            className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#00ADB5]/20 to-[#393E46] border border-[#00ADB5]/30 shadow-[0_0_15px_rgba(0,173,181,0.2)]"
-            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-          />
-        )}
-        <span className="relative z-10 flex items-center gap-1.5">
-          {isActive && <Zap className="h-3 w-3 text-[#00ADB5] animate-pulse" />}
-          {children}
-        </span>
-      </motion.div>
-    </Link>
+    <div
+      ref={outsideClickRef}
+      className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 p-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+    >
+      {tabs.map((tab, index) => {
+        if (tab.type === "separator") {
+          return <Separator key={`separator-${index}`} />
+        }
+
+        const Icon = tab.icon
+        const isActive = pathname === tab.href
+        const isSelected = selected === index || isActive
+
+        return (
+          <motion.button
+            key={tab.title}
+            variants={buttonVariants}
+            initial={false}
+            animate="animate"
+            custom={isSelected}
+            onClick={() => handleSelect(index, tab.href)}
+            transition={transition}
+            className={cn(
+              "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
+              isSelected
+                ? cn("bg-[#393E46]", activeColor)
+                : "text-[#EEEEEE]/60 hover:bg-[#393E46]/50 hover:text-[#EEEEEE]"
+            )}
+          >
+            <Icon size={18} />
+            <AnimatePresence initial={false}>
+              {isSelected && (
+                <motion.span
+                  variants={spanVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={transition}
+                  className="overflow-hidden whitespace-nowrap"
+                >
+                  {tab.title}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        )
+      })}
+    </div>
   )
 }
 
 export function FloatingNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
-  const pathname = usePathname()
   const { scrollY } = useScroll()
   
   const floatY = useTransform(scrollY, [0, 100], [0, 8])
@@ -93,7 +172,7 @@ export function FloatingNav() {
     }
   }, [isMenuOpen])
 
-    return (
+  return (
     <>
       <motion.nav
         initial={hasMounted ? false : { opacity: 0, y: -20 }}
@@ -133,19 +212,9 @@ export function FloatingNav() {
             initial={hasMounted ? false : { opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="hidden rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-2 py-2 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl md:block"
+            className="hidden md:block"
           >
-            <div className="flex items-center gap-1">
-              {navItems.map((item) => (
-                <NavLink 
-                  key={item.href} 
-                  href={item.href} 
-                  isActive={pathname === item.href}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
+            <ExpandableTabs />
           </motion.div>
 
           <motion.div
@@ -167,4 +236,3 @@ export function FloatingNav() {
     </>
   )
 }
-
