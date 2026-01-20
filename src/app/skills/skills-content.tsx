@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, createContext, useContext } from "react"
 import { motion, useScroll, useTransform, useSpring, useInView, useMotionValue } from "framer-motion"
 
 interface Skill {
@@ -11,14 +11,7 @@ interface Skill {
   color?: string
 }
 
-const categoryColors: Record<string, string> = {
-  Frontend: "#00ADB5",
-  Backend: "#00ADB5",
-  Languages: "#00ADB5",
-  Database: "#00ADB5",
-  DevOps: "#00ADB5",
-  Design: "#00ADB5",
-}
+const HoverContext = createContext<boolean>(false)
 
 const categoryIcons: Record<string, string> = {
   Frontend: "🎨",
@@ -33,12 +26,14 @@ function BentoCard({
   children, 
   className = "", 
   delay = 0,
-  size = "default"
+  size = "default",
+  glowColor = "#00ADB5"
 }: { 
   children: React.ReactNode
   className?: string
   delay?: number
-  size?: "small" | "default" | "large" | "wide" | "tall"
+  size?: "small" | "default" | "large" | "wide" | "tall" | "feature"
+  glowColor?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
@@ -60,41 +55,436 @@ function BentoCard({
     large: "col-span-1 row-span-1 md:col-span-2 md:row-span-2",
     wide: "col-span-1 row-span-1 md:col-span-2 md:row-span-1",
     tall: "col-span-1 row-span-1 md:col-span-1 md:row-span-2",
+    feature: "col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-2 lg:row-span-2",
   }
 
   return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50, scale: 0.9 }}
-      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-      transition={{ 
-        duration: 0.8, 
-        delay: delay * 0.1,
-        ease: [0.25, 0.46, 0.45, 0.94]
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/30 hover:shadow-2xl hover:shadow-[#00ADB5]/10 ${sizeClasses[size]} ${className}`}
-      style={{
-        background: isHovered 
-          ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.08), transparent 40%)` 
-          : undefined,
-      }}
-    >
-      <div 
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        style={{
-          background: `radial-gradient(400px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.05), transparent 40%)`,
+    <HoverContext.Provider value={isHovered}>
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+        whileHover={{ scale: 1.02, y: -5 }}
+        transition={{ 
+          duration: 0.8, 
+          delay: delay * 0.1,
+          ease: [0.25, 0.46, 0.45, 0.94]
         }}
-      />
-      
-      <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-gradient-to-br from-[#222831]/95 to-[#222831]" />
-      
-      <div className="relative z-10 h-full p-6 md:p-8">
-        {children}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/50 hover:shadow-2xl hover:shadow-[#00ADB5]/20 ${sizeClasses[size]} ${className}`}
+        style={{
+          background: isHovered 
+            ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}15, transparent 40%)` 
+            : undefined,
+        }}
+      >
+        <motion.div 
+          className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          style={{
+            background: `radial-gradient(400px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}10, transparent 40%)`,
+          }}
+        />
+        
+        <motion.div 
+          className="pointer-events-none absolute -inset-px rounded-[2rem] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          style={{
+            background: `linear-gradient(135deg, ${glowColor}30, transparent 50%, ${glowColor}20)`,
+          }}
+        />
+        
+        <div className="absolute inset-[1px] rounded-[calc(2rem-1px)] bg-gradient-to-br from-[#222831]/95 to-[#222831]" />
+        
+        <div className="relative z-10 h-full p-6 md:p-8">
+          {children}
+        </div>
+      </motion.div>
+    </HoverContext.Provider>
+  )
+}
+
+function useCardHover() {
+  return useContext(HoverContext)
+}
+
+function FrontendCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-4 flex items-center gap-3">
+        <motion.span 
+          className="text-3xl"
+          animate={isHovered ? { rotate: [0, -10, 10, 0], scale: 1.1 } : { rotate: 0, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          🎨
+        </motion.span>
+        <div>
+          <h3 className="text-xl font-bold text-[#EEEEEE]">Frontend</h3>
+          <p className="text-sm text-[#00ADB5]/60">UI/UX Development</p>
+        </div>
       </div>
-    </motion.div>
+      <div className="grid flex-1 grid-cols-2 gap-2 overflow-hidden">
+        {skills.map((skill, i) => (
+          <motion.div
+            key={skill.id}
+            initial={{ opacity: 0.7, x: -10 }}
+            animate={isHovered ? { opacity: 1, x: 0 } : { opacity: 0.7, x: -10 }}
+            transition={{ delay: i * 0.05, duration: 0.3 }}
+          >
+            <SkillPill skill={skill} delay={i} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function LanguagesCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col">
+      <div className="mb-4 flex items-center gap-2">
+        <motion.span 
+          className="text-2xl"
+          animate={isHovered ? { scale: [1, 1.2, 1] } : { scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          💻
+        </motion.span>
+        <h3 className="text-lg font-bold text-[#EEEEEE]">Languages</h3>
+      </div>
+      <div className="flex-1 space-y-2">
+        {skills.map((skill, i) => (
+          <motion.div
+            key={skill.id}
+            initial={{ opacity: 0.7, y: 5 }}
+            animate={isHovered ? { opacity: 1, y: 0 } : { opacity: 0.7, y: 5 }}
+            transition={{ delay: i * 0.08, duration: 0.3 }}
+          >
+            <SkillPill skill={skill} delay={i} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ReactCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div
+        className="mb-4 h-20 w-20 rounded-full border border-[#00ADB5]/30 bg-gradient-to-br from-[#00ADB5]/20 to-transparent p-4"
+        animate={isHovered ? { rotate: 360, scale: 1.1 } : { rotate: 0, scale: 1 }}
+        transition={{ duration: isHovered ? 2 : 0.5, ease: isHovered ? "linear" : "easeOut", repeat: isHovered ? Infinity : 0 }}
+      >
+        <div className="flex h-full w-full items-center justify-center rounded-full bg-[#00ADB5]/10 text-3xl">
+          ⚛️
+        </div>
+      </motion.div>
+      <motion.div 
+        className="text-4xl font-bold text-[#EEEEEE]"
+        animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        React
+      </motion.div>
+      <motion.div 
+        className="text-sm text-[#00ADB5]"
+        animate={isHovered ? { opacity: 1 } : { opacity: 0.7 }}
+      >
+        Primary Framework
+      </motion.div>
+    </div>
+  )
+}
+
+function CodeLinesCard() {
+  const isHovered = useCardHover()
+  const lines = [75, 90, 60, 85, 45, 70, 55]
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center">
+      <div className="mb-3 flex items-end gap-1.5">
+        {lines.map((height, i) => (
+          <motion.div
+            key={i}
+            className="w-2 rounded-full bg-gradient-to-t from-[#FF6B6B] to-[#FF6B6B]/40"
+            initial={{ height: 10 }}
+            animate={isHovered ? { height: height } : { height: 10 }}
+            transition={{ delay: i * 0.05, duration: 0.4, ease: "easeOut" }}
+          />
+        ))}
+      </div>
+      <motion.div 
+        className="text-3xl font-bold text-[#EEEEEE]"
+        animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+      >
+        50K+
+      </motion.div>
+      <div className="text-sm text-[#FF6B6B]/70">Lines of Code</div>
+    </div>
+  )
+}
+
+function BackendCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col justify-between">
+      <motion.div 
+        className="text-4xl"
+        animate={isHovered ? { rotate: [0, 180, 360], scale: 1.1 } : { rotate: 0, scale: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        ⚙️
+      </motion.div>
+      <div>
+        <div className="text-3xl font-bold text-[#EEEEEE]">Backend</div>
+        <div className="text-sm text-[#00ADB5]/60">Server-side Magic</div>
+      </div>
+      <div className="flex flex-wrap gap-1">
+        {skills.slice(0, 3).map((skill, i) => (
+          <motion.span 
+            key={skill.id}
+            className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
+            initial={{ opacity: 0.5, scale: 0.9 }}
+            animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0.5, scale: 0.9 }}
+            transition={{ delay: i * 0.1, duration: 0.3 }}
+          >
+            {skill.name}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function DevOpsCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col justify-center text-center">
+      <motion.div
+        className="mb-4 text-5xl"
+        animate={isHovered ? { y: [0, -15, 0], scale: 1.2 } : { y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        🚀
+      </motion.div>
+      <div className="text-2xl font-bold text-[#EEEEEE]">DevOps</div>
+      <div className="mt-2 flex justify-center gap-1">
+        {skills.slice(0, 3).map((skill, i) => (
+          <motion.span 
+            key={skill.id}
+            className="rounded-lg bg-[#9B59B6]/20 px-2 py-1 text-xs text-[#9B59B6]"
+            initial={{ opacity: 0.5, y: 10 }}
+            animate={isHovered ? { opacity: 1, y: 0 } : { opacity: 0.5, y: 10 }}
+            transition={{ delay: i * 0.1, duration: 0.3 }}
+          >
+            {skill.name}
+          </motion.span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function DatabaseCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full items-center gap-8">
+      <div className="flex-1">
+        <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]/60">Database</div>
+        <div className="text-2xl font-bold text-[#EEEEEE]">Data Management</div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {skills.map((skill, i) => (
+            <motion.span 
+              key={skill.id}
+              className="rounded-xl bg-[#00ADB5]/20 px-3 py-1.5 text-sm text-[#00ADB5]"
+              initial={{ opacity: 0.5, scale: 0.9 }}
+              animate={isHovered ? { opacity: 1, scale: 1 } : { opacity: 0.5, scale: 0.9 }}
+              transition={{ delay: i * 0.08, duration: 0.3 }}
+            >
+              {skill.name}
+            </motion.span>
+          ))}
+        </div>
+      </div>
+      <div className="hidden md:block">
+        <motion.div
+          className="text-7xl"
+          animate={isHovered ? { rotate: [0, 10, -10, 0], scale: 1.1 } : { rotate: 0, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          🗄️
+        </motion.div>
+      </div>
+    </div>
+  )
+}
+
+function DesignCard({ skills }: { skills: Skill[] }) {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col justify-between">
+      <div className="flex items-center gap-2">
+        <motion.span 
+          className="text-2xl"
+          animate={isHovered ? { rotate: [0, 20, -20, 0], scale: 1.2 } : { rotate: 0, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          ✨
+        </motion.span>
+        <span className="text-lg font-bold text-[#EEEEEE]">Design</span>
+      </div>
+      <div className="space-y-2">
+        {skills.map((skill, i) => (
+          <motion.div
+            key={skill.id}
+            initial={{ opacity: 0.7, x: -5 }}
+            animate={isHovered ? { opacity: 1, x: 0 } : { opacity: 0.7, x: -5 }}
+            transition={{ delay: i * 0.1, duration: 0.3 }}
+          >
+            <SkillPill skill={skill} delay={i} />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CoffeeCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div
+        className="mb-2 text-5xl"
+        animate={isHovered ? { rotate: [0, -15, 15, 0], y: [0, -5, 0] } : { rotate: 0, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        ☕
+      </motion.div>
+      <motion.div 
+        className="text-3xl font-bold text-[#EEEEEE]"
+        animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
+      >
+        999+
+      </motion.div>
+      <div className="text-sm text-[#E74C3C]/70">Cups of Coffee</div>
+      <motion.div 
+        className="mt-2 flex gap-1"
+        animate={isHovered ? { opacity: 1 } : { opacity: 0 }}
+      >
+        {[...Array(3)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="h-1 w-1 rounded-full bg-[#E74C3C]"
+            animate={isHovered ? { y: [0, -3, 0] } : { y: 0 }}
+            transition={{ delay: i * 0.1, duration: 0.4, repeat: isHovered ? Infinity : 0 }}
+          />
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
+function ExperienceCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full items-center justify-between">
+      <div>
+        <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]">Experience</div>
+        <motion.div 
+          className="text-3xl font-bold text-[#EEEEEE]"
+          animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+        >
+          5+ Years
+        </motion.div>
+        <div className="text-sm text-[#00ADB5]/60">Building Digital Products</div>
+      </div>
+      <div className="hidden items-center gap-4 md:flex">
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="w-2 rounded-full bg-gradient-to-t from-[#00ADB5] to-[#00ADB5]/40"
+            initial={{ height: 10 }}
+            animate={isHovered ? { height: 30 + i * 15 } : { height: 10 }}
+            transition={{ delay: i * 0.1, duration: 0.4 }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ProblemSolverCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div
+        className="mb-3 text-5xl"
+        animate={isHovered ? { scale: [1, 1.3, 1], rotate: [0, 10, -10, 0] } : { scale: 1, rotate: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        🎯
+      </motion.div>
+      <div className="text-2xl font-bold text-[#EEEEEE]">Problem Solver</div>
+      <motion.div 
+        className="mt-1 text-sm text-[#3498DB]/70"
+        animate={isHovered ? { opacity: 1 } : { opacity: 0.6 }}
+      >
+        Creative Solutions
+      </motion.div>
+    </div>
+  )
+}
+
+function GitCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div 
+        className="mb-2 flex items-center gap-2"
+        animate={isHovered ? { scale: 1.05 } : { scale: 1 }}
+      >
+        <motion.div
+          className="text-4xl"
+          animate={isHovered ? { rotate: [0, 360] } : { rotate: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          🌿
+        </motion.div>
+      </motion.div>
+      <div className="text-2xl font-bold text-[#EEEEEE]">500+</div>
+      <div className="text-sm text-[#2ECC71]/70">Git Commits</div>
+      <motion.div
+        className="mt-2 flex gap-0.5"
+        animate={isHovered ? { opacity: 1 } : { opacity: 0.3 }}
+      >
+        {[...Array(7)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="h-2 w-2 rounded-sm bg-[#2ECC71]"
+            initial={{ opacity: 0.2 }}
+            animate={isHovered ? { opacity: [0.3, 0.5, 0.8, 1][i % 4] } : { opacity: 0.2 }}
+            transition={{ delay: i * 0.05 }}
+          />
+        ))}
+      </motion.div>
+    </div>
   )
 }
 
@@ -410,173 +800,53 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
         style={{ y: gridY, opacity: gridOpacity }}
       >
         <div className="mx-auto max-w-7xl px-6">
-<div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-3">
+<div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-4 lg:grid-cols-4">
               <BentoCard size="large" delay={0}>
-                <div className="flex h-full flex-col">
-                  <div className="mb-4 flex items-center gap-3">
-                    <span className="text-3xl">🎨</span>
-                    <div>
-                      <h3 className="text-xl font-bold text-[#EEEEEE]">Frontend</h3>
-                      <p className="text-sm text-[#00ADB5]/60">UI/UX Development</p>
-                    </div>
-                  </div>
-                  <div className="grid flex-1 grid-cols-2 gap-2 overflow-hidden">
-                    {frontendSkills.map((skill, i) => (
-                      <SkillPill key={skill.id} skill={skill} delay={i} />
-                    ))}
-                  </div>
-                </div>
+                <FrontendCard skills={frontendSkills} />
               </BentoCard>
               
               <BentoCard size="tall" delay={1}>
-                <div className="flex h-full flex-col">
-                  <div className="mb-4 flex items-center gap-2">
-                    <span className="text-2xl">💻</span>
-                    <h3 className="text-lg font-bold text-[#EEEEEE]">Languages</h3>
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    {languageSkills.map((skill, i) => (
-                      <SkillPill key={skill.id} skill={skill} delay={i} />
-                    ))}
-                  </div>
-                </div>
+                <LanguagesCard skills={languageSkills} />
               </BentoCard>
               
               <BentoCard size="default" delay={2}>
-                <div className="flex h-full flex-col items-center justify-center text-center">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="mb-4 h-20 w-20 rounded-full border border-[#00ADB5]/30 bg-gradient-to-br from-[#00ADB5]/20 to-transparent p-4"
-                  >
-                    <div className="flex h-full w-full items-center justify-center rounded-full bg-[#00ADB5]/10 text-3xl">
-                      ⚛️
-                    </div>
-                  </motion.div>
-                  <div className="text-4xl font-bold text-[#EEEEEE]">React</div>
-                  <div className="text-sm text-[#00ADB5]">Primary Framework</div>
-                </div>
+                <ReactCard />
               </BentoCard>
               
-              <BentoCard size="default" delay={3}>
-                <div className="flex h-full flex-col justify-between">
-                  <div className="text-4xl">⚙️</div>
-                  <div>
-                    <div className="text-3xl font-bold text-[#EEEEEE]">Backend</div>
-                    <div className="text-sm text-[#00ADB5]/60">Server-side Magic</div>
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {backendSkills.slice(0, 3).map((skill) => (
-                      <span 
-                        key={skill.id}
-                        className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+              <BentoCard size="default" delay={3} glowColor="#FF6B6B">
+                <CodeLinesCard />
               </BentoCard>
               
               <BentoCard size="default" delay={4}>
-                <div className="flex h-full flex-col justify-center text-center">
-                  <motion.div
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="mb-4 text-5xl"
-                  >
-                    🚀
-                  </motion.div>
-                  <div className="text-2xl font-bold text-[#EEEEEE]">DevOps</div>
-                  <div className="mt-2 flex justify-center gap-1">
-                    {devopsSkills.slice(0, 3).map((skill) => (
-                      <span 
-                        key={skill.id}
-                        className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
-                      >
-                        {skill.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <BackendCard skills={backendSkills} />
               </BentoCard>
               
-              <BentoCard size="wide" delay={5}>
-                <div className="flex h-full items-center gap-8">
-                  <div className="flex-1">
-                    <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]/60">Database</div>
-                    <div className="text-2xl font-bold text-[#EEEEEE]">Data Management</div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {databaseSkills.map((skill) => (
-                        <span 
-                          key={skill.id}
-                          className="rounded-xl bg-[#00ADB5]/20 px-3 py-1.5 text-sm text-[#00ADB5]"
-                        >
-                          {skill.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="hidden md:block">
-                    <motion.div
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="text-7xl"
-                    >
-                      🗄️
-                    </motion.div>
-                  </div>
-                </div>
+              <BentoCard size="default" delay={5} glowColor="#9B59B6">
+                <DevOpsCard skills={devopsSkills} />
               </BentoCard>
               
-              <BentoCard size="default" delay={6}>
-                <div className="flex h-full flex-col justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">✨</span>
-                    <span className="text-lg font-bold text-[#EEEEEE]">Design</span>
-                  </div>
-                  <div className="space-y-2">
-                    {designSkills.map((skill, i) => (
-                      <SkillPill key={skill.id} skill={skill} delay={i} />
-                    ))}
-                  </div>
-                </div>
+              <BentoCard size="wide" delay={6}>
+                <DatabaseCard skills={databaseSkills} />
               </BentoCard>
               
-              <BentoCard size="wide" delay={7}>
-                <div className="flex h-full items-center justify-between">
-                  <div>
-                    <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]">Experience</div>
-                    <div className="text-3xl font-bold text-[#EEEEEE]">5+ Years</div>
-                    <div className="text-sm text-[#00ADB5]/60">Building Digital Products</div>
-                  </div>
-                  <div className="hidden items-center gap-4 md:flex">
-                    {[...Array(5)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="w-2 rounded-full bg-gradient-to-t from-[#00ADB5] to-[#00ADB5]/40"
-                        style={{ height: `${30 + i * 15}px` }}
-                      />
-                    ))}
-                  </div>
-                </div>
+              <BentoCard size="default" delay={7} glowColor="#F1C40F">
+                <DesignCard skills={designSkills} />
               </BentoCard>
               
-              <BentoCard size="default" delay={8}>
-                <div className="flex h-full flex-col items-center justify-center text-center">
-                  <motion.div
-                    animate={{ y: [0, -8, 0] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                    className="mb-3 text-5xl"
-                  >
-                    🎯
-                  </motion.div>
-                  <div className="text-2xl font-bold text-[#EEEEEE]">Problem Solver</div>
-                  <div className="mt-1 text-sm text-[#00ADB5]/60">Creative Solutions</div>
-                </div>
+              <BentoCard size="default" delay={8} glowColor="#E74C3C">
+                <CoffeeCard />
+              </BentoCard>
+              
+              <BentoCard size="wide" delay={9}>
+                <ExperienceCard />
+              </BentoCard>
+              
+              <BentoCard size="default" delay={10} glowColor="#3498DB">
+                <ProblemSolverCard />
+              </BentoCard>
+              
+              <BentoCard size="default" delay={11} glowColor="#2ECC71">
+                <GitCard />
               </BentoCard>
             </div>
         </div>
