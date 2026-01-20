@@ -350,15 +350,7 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
         style={{ y: headerY, opacity: headerOpacity }}
       >
         <div className="relative z-10 px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <span className="mb-6 inline-block rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2 text-sm font-medium uppercase tracking-[0.3em] text-[#00ADB5]">
-              Technical Arsenal
-            </span>
-          </motion.div>
+
           
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
