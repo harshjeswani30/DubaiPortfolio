@@ -470,7 +470,53 @@ function GitCard() {
             transition={{ delay: i * 0.05 }}
           />
         ))}
+        </motion.div>
+      </div>
+    )
+  }
+
+function ProjectsCountCard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div
+        className="mb-2 text-5xl"
+        animate={isHovered ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : { scale: 1, rotate: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        📁
       </motion.div>
+      <motion.div 
+        className="text-3xl font-bold text-[#EEEEEE]"
+        animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
+      >
+        30+
+      </motion.div>
+      <div className="text-sm text-[#F39C12]/70">Projects Completed</div>
+    </div>
+  )
+}
+
+function APICard() {
+  const isHovered = useCardHover()
+  
+  return (
+    <div className="flex h-full flex-col items-center justify-center text-center">
+      <motion.div
+        className="mb-2 text-5xl"
+        animate={isHovered ? { y: [0, -8, 0], scale: 1.1 } : { y: 0, scale: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        🔌
+      </motion.div>
+      <motion.div 
+        className="text-3xl font-bold text-[#EEEEEE]"
+        animate={isHovered ? { scale: 1.1 } : { scale: 1 }}
+      >
+        REST & GraphQL
+      </motion.div>
+      <div className="text-sm text-[#1ABC9C]/70">API Development</div>
     </div>
   )
 }
@@ -1251,29 +1297,37 @@ const headerY = useTransform(smoothProgress, [0, 0.15], [0, -50])
                 <DatabaseCard skills={databaseSkills} />
               </BentoCard>
               
-              <BentoCard size="tall" delay={6} className="md:row-span-2">
-                <LanguagesCard skills={languageSkills} />
-              </BentoCard>
-              
-              <BentoCard size="default" delay={7} glowColor="#F1C40F">
-                <DesignCard skills={designSkills} />
-              </BentoCard>
-              
-              <BentoCard size="default" delay={8} glowColor="#E74C3C">
-                <CoffeeCard />
-              </BentoCard>
-              
-              <BentoCard size="default" delay={9} glowColor="#3498DB">
-                <ProblemSolverCard />
-              </BentoCard>
-              
-              <BentoCard size="wide" delay={10} className="md:col-span-2">
-                <ExperienceCard />
-              </BentoCard>
-              
-              <BentoCard size="default" delay={11} glowColor="#2ECC71">
-                <GitCard />
-              </BentoCard>
+<BentoCard size="tall" delay={6} className="md:row-span-2">
+                  <LanguagesCard skills={languageSkills} />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={7} glowColor="#F1C40F">
+                  <DesignCard skills={designSkills} />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={8} glowColor="#E74C3C">
+                  <CoffeeCard />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={9} glowColor="#2ECC71">
+                  <GitCard />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={10} glowColor="#3498DB">
+                  <ProblemSolverCard />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={11} glowColor="#F39C12">
+                  <ProjectsCountCard />
+                </BentoCard>
+                
+                <BentoCard size="wide" delay={12} className="md:col-span-2">
+                  <ExperienceCard />
+                </BentoCard>
+                
+                <BentoCard size="default" delay={13} glowColor="#1ABC9C">
+                  <APICard />
+                </BentoCard>
             </div>
         </div>
       </motion.section>
