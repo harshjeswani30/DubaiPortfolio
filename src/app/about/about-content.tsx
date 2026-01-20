@@ -123,20 +123,38 @@ export function AboutContent() {
         })
       }
 
-      const preloadImages = (selector = "img") => {
+        const animateBentoGridOnScroll = () => {
+          const bentoItems = document.querySelectorAll(".bento-item:not(.bento-item--main)")
+          gsap.to(bentoItems, {
+            opacity: 0,
+            scale: 0.8,
+            duration: 1,
+            ease: "power2.out",
+            stagger: 0.05,
+            scrollTrigger: {
+              trigger: ".about-main",
+              start: "top top",
+              end: "+=30%",
+              scrub: true,
+            },
+          })
+        }
+
+        const preloadImages = (selector = "img") => {
         return new Promise((resolve) => {
           imagesLoaded(document.querySelectorAll(selector), { background: true }, resolve)
         })
       }
 
-      preloadImages(".one, .content__img").then(() => {
-        document.body.classList.remove("loading")
-        createFlipOnScrollAnimation()
-        animateSpansOnScroll()
-        animateImagesOnScroll()
-        addParallaxToColumnImages()
-        window.addEventListener("resize", createFlipOnScrollAnimation)
-      })
+        preloadImages(".one, .content__img").then(() => {
+          document.body.classList.remove("loading")
+          createFlipOnScrollAnimation()
+          animateSpansOnScroll()
+          animateImagesOnScroll()
+          addParallaxToColumnImages()
+          animateBentoGridOnScroll()
+          window.addEventListener("resize", createFlipOnScrollAnimation)
+        })
 
       return () => {
         flipCtx && flipCtx.revert()
@@ -213,18 +231,63 @@ export function AboutContent() {
           width: 100vw;
         }
 
-        .content {
-          display: grid;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100vh;
-          grid-template-columns: 1fr;
-          grid-template-rows: auto;
-          grid-template-areas: "content";
-          position: relative;
-          z-index: 90;
-        }
+          .bento-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 8px;
+            padding: 8px;
+            z-index: 100;
+            pointer-events: none;
+          }
+
+          .bento-item {
+            background: var(--color-medium);
+            border-radius: 12px;
+            overflow: hidden;
+            opacity: 0.9;
+          }
+
+          .bento-item--main {
+            grid-column: 2 / 4;
+            grid-row: 1 / 3;
+            background: transparent;
+          }
+
+          .bento-item--1 { grid-column: 1; grid-row: 1; }
+          .bento-item--2 { grid-column: 4; grid-row: 1; }
+          .bento-item--3 { grid-column: 1; grid-row: 2; }
+          .bento-item--4 { grid-column: 4; grid-row: 2; }
+          .bento-item--5 { grid-column: 1; grid-row: 3; }
+          .bento-item--6 { grid-column: 2; grid-row: 3; }
+          .bento-item--7 { grid-column: 3; grid-row: 3; }
+          .bento-item--8 { grid-column: 4; grid-row: 3; }
+
+          .bento-item--accent {
+            background: linear-gradient(135deg, var(--color-accent), rgba(0, 173, 181, 0.5));
+          }
+
+          .bento-item--dark {
+            background: rgba(34, 40, 49, 0.95);
+          }
+
+          .content {
+            display: grid;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto;
+            grid-template-areas: "content";
+            position: relative;
+            z-index: 90;
+          }
 
         .content--blend {
           mix-blend-mode: overlay;
@@ -380,211 +443,14 @@ export function AboutContent() {
           flex: none;
         }
 
-          .footer-text {
-            text-align: center;
-            padding: 10vh 0;
-            font-size: 1.5rem;
-            color: var(--color-accent);
-          }
+        .footer-text {
+          text-align: center;
+          padding: 10vh 0;
+          font-size: 1.5rem;
+          color: var(--color-accent);
+        }
 
-          .bento-wrapper {
-            position: relative;
-            z-index: 100;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-          }
-
-          .bento-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, minmax(150px, auto));
-            gap: 1rem;
-            width: 100%;
-          }
-
-          .bento-item {
-            background: rgba(57, 62, 70, 0.5);
-            border: 1px solid rgba(0, 173, 181, 0.2);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            position: relative;
-          }
-
-          .bento-item:hover {
-            border-color: var(--color-accent);
-            transform: translateY(-4px);
-            box-shadow: 0 10px 40px rgba(0, 173, 181, 0.15);
-          }
-
-          .bento-item--large {
-            grid-column: span 2;
-            grid-row: span 2;
-          }
-
-          .bento-item--wide {
-            grid-column: span 2;
-          }
-
-          .bento-item--tall {
-            grid-row: span 2;
-          }
-
-          .bento-item__title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--color-title);
-            margin-bottom: 0.5rem;
-          }
-
-          .bento-item__subtitle {
-            font-size: 0.875rem;
-            color: var(--color-accent);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.75rem;
-          }
-
-          .bento-item__text {
-            font-size: 0.9rem;
-            color: var(--color-text);
-            opacity: 0.8;
-            line-height: 1.6;
-          }
-
-          .bento-item__icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-          }
-
-          .bento-item__stats {
-            display: flex;
-            gap: 2rem;
-            margin-top: auto;
-          }
-
-          .bento-stat {
-            text-align: center;
-          }
-
-          .bento-stat__number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--color-accent);
-            display: block;
-          }
-
-          .bento-stat__label {
-            font-size: 0.75rem;
-            color: var(--color-text);
-            opacity: 0.6;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-          }
-
-          .bento-item__tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-          }
-
-          .bento-tag {
-            background: rgba(0, 173, 181, 0.15);
-            color: var(--color-accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-          }
-
-          .bento-item__image {
-            position: absolute;
-            inset: 0;
-            background-size: cover;
-            background-position: center;
-            opacity: 0.3;
-            z-index: -1;
-          }
-
-          .bento-item__list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-          }
-
-          .bento-item__list li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-          }
-
-          .bento-item__list li:last-child {
-            border-bottom: none;
-          }
-
-          .bento-item__list li::before {
-            content: "→";
-            color: var(--color-accent);
-          }
-
-          .bento-progress {
-            margin-top: auto;
-          }
-
-          .bento-progress__bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 0.5rem;
-          }
-
-          .bento-progress__fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-accent), #00d4dd);
-            border-radius: 3px;
-          }
-
-          .bento-progress__label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--color-text);
-            opacity: 0.6;
-          }
-
-          @media screen and (max-width: 1024px) {
-            .bento-grid {
-              grid-template-columns: repeat(2, 1fr);
-              grid-template-rows: auto;
-            }
-            .bento-item--large {
-              grid-column: span 2;
-              grid-row: span 1;
-            }
-          }
-
-          @media screen and (max-width: 640px) {
-            .bento-grid {
-              grid-template-columns: 1fr;
-            }
-            .bento-item--large,
-            .bento-item--wide {
-              grid-column: span 1;
-            }
-          }
-
-          @media screen and (min-width: 53em) {
+        @media screen and (min-width: 53em) {
           .content--sides {
             grid-template-columns: 40% 1fr;
             grid-template-areas: "img content";
@@ -622,133 +488,182 @@ export function AboutContent() {
 
       <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
 
-      <div className="about-page-wrapper">
-        <main ref={mainRef} className="about-main">
+        <div className="about-page-wrapper">
+          <div className="bento-grid">
+            <div className="bento-item bento-item--1 bento-item--accent"></div>
+            <div className="bento-item bento-item--main"></div>
+            <div className="bento-item bento-item--2 bento-item--dark"></div>
+            <div className="bento-item bento-item--3 bento-item--dark"></div>
+            <div className="bento-item bento-item--4 bento-item--accent"></div>
+            <div className="bento-item bento-item--5 bento-item--dark"></div>
+            <div className="bento-item bento-item--6 bento-item--accent"></div>
+            <div className="bento-item bento-item--7 bento-item--dark"></div>
+            <div className="bento-item bento-item--8 bento-item--dark"></div>
+          </div>
+          <main ref={mainRef} className="about-main">
           <section className="content content--inital">
+            <div
+              className="one"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
+              }}
+            />
+          </section>
+
+          <section className="content content--center content--blend">
+            <div data-step className="content__img" />
+            <h1 className="content__title font-alt">
+              <span>Full Stack</span>
+              <br />
+              <span>Developer</span>
+            </h1>
+          </section>
+
+          <section className="content content--column">
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=600)",
+              }}
+            />
+            <div data-step className="content__img content__img--mid" />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1504639725590-34d0984388bd?q=80&w=600)",
+              }}
+            />
+          </section>
+
+          <section className="content content--lines">
+            <h2 className="content__title content__title--medium font-alt">
+              <span>Clean</span>
+              <div data-step className="content__img" />
+              <span>Code</span>
+            </h2>
+            <h2 className="content__title content__title--medium font-alt">
+              <span>Built with</span>
               <div
-                className="one"
+                className="content__img"
                 style={{
                   backgroundImage:
-                    "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
+                    "url(https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=600)",
                 }}
               />
-            </section>
+              <span>passion</span>
+            </h2>
+            <h2 className="content__title content__title--medium font-alt">
+              <span>and</span>
+              <div
+                className="content__img"
+                style={{
+                  backgroundImage:
+                    "url(https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600)",
+                }}
+              />
+              <span>precision</span>
+            </h2>
+          </section>
 
-            <div className="bento-wrapper">
-              <div className="bento-grid">
-                <div className="bento-item bento-item--large">
-                  <div className="bento-item__subtitle">About Me</div>
-                  <h3 className="bento-item__title font-alt">Full Stack Developer & UI/UX Enthusiast</h3>
-                  <p className="bento-item__text">
-                    Welcome to my digital space where creativity meets technology. I specialize in building modern web applications—crafting seamless user experiences with cutting-edge frameworks and scalable architectures.
-                  </p>
-                  <div className="bento-item__stats">
-                    <div className="bento-stat">
-                      <span className="bento-stat__number">5+</span>
-                      <span className="bento-stat__label">Years Exp</span>
-                    </div>
-                    <div className="bento-stat">
-                      <span className="bento-stat__number">50+</span>
-                      <span className="bento-stat__label">Projects</span>
-                    </div>
-                    <div className="bento-stat">
-                      <span className="bento-stat__number">30+</span>
-                      <span className="bento-stat__label">Clients</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bento-item">
-                  <div className="bento-item__icon">🎯</div>
-                  <h3 className="bento-item__title">Mission</h3>
-                  <p className="bento-item__text">Creating digital experiences that matter</p>
-                </div>
-
-                <div className="bento-item">
-                  <div className="bento-item__icon">📍</div>
-                  <h3 className="bento-item__title">Based In</h3>
-                  <p className="bento-item__text">Dubai, UAE</p>
-                </div>
-
-                <div className="bento-item bento-item--wide">
-                  <div className="bento-item__subtitle">Tech Stack</div>
-                  <h3 className="bento-item__title">Technologies I Work With</h3>
-                  <div className="bento-item__tags">
-                    <span className="bento-tag">React</span>
-                    <span className="bento-tag">Next.js</span>
-                    <span className="bento-tag">TypeScript</span>
-                    <span className="bento-tag">Node.js</span>
-                    <span className="bento-tag">Python</span>
-                    <span className="bento-tag">PostgreSQL</span>
-                    <span className="bento-tag">AWS</span>
-                    <span className="bento-tag">Docker</span>
-                  </div>
-                </div>
-
-                <div className="bento-item bento-item--tall">
-                  <div className="bento-item__subtitle">Services</div>
-                  <h3 className="bento-item__title">What I Do</h3>
-                  <ul className="bento-item__list">
-                    <li>Web Development</li>
-                    <li>Mobile Apps</li>
-                    <li>UI/UX Design</li>
-                    <li>API Development</li>
-                    <li>Cloud Solutions</li>
-                  </ul>
-                </div>
-
-                <div className="bento-item">
-                  <div
-                    className="bento-item__image"
-                    style={{
-                      backgroundImage: "url(https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600)",
-                    }}
-                  />
-                  <h3 className="bento-item__title">Clean Code</h3>
-                  <p className="bento-item__text">Built with passion and precision</p>
-                </div>
-
-                <div className="bento-item bento-item--wide">
-                  <div className="bento-item__subtitle">Philosophy</div>
-                  <h3 className="bento-item__title">My Approach</h3>
-                  <p className="bento-item__text">
-                    I believe in writing clean, maintainable code that stands the test of time—collaborating with teams to deliver products that users love and businesses rely on.
-                  </p>
-                </div>
-
-                <div className="bento-item">
-                  <div className="bento-item__icon">🚀</div>
-                  <h3 className="bento-item__title">Performance</h3>
-                  <div className="bento-progress">
-                    <div className="bento-progress__label">
-                      <span>Optimization</span>
-                      <span>95%</span>
-                    </div>
-                    <div className="bento-progress__bar">
-                      <div className="bento-progress__fill" style={{ width: "95%" }} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bento-item">
-                  <div className="bento-item__icon">💡</div>
-                  <h3 className="bento-item__title">Innovation</h3>
-                  <p className="bento-item__text">Always exploring new technologies</p>
-                </div>
-
-                <div className="bento-item bento-item--wide">
-                  <div
-                    className="bento-item__image"
-                    style={{
-                      backgroundImage: "url(https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600)",
-                    }}
-                  />
-                  <div className="bento-item__subtitle">Let&apos;s Connect</div>
-                  <h3 className="bento-item__title font-alt">Ready to Build Something Amazing?</h3>
-                  <p className="bento-item__text">Let&apos;s turn your ideas into reality</p>
-                </div>
-              </div>
+          <section className="content content--sides">
+            <div data-step className="content__img" />
+            <div className="content__text">
+              <p>
+                <strong>Welcome to my digital space</strong> where creativity meets technology. I specialize in
+                building modern web applications—crafting seamless user experiences with cutting-edge
+                frameworks and scalable architectures.
+              </p>
             </div>
+          </section>
+
+          <section className="content content--center content--center-tall">
+            <div data-step className="content__img" />
+            <div className="content__text content__text--large">
+              <p>
+                I believe in writing clean, maintainable code that stands the test of time—collaborating
+                with teams to deliver products that users love and businesses rely on.
+              </p>
+            </div>
+          </section>
+
+          <section className="content content--grid">
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=600)",
+              }}
+            />
+            <div data-step className="content__img" />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1537432376149-e84978a29b5d?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1562813733-b31f71025d54?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?q=80&w=600)",
+              }}
+            />
+            <div
+              className="content__img"
+              style={{
+                backgroundImage:
+                  "url(https://images.unsplash.com/photo-1629654297299-c8506221ca97?q=80&w=600)",
+              }}
+            />
+          </section>
+
+          <div className="footer-text font-alt">Let&apos;s build something amazing</div>
         </main>
       </div>
     </>
