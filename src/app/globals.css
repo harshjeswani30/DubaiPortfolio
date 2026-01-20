@@ -229,17 +229,7 @@ body {
   grid-area: 1 / 1;
 }
 
-.projects-layout ~ footer,
-.projects-layout ~ nav,
-body:has(.projects-layout) footer,
-body:has(.projects-layout) > div > footer,
-body:has(.carousel-container) footer {
-  display: none !important;
-}
 
-body:has(.carousel-container) .scroll-progress {
-  display: none !important;
-}
 
 .animate-grow {
   animation: grow linear both;
