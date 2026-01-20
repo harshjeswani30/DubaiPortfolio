@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -18,12 +18,20 @@ const navItems = [
   { href: "/contact", label: "Contact" },
 ]
 
+const hasMountedRef = { current: false }
+
 export function FloatingNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
   const pathname = usePathname()
   const { scrollY } = useScroll()
   
   const floatY = useTransform(scrollY, [0, 100], [0, 8])
+
+  useEffect(() => {
+    hasMountedRef.current = true
+    setHasMounted(true)
+  }, [])
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -50,22 +58,22 @@ export function FloatingNav() {
     }
   }, [isMenuOpen])
 
-  return (
-    <>
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-        style={{ y: floatY }}
-        className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
-      >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl"
-          >
+    return (
+      <>
+        <motion.nav
+          initial={hasMounted ? false : { opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{ y: floatY }}
+          className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
+        >
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+            <motion.div
+              initial={hasMounted ? false : { opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl"
+            >
             <Link href="/">
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -84,12 +92,12 @@ export function FloatingNav() {
             </Link>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="hidden rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl md:block"
-          >
+            <motion.div
+              initial={hasMounted ? false : { opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="hidden rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-4 py-3 shadow-xl backdrop-blur-xl md:block"
+            >
             <div className="flex items-center gap-1">
               {navItems.map((item) => (
                 <Link key={item.href} href={item.href}>
@@ -117,12 +125,12 @@ export function FloatingNav() {
             </div>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-3 py-3 shadow-xl backdrop-blur-xl"
-          >
+            <motion.div
+              initial={hasMounted ? false : { opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/80 px-3 py-3 shadow-xl backdrop-blur-xl"
+            >
             <MenuButton
               isOpen={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
