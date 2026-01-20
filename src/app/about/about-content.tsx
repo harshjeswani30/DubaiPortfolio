@@ -129,14 +129,23 @@ export function AboutContent() {
         })
       }
 
-      preloadImages(".one, .content__img").then(() => {
-        document.body.classList.remove("loading")
-        createFlipOnScrollAnimation()
-        animateSpansOnScroll()
-        animateImagesOnScroll()
-        addParallaxToColumnImages()
-        window.addEventListener("resize", createFlipOnScrollAnimation)
-      })
+preloadImages(".one, .content__img").then(() => {
+          document.body.classList.remove("loading")
+          
+          gsap.set(oneElement, {
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh"
+          })
+          
+          createFlipOnScrollAnimation()
+          animateSpansOnScroll()
+          animateImagesOnScroll()
+          addParallaxToColumnImages()
+          window.addEventListener("resize", createFlipOnScrollAnimation)
+        })
 
       return () => {
         flipCtx && flipCtx.revert()
@@ -228,19 +237,7 @@ export function AboutContent() {
             position: relative;
           }
 
-          .one {
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 10;
-            background-size: cover;
-            background-position: 50% 50%;
-            will-change: transform, width, height, filter;
-          }
-
-        .content--blend {
+          .content--blend {
           mix-blend-mode: overlay;
         }
 
@@ -322,17 +319,19 @@ export function AboutContent() {
           max-width: none;
         }
 
-        .one {
-          width: 100vw;
-          height: 100vh;
-          position: relative;
-          z-index: 10;
-          background-size: cover;
-          background-position: 50% 50%;
-          will-change: transform, width, height, filter;
-        }
+.one {
+            width: 100vw !important;
+            height: 100vh !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            background-size: cover;
+            background-position: 50% 50%;
+            will-change: transform, width, height, filter;
+          }
 
-        .content__img {
+          .content__img {
           background-size: cover;
           background-position: 50% 50%;
           will-change: transform, filter, opacity;
