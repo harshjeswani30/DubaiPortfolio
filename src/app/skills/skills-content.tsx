@@ -801,7 +801,7 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
           className="relative z-10 min-h-screen py-32"
           style={{ y: gridY, opacity: gridOpacity }}
         >
-          <div className="absolute inset-0 grid-background opacity-30" />
+          <div className="absolute inset-0 grid-background opacity-50" />
           <div className="relative mx-auto max-w-7xl px-6">
 <div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-4 lg:grid-cols-4">
               <BentoCard size="large" delay={0}>
