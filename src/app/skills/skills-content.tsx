@@ -693,10 +693,14 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
     restDelta: 0.001
   })
   
-  const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
-  const headerOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
-  const gridY = useTransform(smoothProgress, [0.1, 0.4], [100, 0])
-  const gridOpacity = useTransform(smoothProgress, [0.1, 0.25], [0, 1])
+const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
+    const headerOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
+    const gridY = useTransform(smoothProgress, [0.1, 0.4], [100, 0])
+    const gridOpacity = useTransform(smoothProgress, [0.1, 0.25], [0, 1])
+    const categoriesY = useTransform(smoothProgress, [0.3, 0.6], [150, 0])
+    const categoriesOpacity = useTransform(smoothProgress, [0.3, 0.45], [0, 1])
+    const learningY = useTransform(smoothProgress, [0.5, 0.8], [150, 0])
+    const learningOpacity = useTransform(smoothProgress, [0.5, 0.65], [0, 1])
   
   const skillsByCategory = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = []
@@ -855,69 +859,77 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
         </div>
       </motion.section>
       
-      <section className="relative z-10 py-32">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-16 text-center"
-          >
-            <h2 className="mb-4 text-4xl font-bold text-[#EEEEEE] md:text-5xl">
-              Skill Categories
-            </h2>
-            <p className="text-[#00ADB5]/70">
-              Hover to explore proficiency levels
-            </p>
-          </motion.div>
-          
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(skillsByCategory).map(([category, categorySkills], index) => (
-              <CategoryCard
-                key={category}
-                category={category}
-                skills={categorySkills}
-                index={index}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-      
-      <section className="relative z-10 py-32">
-        <div className="mx-auto max-w-5xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="mb-8 text-4xl font-bold text-[#EEEEEE] md:text-5xl">
-              Always <span className="text-[#00ADB5]">Learning</span>
-            </h2>
-            <p className="mx-auto mb-12 max-w-2xl text-lg text-[#00ADB5]/70">
-              Technology evolves rapidly, and so do I. Currently exploring AI/ML integration, 
-              WebGPU, and advanced animation techniques.
-            </p>
+<motion.section 
+          className="relative z-10 py-32"
+          style={{ y: categoriesY, opacity: categoriesOpacity }}
+        >
+          <div className="absolute inset-0 grid-background opacity-50" />
+          <div className="relative mx-auto max-w-7xl px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-16 text-center"
+            >
+              <h2 className="mb-4 text-4xl font-bold text-[#EEEEEE] md:text-5xl">
+                Skill Categories
+              </h2>
+              <p className="text-[#00ADB5]/70">
+                Hover to explore proficiency levels
+              </p>
+            </motion.div>
             
-            <div className="flex flex-wrap justify-center gap-3">
-              {["AI/ML", "WebGPU", "Rust", "WebAssembly", "Edge Computing"].map((tech, i) => (
-                <motion.span
-                  key={tech}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-6 py-3 text-sm font-medium text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#00ADB5]/10"
-                >
-                  {tech}
-                </motion.span>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Object.entries(skillsByCategory).map(([category, categorySkills], index) => (
+                <CategoryCard
+                  key={category}
+                  category={category}
+                  skills={categorySkills}
+                  index={index}
+                />
               ))}
             </div>
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </motion.section>
+      
+      <motion.section 
+          className="relative z-10 py-32"
+          style={{ y: learningY, opacity: learningOpacity }}
+        >
+          <div className="absolute inset-0 grid-background opacity-50" />
+          <div className="relative mx-auto max-w-5xl px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center"
+            >
+              <h2 className="mb-8 text-4xl font-bold text-[#EEEEEE] md:text-5xl">
+                Always <span className="text-[#00ADB5]">Learning</span>
+              </h2>
+              <p className="mx-auto mb-12 max-w-2xl text-lg text-[#00ADB5]/70">
+                Technology evolves rapidly, and so do I. Currently exploring AI/ML integration, 
+                WebGPU, and advanced animation techniques.
+              </p>
+              
+              <div className="flex flex-wrap justify-center gap-3">
+                {["AI/ML", "WebGPU", "Rust", "WebAssembly", "Edge Computing"].map((tech, i) => (
+                  <motion.span
+                    key={tech}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-6 py-3 text-sm font-medium text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#00ADB5]/10"
+                  >
+                    {tech}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </motion.section>
     </div>
   )
 }
