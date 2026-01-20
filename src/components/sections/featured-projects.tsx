@@ -26,7 +26,7 @@ interface FeaturedProjectsProps {
   projects: Project[]
 }
 
-function ProjectCard({ project, index, isInView, totalProjects }: { project: Project; index: number; isInView: boolean; totalProjects: number }) {
+function ProjectCard({ project, index, isInView, totalProjects, className = "" }: { project: Project; index: number; isInView: boolean; totalProjects: number; className?: string }) {
   const cardRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -103,10 +103,10 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      className="relative"
-      style={{ perspective: 1200 }}
-    >
+        onMouseLeave={handleMouseLeave}
+        className={`relative ${className}`}
+        style={{ perspective: 1200 }}
+      >
       <div onClick={handleProjectClick} className="cursor-pointer">
         <motion.div
           style={{
@@ -564,15 +564,24 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
           layout
         >
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, i) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
-                index={i} 
-                isInView={isInView}
-                totalProjects={filteredProjects.length}
-              />
-            ))}
+            {filteredProjects.map((project, i) => {
+              let spanClass = ""
+              if (filteredProjects.length === 4) {
+                if (i === 0 || i === 3) spanClass = "lg:col-span-2"
+                else spanClass = "lg:col-span-1"
+              }
+              
+              return (
+                <ProjectCard 
+                  key={project.id} 
+                  project={project} 
+                  index={i} 
+                  isInView={isInView}
+                  totalProjects={filteredProjects.length}
+                  className={spanClass}
+                />
+              )
+            })}
           </AnimatePresence>
         </motion.div>
 
