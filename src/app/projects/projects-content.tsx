@@ -113,148 +113,152 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-end pb-12">
-          <div className="overlap items-end w-[36rem] mb-6">
-            {displayProjects.map((project, index) => (
-              <div key={project.id}>
-                <span className="block overflow-clip">
-                  <span
-                    className="block uppercase font-medium tracking-widest mb-2 text-sm text-white/80 animate-text-up"
+        <div className="flex-1 px-8 lg:px-12 relative hidden supports-sda:flex flex-col justify-end pb-10">
+          <div className="max-w-lg space-y-6">
+            <div className="overlap h-[140px]">
+              {displayProjects.map((project, index) => (
+                <div key={project.id} className="flex flex-col justify-end h-full">
+                  <span className="block overflow-clip">
+                    <span
+                      className="block uppercase font-medium tracking-[0.25em] text-xs text-[#00ADB5] animate-text-up"
+                      style={{
+                        animationTimeline: `--slide-${index + 1}`,
+                        animationRangeStart: "30cqw",
+                      }}
+                    >
+                      {project.category}
+                    </span>
+                  </span>
+                  <h1
+                    className="mt-2 font-serif text-4xl lg:text-5xl leading-tight animate-text translate-y-[205%] skew-y-6"
                     style={{
                       animationTimeline: `--slide-${index + 1}`,
                       animationRangeStart: "30cqw",
-                      letterSpacing: "0.3em",
                     }}
                   >
-                    {project.category}
-                  </span>
-                </span>
+                    {project.title.split(" ").slice(0, -1).join(" ")}{" "}
+                    <em className="text-white/90">{project.title.split(" ").slice(-1)[0]}</em>
+                  </h1>
+                </div>
+              ))}
+            </div>
+
+            <div className="overlap h-[60px]">
+              {displayProjects.map((project, index) => (
                 <p
-                  className="pb-2 font-serif text-6xl animate-text translate-y-[205%] skew-y-6"
+                  key={project.id}
+                  className="text-white/60 text-sm leading-relaxed animate-text translate-y-[50%] line-clamp-3"
                   style={{
                     animationTimeline: `--slide-${index + 1}`,
                     animationRangeStart: "30cqw",
                   }}
                 >
-                  {project.title.split(" ").slice(0, -1).join(" ")}{" "}
-                  <em>{project.title.split(" ").slice(-1)[0]}</em>
+                  {project.description}
                 </p>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="overlap w-[28rem] mb-5">
-            {displayProjects.map((project, index) => (
-              <p
-                key={project.id}
-                className="text-white/70 text-base leading-relaxed animate-text translate-y-[50%] skew-y-[1.5deg]"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                {project.description}
-              </p>
-            ))}
-          </div>
-
-          <div className="overlap max-w-xl mb-5">
-            {displayProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className="flex flex-wrap gap-2 animate-tech pointer-events-auto"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                {project.tech_stack.map((tech) => (
-                  <span
-                    key={tech}
-                    className="group relative cursor-pointer rounded-lg bg-white/5 border border-white/15 px-3 py-1.5 text-[10px] font-bold text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:border-[#00ADB5]/50 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(0,173,181,0.25)] hover:text-white"
-                  >
-                    <span className="relative z-10 flex items-center gap-1.5 uppercase tracking-widest">
-                      <span className="h-1 w-1 rounded-full bg-[#00ADB5] shadow-[0_0_10px_#00ADB5] animate-pulse" />
+            <div className="overlap h-[40px]">
+              {displayProjects.map((project, index) => (
+                <div
+                  key={project.id}
+                  className="flex flex-wrap gap-2 animate-tech pointer-events-auto"
+                  style={{
+                    animationTimeline: `--slide-${index + 1}`,
+                    animationRangeStart: "30cqw",
+                  }}
+                >
+                  {project.tech_stack.slice(0, 4).map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
+                    >
                       {tech}
                     </span>
-                    <span className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#00ADB5]/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </span>
-                ))}
-              </div>
-            ))}
-          </div>
+                  ))}
+                  {project.tech_stack.length > 4 && (
+                    <span className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80">
+                      +{project.tech_stack.length - 4}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
 
-          <div className="overlap w-[22rem] mb-6">
-            {displayProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className="flex items-center gap-3 animate-text translate-y-[50%] pointer-events-auto"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                <Link href={`/projects/${project.slug}`}>
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
-                  >
-                    <span>View Details</span>
-                    <ArrowUpRight className="h-4 w-4" />
-                  </motion.button>
-                </Link>
-                
-                {project.github_url && (
-                  <motion.a
-                    href={project.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                  >
-                    <Github className="h-4 w-4" />
-                  </motion.a>
-                )}
-                
-                {project.live_url && (
-                  <motion.a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </motion.a>
-                )}
-              </div>
-            ))}
-          </div>
-
-          <div className="w-60">
-            <nav className="flex font-medium text-sm gap-5">
-              {displayProjects.map((_, index) => (
-                <a
-                  key={index}
-                  href={`#slide-${index + 1}`}
-                  className="animate-page !text-white pointer-events-auto"
+            <div className="overlap h-[44px]">
+              {displayProjects.map((project, index) => (
+                <div
+                  key={project.id}
+                  className="flex items-center gap-3 animate-text translate-y-[50%] pointer-events-auto"
                   style={{
                     animationTimeline: `--slide-${index + 1}`,
                     animationRangeStart: "30cqw",
                   }}
                 >
-                  {String(index + 1).padStart(2, "0")}
-                </a>
+                  <Link href={`/projects/${project.slug}`}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-medium text-black transition-all hover:bg-white/90"
+                    >
+                      <span>View Project</span>
+                      <ArrowUpRight className="h-4 w-4" />
+                    </motion.button>
+                  </Link>
+                  
+                  {project.github_url && (
+                    <motion.a
+                      href={project.github_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                    >
+                      <Github className="h-4 w-4" />
+                    </motion.a>
+                  )}
+                  
+                  {project.live_url && (
+                    <motion.a
+                      href={project.live_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                    </motion.a>
+                  )}
+                </div>
               ))}
-            </nav>
-            <div className="bg-white/60 mt-2">
-              <div
-                className="bg-white h-0.5 animate-progress origin-left"
-                style={{ animationTimeline: "--scroller" }}
-              />
+            </div>
+
+            <div className="pt-4 border-t border-white/10">
+              <div className="flex items-center gap-4">
+                <nav className="flex font-medium text-sm gap-4">
+                  {displayProjects.map((_, index) => (
+                    <a
+                      key={index}
+                      href={`#slide-${index + 1}`}
+                      className="animate-page !text-white/50 hover:!text-white transition-colors pointer-events-auto"
+                      style={{
+                        animationTimeline: `--slide-${index + 1}`,
+                        animationRangeStart: "30cqw",
+                      }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </a>
+                  ))}
+                </nav>
+                <div className="flex-1 h-0.5 bg-white/20 rounded-full overflow-hidden">
+                  <div
+                    className="bg-[#00ADB5] h-full animate-progress origin-left"
+                    style={{ animationTimeline: "--scroller" }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
