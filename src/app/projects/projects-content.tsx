@@ -113,7 +113,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-start pt-8">
+          <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-start pt-8">
             <div className="overlap w-full max-w-xl">
               {displayProjects.map((project, index) => (
                 <div
@@ -139,7 +139,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                     {project.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-2 mt-3">
+                  <div className="flex flex-wrap gap-2 mt-4">
                     {project.tech_stack.map((tech) => (
                       <span
                         key={tech}
@@ -149,75 +149,49 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                       </span>
                     ))}
                   </div>
-
-                  <div className="flex items-center gap-3 mt-4 pointer-events-auto">
-                    <Link href={`/projects/${project.slug}`}>
-                      <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
-                      >
-                        <span>View Details</span>
-                        <ArrowUpRight className="h-4 w-4" />
-                      </motion.button>
-                    </Link>
-                    
-                    {project.github_url && (
-                      <motion.a
-                        href={project.github_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                        title="View on GitHub"
-                      >
-                        <Github className="h-4 w-4" />
-                      </motion.a>
-                    )}
-                    
-                    {project.live_url && (
-                      <motion.a
-                        href={project.live_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                        title="View Live Site"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </motion.a>
-                    )}
-                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="w-60 mt-8">
-            <nav className="flex font-medium text-sm gap-5">
-              {displayProjects.map((_, index) => (
-                <a
-                  key={index}
-                  href={`#slide-${index + 1}`}
-                  className="animate-page !text-white pointer-events-auto"
-                  style={{
-                    animationTimeline: `--slide-${index + 1}`,
-                    animationRangeStart: "30cqw",
-                  }}
-                >
-                  {String(index + 1).padStart(2, "0")}
-                </a>
-              ))}
-            </nav>
-            <div className="bg-white/30 mt-2">
-              <div
-                className="bg-white h-0.5 animate-progress origin-left"
-                style={{ animationTimeline: "--scroller" }}
-              />
+            <div className="mt-auto mb-16 flex flex-col gap-6">
+              <div className="flex items-center gap-3 pointer-events-auto">
+                <Link href={`/projects/${displayProjects[0]?.slug || ''}`}>
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+                  >
+                    <span>View Details</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </motion.button>
+                </Link>
+              </div>
+
+              <div className="w-60">
+                <nav className="flex font-medium text-sm gap-5">
+                  {displayProjects.map((_, index) => (
+                    <a
+                      key={index}
+                      href={`#slide-${index + 1}`}
+                      className="animate-page !text-white pointer-events-auto"
+                      style={{
+                        animationTimeline: `--slide-${index + 1}`,
+                        animationRangeStart: "30cqw",
+                      }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </a>
+                  ))}
+                </nav>
+                <div className="bg-white/30 mt-2">
+                  <div
+                    className="bg-white h-0.5 animate-progress origin-left"
+                    style={{ animationTimeline: "--scroller" }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
       <div className="supports-sda:hidden px-7 pb-7">
         Your browser does not support scroll-driven animations. See{" "}
