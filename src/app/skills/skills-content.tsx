@@ -62,13 +62,13 @@ function BentoCard({
     <HoverContext.Provider value={isHovered}>
       <motion.div
         ref={ref}
-        initial={{ opacity: 0, y: 50, scale: 0.95 }}
-        animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-        whileHover={{ scale: 1.02, y: -5 }}
+        initial={{ opacity: 0, y: 60 }}
+        animate={isInView ? { opacity: 1, y: 0 } : {}}
+        whileHover={{ y: -5 }}
         transition={{ 
-          duration: 0.8, 
-          delay: delay * 0.08,
-          ease: "easeIn"
+          duration: 0.7, 
+          delay: delay * 0.06,
+          ease: [0.4, 0, 0.2, 1]
         }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
@@ -569,12 +569,12 @@ function CategoryCard({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40, scale: 0.95 }}
-      animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ 
-        delay: index * 0.1, 
-        duration: 0.7,
-        ease: "easeIn"
+        delay: index * 0.08, 
+        duration: 0.6,
+        ease: [0.4, 0, 0.2, 1]
       }}
       className="group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-[#222831]/80 p-6 backdrop-blur-sm transition-all duration-500 hover:border-[#00ADB5]/30"
     >
@@ -923,15 +923,15 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
                   {["AI/ML", "WebGPU", "Rust", "WebAssembly", "Edge Computing"].map((tech, i) => (
                     <motion.span
                       key={tech}
-                      initial={{ opacity: 0, y: 30 }}
+                      initial={{ opacity: 0, y: 40 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ 
-                        delay: i * 0.1,
+                        delay: i * 0.08,
                         duration: 0.6,
-                        ease: "easeIn"
+                        ease: [0.4, 0, 0.2, 1]
                       }}
-                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileHover={{ y: -2 }}
                       className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-6 py-3 text-sm font-medium text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#00ADB5]/10"
                     >
                       {tech}
