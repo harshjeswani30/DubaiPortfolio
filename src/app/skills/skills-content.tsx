@@ -49,15 +49,6 @@ function BentoCard({
     })
   }
 
-  const sizeClasses = {
-    small: "col-span-1 row-span-1",
-    default: "col-span-1 row-span-1 md:col-span-1 md:row-span-1",
-    large: "col-span-1 row-span-1 md:col-span-2 md:row-span-2",
-    wide: "col-span-1 row-span-1 md:col-span-2 md:row-span-1",
-    tall: "col-span-1 row-span-1 md:col-span-1 md:row-span-2",
-    feature: "col-span-1 row-span-1 md:col-span-2 md:row-span-2 lg:col-span-2 lg:row-span-2",
-  }
-
   return (
     <HoverContext.Provider value={isHovered}>
       <motion.div
@@ -73,7 +64,7 @@ function BentoCard({
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/50 hover:shadow-2xl hover:shadow-[#00ADB5]/20 ${sizeClasses[size]} ${className}`}
+        className={`group relative overflow-hidden rounded-[2rem] border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#222831]/50 backdrop-blur-xl transition-all duration-500 hover:border-[#00ADB5]/50 hover:shadow-2xl hover:shadow-[#00ADB5]/20 ${className}`}
         style={{
           background: isHovered 
             ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, ${glowColor}15, transparent 40%)` 
@@ -1239,33 +1230,33 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
         >
           <div className="absolute inset-0 grid-background opacity-50" />
           <div className="relative mx-auto max-w-7xl px-6">
-<div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-4 lg:grid-cols-4">
-              <BentoCard size="large" delay={0}>
+<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 md:[grid-auto-rows:180px]">
+              <BentoCard size="large" delay={0} className="md:col-span-2 md:row-span-2">
                 <FrontendCard skills={frontendSkills} />
               </BentoCard>
               
-              <BentoCard size="tall" delay={1}>
-                <LanguagesCard skills={languageSkills} />
-              </BentoCard>
-              
-              <BentoCard size="default" delay={2}>
+              <BentoCard size="default" delay={1}>
                 <ReactCard />
               </BentoCard>
               
-              <BentoCard size="default" delay={3} glowColor="#FF6B6B">
+              <BentoCard size="default" delay={2} glowColor="#FF6B6B">
                 <CodeLinesCard />
               </BentoCard>
               
-              <BentoCard size="default" delay={4}>
+              <BentoCard size="default" delay={3}>
                 <BackendCard skills={backendSkills} />
               </BentoCard>
               
-              <BentoCard size="default" delay={5} glowColor="#9B59B6">
+              <BentoCard size="default" delay={4} glowColor="#9B59B6">
                 <DevOpsCard skills={devopsSkills} />
               </BentoCard>
               
-              <BentoCard size="wide" delay={6}>
+              <BentoCard size="wide" delay={5} className="md:col-span-2">
                 <DatabaseCard skills={databaseSkills} />
+              </BentoCard>
+              
+              <BentoCard size="tall" delay={6} className="md:row-span-2">
+                <LanguagesCard skills={languageSkills} />
               </BentoCard>
               
               <BentoCard size="default" delay={7} glowColor="#F1C40F">
@@ -1276,12 +1267,12 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
                 <CoffeeCard />
               </BentoCard>
               
-              <BentoCard size="wide" delay={9}>
-                <ExperienceCard />
+              <BentoCard size="default" delay={9} glowColor="#3498DB">
+                <ProblemSolverCard />
               </BentoCard>
               
-              <BentoCard size="default" delay={10} glowColor="#3498DB">
-                <ProblemSolverCard />
+              <BentoCard size="wide" delay={10} className="md:col-span-2">
+                <ExperienceCard />
               </BentoCard>
               
               <BentoCard size="default" delay={11} glowColor="#2ECC71">
