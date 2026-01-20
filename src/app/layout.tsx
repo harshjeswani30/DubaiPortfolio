@@ -71,13 +71,13 @@ export default function RootLayout({
       <body
           className={`${geistSans.variable} ${geistMono.variable} ${cardo.variable} bg-black antialiased`}
         >
-<ThemeProvider>
+        <FloatingNav />
+        <ThemeProvider>
           <PageTransitionProvider>
               <SmoothScrollProvider>
                   <CircleTrailCursor strokeColor="#00ADB5" />
                 <ScrollProgress />
                 <CommandPalette />
-                <FloatingNav />
                 <main className="min-h-screen">{children}</main>
                 <Footer />
               </SmoothScrollProvider>
