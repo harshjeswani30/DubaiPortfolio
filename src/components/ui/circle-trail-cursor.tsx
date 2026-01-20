@@ -5,17 +5,20 @@ import { useEffect, useRef, useState } from 'react';
 export interface CircleTrailCursorProps {
   fillColor?: string;
   baseRadius?: number;
+  hoverRadius?: number;
   triggerSelector?: string;
 }
 
 export function CircleTrailCursor({
   fillColor = '#00ADB5',
   baseRadius = 8,
+  hoverRadius = 20,
   triggerSelector = 'a, button, [data-cursor-hover]'
 }: CircleTrailCursorProps) {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isCoarse, setIsCoarse] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
+  const posRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -28,8 +31,11 @@ export function CircleTrailCursor({
     const cursor = cursorRef.current;
     if (!cursor) return;
 
+    const currentRadius = isHovering ? hoverRadius : baseRadius;
+
     const onMouseMove = (ev: MouseEvent) => {
-      cursor.style.transform = `translate(${ev.clientX - baseRadius}px, ${ev.clientY - baseRadius}px)`;
+      posRef.current = { x: ev.clientX, y: ev.clientY };
+      cursor.style.transform = `translate(${ev.clientX - currentRadius}px, ${ev.clientY - currentRadius}px)`;
       cursor.style.opacity = '1';
     };
 
@@ -51,17 +57,28 @@ export function CircleTrailCursor({
         trigger.removeEventListener('mouseleave', leave);
       });
     };
-  }, [baseRadius, triggerSelector, isCoarse]);
+  }, [baseRadius, hoverRadius, triggerSelector, isCoarse, isHovering]);
+
+  useEffect(() => {
+    if (isCoarse) return;
+    const cursor = cursorRef.current;
+    if (!cursor) return;
+    
+    const currentRadius = isHovering ? hoverRadius : baseRadius;
+    cursor.style.transform = `translate(${posRef.current.x - currentRadius}px, ${posRef.current.y - currentRadius}px)`;
+  }, [isHovering, baseRadius, hoverRadius, isCoarse]);
 
   if (isCoarse) {
     return null;
   }
 
+  const currentRadius = isHovering ? hoverRadius : baseRadius;
+
   return (
     <>
       <style jsx global>{`
         * {
-          cursor: ${isHovering ? 'auto' : 'none'} !important;
+          cursor: none !important;
         }
       `}</style>
       <div
@@ -70,16 +87,16 @@ export function CircleTrailCursor({
           position: 'fixed',
           top: 0,
           left: 0,
-          width: baseRadius * 2,
-          height: baseRadius * 2,
+          width: currentRadius * 2,
+          height: currentRadius * 2,
           borderRadius: '50%',
-          backgroundColor: fillColor,
+          backgroundColor: isHovering ? 'transparent' : fillColor,
+          border: isHovering ? `2px solid ${fillColor}` : 'none',
           pointerEvents: 'none',
           zIndex: 10000,
           opacity: 0,
           willChange: 'transform',
-          transition: 'opacity 0.2s ease',
-          display: isHovering ? 'none' : 'block'
+          transition: 'width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border 0.2s ease',
         }}
       />
     </>
