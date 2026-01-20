@@ -154,17 +154,56 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             </div>
 
             <div className="mt-auto mb-16 flex flex-col gap-6">
-              <div className="flex items-center gap-3 pointer-events-auto">
-                <Link href={`/projects/${displayProjects[0]?.slug || ''}`}>
-                  <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+              <div className="overlap">
+                {displayProjects.map((project, index) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center gap-3 pointer-events-auto animate-text"
+                    style={{
+                      animationTimeline: `--slide-${index + 1}`,
+                      animationRangeStart: "30cqw",
+                    }}
                   >
-                    <span>View Details</span>
-                    <ArrowUpRight className="h-4 w-4" />
-                  </motion.button>
-                </Link>
+                    <Link href={`/projects/${project.slug}`}>
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+                      >
+                        <span>View Details</span>
+                        <ArrowUpRight className="h-4 w-4" />
+                      </motion.button>
+                    </Link>
+                    
+                    {project.github_url && (
+                      <motion.a
+                        href={project.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                        title="View on GitHub"
+                      >
+                        <Github className="h-4 w-4" />
+                      </motion.a>
+                    )}
+                    
+                    {project.live_url && (
+                      <motion.a
+                        href={project.live_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                        title="View Live Site"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </motion.a>
+                    )}
+                  </div>
+                ))}
               </div>
 
               <div className="w-60">
