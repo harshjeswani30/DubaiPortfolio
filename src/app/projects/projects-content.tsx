@@ -76,7 +76,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
   return (
     <div
-      className="carousel-container min-h-screen relative isolate flex flex-col gap-8 supports-sda:pointer-events-none overflow-clip bg-black text-white antialiased pt-24"
+      className="carousel-container h-screen relative isolate flex flex-col gap-4 supports-sda:pointer-events-none overflow-hidden bg-black text-white antialiased pt-20"
       style={{
         timelineScope: timelineScope,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,7 +129,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="overlap max-w-2xl mt-6">
+          <div className="overlap max-w-2xl mt-3">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
@@ -155,7 +155,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="overlap w-[22rem] mt-4">
+          <div className="overlap w-[22rem] mt-2">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
@@ -245,7 +245,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                 </span>
               </span>
               <p
-                className="pb-7 font-serif text-8xl animate-text translate-y-[205%] skew-y-6"
+                  className="pb-4 font-serif text-7xl animate-text translate-y-[205%] skew-y-6"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
