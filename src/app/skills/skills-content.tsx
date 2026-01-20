@@ -489,19 +489,21 @@ function GitCard() {
 }
 
 function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isPillHovered, setIsPillHovered] = useState(false)
+  const isCardHovered = useCardHover()
+  const isActive = isCardHovered || isPillHovered
   
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: delay * 0.05, duration: 0.4, ease: "easeOut" }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsPillHovered(true)}
+      onMouseLeave={() => setIsPillHovered(false)}
       className="group relative cursor-pointer"
     >
       <motion.div
-        animate={{ scale: isHovered ? 1.05 : 1 }}
+        animate={{ scale: isPillHovered ? 1.05 : 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
         className="relative overflow-hidden rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-4 py-3 backdrop-blur-sm transition-all duration-300 hover:border-[#00ADB5]/30 hover:bg-[#393E46]/30"
       >
@@ -516,7 +518,7 @@ function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
           <div 
             className="h-2.5 w-2.5 rounded-full bg-[#00ADB5] transition-all duration-300 group-hover:scale-125"
             style={{ 
-              boxShadow: isHovered ? `0 0 12px rgba(0, 173, 181, 0.8)` : 'none'
+              boxShadow: isActive ? `0 0 12px rgba(0, 173, 181, 0.8)` : 'none'
             }}
           />
           <span className="text-sm font-medium text-[#EEEEEE]/80 transition-colors group-hover:text-[#EEEEEE]">
@@ -524,7 +526,7 @@ function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
           </span>
           <span 
             className="ml-auto text-xs font-semibold transition-colors"
-            style={{ color: isHovered ? '#00ADB5' : 'rgba(238,238,238,0.4)' }}
+            style={{ color: isActive ? '#00ADB5' : 'rgba(238,238,238,0.4)' }}
           >
             {skill.proficiency}%
           </span>
@@ -533,14 +535,14 @@ function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
         <motion.div
           className="mt-2 h-1 overflow-hidden rounded-full bg-[#393E46]/50"
           initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.2 }}
+          animate={{ opacity: isActive ? 1 : 0 }}
+          transition={{ duration: 0.2, delay: isCardHovered ? delay * 0.05 : 0 }}
         >
           <motion.div
             className="h-full rounded-full bg-gradient-to-r from-[#00ADB5] to-[#00ADB5]/70"
             initial={{ width: 0 }}
-            animate={{ width: isHovered ? `${skill.proficiency}%` : 0 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            animate={{ width: isActive ? `${skill.proficiency}%` : 0 }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: isCardHovered ? delay * 0.05 : 0 }}
           />
         </motion.div>
       </motion.div>
