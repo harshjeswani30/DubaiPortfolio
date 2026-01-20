@@ -38,32 +38,43 @@ export function AboutContent() {
 
       let flipCtx: any
 
-      const createFlipOnScrollAnimation = () => {
-        flipCtx && flipCtx.revert()
-        flipCtx = gsap.context(() => {
-          const flipConfig = { duration: 1, ease: "sine.inOut" }
-          const states = stepElements.map((stepElement) => Flip.getState(stepElement))
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: parentElement,
-              start: "clamp(center center)",
-              endTrigger: stepElements[stepElements.length - 1],
-              end: "clamp(center center)",
-              scrub: true,
-            },
-          })
+const createFlipOnScrollAnimation = () => {
+          flipCtx && flipCtx.revert()
+          flipCtx = gsap.context(() => {
+            const flipConfig = { duration: 1, ease: "sine.inOut" }
+            const states = stepElements.map((stepElement) => Flip.getState(stepElement))
+            
+            gsap.set(oneElement, {
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              xPercent: 0,
+              yPercent: 0
+            })
+            
+            const tl = gsap.timeline({
+              scrollTrigger: {
+                trigger: parentElement,
+                start: "clamp(top top)",
+                endTrigger: stepElements[stepElements.length - 1],
+                end: "clamp(center center)",
+                scrub: true,
+              },
+            })
 
-          states.forEach((state: any, index: number) => {
-            tl.add(
-              Flip.fit(oneElement, state, {
-                ...flipConfig,
-                ease: index === 0 ? "none" : flipConfig.ease,
-              }),
-              index ? "+=0.5" : 0
-            )
+            states.forEach((state: any, index: number) => {
+              tl.add(
+                Flip.fit(oneElement, state, {
+                  ...flipConfig,
+                  ease: flipConfig.ease,
+                }),
+                index === 0 ? 0 : `+=${0.5}`
+              )
+            })
           })
-        })
-      }
+        }
 
       const animateSpansOnScroll = () => {
         document.querySelectorAll(".content__title > span").forEach((span, index) => {
@@ -131,14 +142,6 @@ export function AboutContent() {
 
 preloadImages(".one, .content__img").then(() => {
           document.body.classList.remove("loading")
-          
-          gsap.set(oneElement, {
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh"
-          })
           
           createFlipOnScrollAnimation()
           animateSpansOnScroll()
@@ -320,9 +323,9 @@ preloadImages(".one, .content__img").then(() => {
         }
 
 .one {
-            width: 100vw !important;
-            height: 100vh !important;
-            position: fixed;
+            width: 100%;
+            height: 100%;
+            position: absolute;
             top: 0;
             left: 0;
             z-index: 10;
