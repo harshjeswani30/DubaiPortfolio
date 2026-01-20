@@ -113,7 +113,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-end pb-12">
+        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-center">
           <div className="overlap w-full max-w-xl">
             {displayProjects.map((project, index) => (
               <div
