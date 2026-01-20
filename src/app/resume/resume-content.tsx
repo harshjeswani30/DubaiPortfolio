@@ -139,10 +139,10 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#222831]">
-      <motion.section 
-        className="relative min-h-[60vh] flex items-center justify-center overflow-hidden pt-24"
-        style={{ y: heroY, opacity: heroOpacity }}
-      >
+<motion.section 
+          className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-32"
+          style={{ y: heroY, opacity: heroOpacity }}
+        >
         <div className="absolute inset-0 dot-background opacity-30" />
         
         <motion.div
