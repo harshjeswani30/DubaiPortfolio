@@ -113,88 +113,88 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-center">
-          <div className="overlap w-full max-w-xl">
-            {displayProjects.map((project, index) => (
-              <div
-                key={project.id}
-                className="flex flex-col gap-4 animate-text translate-y-[30%]"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                <span
-                  className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-start pt-8">
+            <div className="overlap w-full max-w-xl">
+              {displayProjects.map((project, index) => (
+                <div
+                  key={project.id}
+                  className="flex flex-col gap-2 animate-text translate-y-[30%]"
+                  style={{
+                    animationTimeline: `--slide-${index + 1}`,
+                    animationRangeStart: "30cqw",
+                  }}
                 >
-                  {project.category}
-                </span>
+                  <span
+                    className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+                  >
+                    {project.category}
+                  </span>
 
-                <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
-                  {project.title.split(" ").slice(0, -1).join(" ")}{" "}
-                  <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
-                </h2>
+                  <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
+                    {project.title.split(" ").slice(0, -1).join(" ")}{" "}
+                    <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
+                  </h2>
 
-                <p className="text-white/70 text-base leading-relaxed max-w-md">
-                  {project.description}
-                </p>
+                  <p className="text-white/70 text-base leading-relaxed max-w-md mt-2">
+                    {project.description}
+                  </p>
 
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {project.tech_stack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {project.tech_stack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-3 mt-4 pointer-events-auto">
+                    <Link href={`/projects/${project.slug}`}>
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+                      >
+                        <span>View Details</span>
+                        <ArrowUpRight className="h-4 w-4" />
+                      </motion.button>
+                    </Link>
+                    
+                    {project.github_url && (
+                      <motion.a
+                        href={project.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                        title="View on GitHub"
+                      >
+                        <Github className="h-4 w-4" />
+                      </motion.a>
+                    )}
+                    
+                    {project.live_url && (
+                      <motion.a
+                        href={project.live_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+                        title="View Live Site"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </motion.a>
+                    )}
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                <div className="flex items-center gap-3 mt-8 pointer-events-auto">
-                  <Link href={`/projects/${project.slug}`}>
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
-                    >
-                      <span>View Details</span>
-                      <ArrowUpRight className="h-4 w-4" />
-                    </motion.button>
-                  </Link>
-                  
-                  {project.github_url && (
-                    <motion.a
-                      href={project.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                      title="View on GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </motion.a>
-                  )}
-                  
-                  {project.live_url && (
-                    <motion.a
-                      href={project.live_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
-                      title="View Live Site"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </motion.a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-              <div className="w-60 mt-12">
+            <div className="w-60 mt-8">
             <nav className="flex font-medium text-sm gap-5">
               {displayProjects.map((_, index) => (
                 <a
