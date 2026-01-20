@@ -113,12 +113,41 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col gap-[inherit]">
-          <div className="overlap w-[17rem]">
+        <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-end pb-12">
+          <div className="overlap items-end w-[36rem] mb-6">
+            {displayProjects.map((project, index) => (
+              <div key={project.id}>
+                <span className="block overflow-clip">
+                  <span
+                    className="block uppercase font-medium tracking-widest mb-2 text-sm text-white/80 animate-text-up"
+                    style={{
+                      animationTimeline: `--slide-${index + 1}`,
+                      animationRangeStart: "30cqw",
+                      letterSpacing: "0.3em",
+                    }}
+                  >
+                    {project.category}
+                  </span>
+                </span>
+                <p
+                  className="pb-2 font-serif text-6xl animate-text translate-y-[205%] skew-y-6"
+                  style={{
+                    animationTimeline: `--slide-${index + 1}`,
+                    animationRangeStart: "30cqw",
+                  }}
+                >
+                  {project.title.split(" ").slice(0, -1).join(" ")}{" "}
+                  <em>{project.title.split(" ").slice(-1)[0]}</em>
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="overlap w-[28rem] mb-5">
             {displayProjects.map((project, index) => (
               <p
                 key={project.id}
-                className="animate-text translate-y-[50%] skew-y-[1.5deg]"
+                className="text-white/70 text-base leading-relaxed animate-text translate-y-[50%] skew-y-[1.5deg]"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
@@ -129,11 +158,11 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="overlap max-w-2xl mt-3">
+          <div className="overlap max-w-xl mb-5">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
-                className="flex flex-wrap gap-3 animate-tech pointer-events-auto pb-4"
+                className="flex flex-wrap gap-2 animate-tech pointer-events-auto"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
@@ -142,20 +171,20 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                 {project.tech_stack.map((tech) => (
                   <span
                     key={tech}
-                    className="group relative cursor-pointer rounded-xl bg-white/5 border border-white/15 px-4 py-2 text-[11px] font-bold text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:border-[#00ADB5]/50 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(0,173,181,0.25)] hover:text-white"
+                    className="group relative cursor-pointer rounded-lg bg-white/5 border border-white/15 px-3 py-1.5 text-[10px] font-bold text-white/90 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:-translate-y-1 hover:border-[#00ADB5]/50 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(0,173,181,0.25)] hover:text-white"
                   >
-                    <span className="relative z-10 flex items-center gap-2 uppercase tracking-widest">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#00ADB5] shadow-[0_0_10px_#00ADB5] animate-pulse" />
+                    <span className="relative z-10 flex items-center gap-1.5 uppercase tracking-widest">
+                      <span className="h-1 w-1 rounded-full bg-[#00ADB5] shadow-[0_0_10px_#00ADB5] animate-pulse" />
                       {tech}
                     </span>
-                    <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#00ADB5]/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#00ADB5]/10 via-transparent to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </span>
                 ))}
               </div>
             ))}
           </div>
 
-          <div className="overlap w-[22rem] mt-2">
+          <div className="overlap w-[22rem] mb-6">
             {displayProjects.map((project, index) => (
               <div
                 key={project.id}
@@ -205,59 +234,30 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
             ))}
           </div>
 
-          <div className="w-60 my-auto">
-          <nav className="flex font-medium text-sm gap-5">
-            {displayProjects.map((_, index) => (
-              <a
-                key={index}
-                href={`#slide-${index + 1}`}
-                className="animate-page !text-white pointer-events-auto"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                {String(index + 1).padStart(2, "0")}
-              </a>
-            ))}
-          </nav>
-          <div className="bg-white/60 mt-2">
-            <div
-              className="bg-white h-0.5 animate-progress origin-left"
-              style={{ animationTimeline: "--scroller" }}
-            />
-          </div>
-        </div>
-
-        <div className="overlap items-end w-[31rem]">
-          {displayProjects.map((project, index) => (
-            <div key={project.id}>
-              <span className="block overflow-clip">
-                <span
-                  className="block uppercase font-medium tracking-widest mb-4 animate-text-up"
+          <div className="w-60">
+            <nav className="flex font-medium text-sm gap-5">
+              {displayProjects.map((_, index) => (
+                <a
+                  key={index}
+                  href={`#slide-${index + 1}`}
+                  className="animate-page !text-white pointer-events-auto"
                   style={{
                     animationTimeline: `--slide-${index + 1}`,
                     animationRangeStart: "30cqw",
-                    letterSpacing: "0.3em",
                   }}
                 >
-                  {project.category}
-                </span>
-              </span>
-              <p
-                  className="pb-4 font-serif text-7xl animate-text translate-y-[205%] skew-y-6"
-                style={{
-                  animationTimeline: `--slide-${index + 1}`,
-                  animationRangeStart: "30cqw",
-                }}
-              >
-                {project.title.split(" ").slice(0, -1).join(" ")}{" "}
-                <em>{project.title.split(" ").slice(-1)[0]}</em>
-              </p>
+                  {String(index + 1).padStart(2, "0")}
+                </a>
+              ))}
+            </nav>
+            <div className="bg-white/60 mt-2">
+              <div
+                className="bg-white h-0.5 animate-progress origin-left"
+                style={{ animationTimeline: "--scroller" }}
+              />
             </div>
-          ))}
+          </div>
         </div>
-      </div>
 
       <div className="supports-sda:hidden px-7 pb-7">
         Your browser does not support scroll-driven animations. See{" "}
