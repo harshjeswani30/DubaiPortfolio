@@ -65,17 +65,16 @@ function ExpandableTabs({
 }: { 
   activeColor?: string 
 }) {
-  const [selected, setSelected] = useState<number | null>(null)
+  const [hovered, setHovered] = useState<number | null>(null)
   const outsideClickRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
   const router = useRouter()
 
   useOnClickOutside(outsideClickRef as React.RefObject<HTMLElement>, () => {
-    setSelected(null)
+    setHovered(null)
   })
 
-  const handleSelect = (index: number, href: string) => {
-    setSelected(index)
+  const handleClick = (href: string) => {
     router.push(href)
   }
 
@@ -87,6 +86,7 @@ function ExpandableTabs({
     <div
       ref={outsideClickRef}
       className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 p-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+      onMouseLeave={() => setHovered(null)}
     >
       {tabs.map((tab, index) => {
         if (tab.type === "separator") {
@@ -95,7 +95,8 @@ function ExpandableTabs({
 
         const Icon = tab.icon
         const isActive = pathname === tab.href
-        const isSelected = selected === index || isActive
+        const isHovered = hovered === index
+        const isExpanded = isHovered || (isActive && hovered === null)
 
         return (
           <motion.button
@@ -103,19 +104,20 @@ function ExpandableTabs({
             variants={buttonVariants}
             initial={false}
             animate="animate"
-            custom={isSelected}
-            onClick={() => handleSelect(index, tab.href)}
+            custom={isExpanded}
+            onClick={() => handleClick(tab.href)}
+            onMouseEnter={() => setHovered(index)}
             transition={transition}
             className={cn(
               "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
-              isSelected
+              isExpanded
                 ? cn("bg-[#393E46]", activeColor)
-                : "text-[#EEEEEE]/60 hover:bg-[#393E46]/50 hover:text-[#EEEEEE]"
+                : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
             )}
           >
             <Icon size={18} />
             <AnimatePresence initial={false}>
-              {isSelected && (
+              {isExpanded && (
                 <motion.span
                   variants={spanVariants}
                   initial="initial"
