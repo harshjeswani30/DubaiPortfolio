@@ -206,12 +206,12 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
           </div>
 
           <div className="w-60 my-auto">
-          <nav className="flex font-medium text-sm gap-5">
+          <nav className="flex font-medium text-sm gap-5 overflow-x-auto max-w-full scrollbar-hidden pb-1">
             {displayProjects.map((_, index) => (
               <a
                 key={index}
                 href={`#slide-${index + 1}`}
-                className="animate-page !text-white pointer-events-auto"
+                className="animate-page !text-white pointer-events-auto flex-shrink-0"
                 style={{
                   animationTimeline: `--slide-${index + 1}`,
                   animationRangeStart: "30cqw",
