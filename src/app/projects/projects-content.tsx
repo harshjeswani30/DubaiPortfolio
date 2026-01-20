@@ -76,7 +76,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
   return (
     <div
-      className="carousel-container h-screen relative isolate flex flex-col gap-4 supports-sda:pointer-events-none overflow-hidden bg-black text-white antialiased pt-20"
+      className="carousel-container h-screen relative flex flex-col gap-4 supports-sda:pointer-events-none overflow-hidden bg-black text-white antialiased pt-24"
       style={{
         timelineScope: timelineScope,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
