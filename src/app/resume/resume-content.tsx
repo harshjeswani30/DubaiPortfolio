@@ -156,20 +156,7 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         </motion.div>
 
         <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#393E46] bg-[#393E46]/20 px-4 py-2"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ADB5] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ADB5]" />
-            </span>
-            <span className="text-sm font-medium text-[#EEEEEE]">Available for opportunities</span>
-          </motion.div>
-
-          <motion.h1
+            <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -250,11 +237,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
           </motion.div>
         </div>
 
+        </motion.section>
+
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="flex justify-center py-8"
         >
           <motion.div
             animate={{ y: [0, 8, 0] }}
@@ -271,7 +260,6 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             </div>
           </motion.div>
         </motion.div>
-      </motion.section>
 
       <div className="relative mx-auto max-w-6xl px-6 pb-32">
         <motion.section 
