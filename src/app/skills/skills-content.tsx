@@ -693,14 +693,15 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
     restDelta: 0.001
   })
   
-const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
-    const headerOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
-    const gridY = useTransform(smoothProgress, [0.1, 0.4], [100, 0])
-    const gridOpacity = useTransform(smoothProgress, [0.1, 0.25], [0, 1])
-    const categoriesY = useTransform(smoothProgress, [0.3, 0.6], [150, 0])
-    const categoriesOpacity = useTransform(smoothProgress, [0.3, 0.45], [0, 1])
-    const learningY = useTransform(smoothProgress, [0.5, 0.8], [150, 0])
-    const learningOpacity = useTransform(smoothProgress, [0.5, 0.65], [0, 1])
+const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
+    const headerOpacity = useTransform(smoothProgress, [0, 0.25], [1, 0])
+    
+    const gridY = useTransform(smoothProgress, [0, 0.5], [0, -80])
+    const gridScale = useTransform(smoothProgress, [0.1, 0.4], [0.95, 1])
+    
+    const categoriesY = useTransform(smoothProgress, [0.2, 0.7], [100, -50])
+    
+    const learningY = useTransform(smoothProgress, [0.4, 0.9], [150, -30])
   
   const skillsByCategory = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = []
@@ -803,7 +804,7 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
       
 <motion.section 
           className="relative z-10 min-h-screen py-32"
-          style={{ y: gridY, opacity: gridOpacity }}
+          style={{ y: gridY, scale: gridScale }}
         >
           <div className="absolute inset-0 grid-background opacity-50" />
           <div className="relative mx-auto max-w-7xl px-6">
@@ -861,9 +862,8 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
       
 <motion.section 
           className="relative z-10 py-32"
-          style={{ y: categoriesY, opacity: categoriesOpacity }}
+          style={{ y: categoriesY }}
         >
-          <div className="absolute inset-0 grid-background opacity-50" />
           <div className="relative mx-auto max-w-7xl px-6">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -894,7 +894,7 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -100])
       
       <motion.section 
           className="relative z-10 py-32"
-          style={{ y: learningY, opacity: learningOpacity }}
+          style={{ y: learningY }}
         >
           <div className="absolute inset-0 grid-background opacity-50" />
           <div className="relative mx-auto max-w-5xl px-6">
