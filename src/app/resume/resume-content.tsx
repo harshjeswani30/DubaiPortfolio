@@ -288,20 +288,20 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             <p className="text-lg leading-relaxed text-[#EEEEEE]/80">
               {about?.bio || "Passionate Full Stack Developer with 5+ years of experience crafting high-performance web applications. Specialized in React, Next.js, and Node.js ecosystems with a strong focus on creating exceptional user experiences. Proven track record of delivering scalable solutions for startups and enterprises across fintech, real estate, and e-commerce sectors. Committed to writing clean, maintainable code and staying current with emerging technologies."}
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              {["React Expert", "Node.js", "TypeScript", "Cloud Architecture", "Team Lead"].map((tag, i) => (
-                <motion.span
-                  key={tag}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]"
-                >
-                  {tag}
-                </motion.span>
-              ))}
-            </div>
+              <div className="mt-6 flex flex-wrap gap-3">
+                {["React Expert", "Node.js", "TypeScript", "Cloud Architecture", "Team Lead"].map((tag) => (
+                  <motion.span
+                    key={tag}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]"
+                  >
+                    {tag}
+                  </motion.span>
+                ))}
+              </div>
           </motion.div>
         </motion.section>
 
@@ -317,10 +317,10 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
               {experiences.map((exp, index) => (
                 <motion.div
                   key={exp.id}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                   className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
                 >
                   <div className="absolute left-[12px] top-0 z-10 h-4 w-4 rounded-full border-4 border-[#222831] bg-[#00ADB5] md:left-1/2 md:-translate-x-1/2" />
@@ -359,13 +359,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         >
           <SectionHeader icon={<GraduationCap className="h-5 w-5" />} title="Education" />
           <div className="grid gap-6 md:grid-cols-2">
-            {education.map((edu, index) => (
+            {education.map((edu) => (
               <motion.div
                 key={edu.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 whileHover={{ scale: 1.02, y: -4 }}
                 className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50"
               >
@@ -409,23 +409,23 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         >
           <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Technical Skills" />
           <div className="space-y-8">
-            {Object.entries(skillsByCategory).map(([category, categorySkills], catIndex) => (
+            {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
               <motion.div
                 key={category}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: catIndex * 0.1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <h3 className="mb-4 text-lg font-semibold text-[#EEEEEE]">{category}</h3>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {categorySkills.map((skill, index) => (
+                  {categorySkills.map((skill) => (
                     <motion.div
                       key={skill.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
+                      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
                       whileHover={{ scale: 1.03, y: -2 }}
                       className="group relative overflow-hidden rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
                     >
@@ -458,13 +458,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         >
           <SectionHeader icon={<Award className="h-5 w-5" />} title="Certifications" />
           <div className="grid gap-4 sm:grid-cols-2">
-            {certifications.map((cert, index) => (
+            {certifications.map((cert) => (
               <motion.div
                 key={cert.id}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 whileHover={{ scale: 1.02, x: 4 }}
                 className="group flex items-center gap-4 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
               >
@@ -489,13 +489,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         >
           <SectionHeader icon={<Globe className="h-5 w-5" />} title="Languages" />
           <div className="grid gap-4 sm:grid-cols-3">
-            {languages.map((lang, index) => (
+            {languages.map((lang) => (
               <motion.div
                 key={lang.name}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 whileHover={{ scale: 1.05, y: -4 }}
                 className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 text-center transition-all hover:border-[#00ADB5]/50"
               >
@@ -544,13 +544,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
         >
           <SectionHeader icon={<Folder className="h-5 w-5" />} title="Featured Projects" />
           <div className="grid gap-6 md:grid-cols-3">
-            {featuredProjects.map((project, index) => (
+            {featuredProjects.map((project) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <Link href={project.link}>
                   <motion.div
@@ -601,17 +601,19 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
           </motion.div>
         </motion.section>
 
-        <motion.section 
+          <motion.section 
           className="py-16"
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 md:p-12 text-center">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
             >
               Let&apos;s Work Together
@@ -620,7 +622,7 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
             >
               I&apos;m currently open to new opportunities and exciting projects. 
@@ -630,7 +632,7 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="flex flex-wrap items-center justify-center gap-4"
             >
               <Link href="/contact">
@@ -662,9 +664,10 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
 function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      whileInView={{ opacity: 1, x: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
+      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="mb-8 flex items-center gap-3"
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10 text-[#00ADB5]">
