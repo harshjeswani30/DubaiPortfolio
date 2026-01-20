@@ -141,6 +141,10 @@ export async function getBlogPosts() {
   return blogPosts.filter(p => p.is_published).sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
 }
 
+export async function getBlogPostBySlug(slug: string) {
+  return blogPosts.find(p => p.slug === slug && p.is_published) || null
+}
+
 export interface Skill {
   id: string
   name: string
