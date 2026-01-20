@@ -38,43 +38,32 @@ export function AboutContent() {
 
       let flipCtx: any
 
-const createFlipOnScrollAnimation = () => {
-          flipCtx && flipCtx.revert()
-          flipCtx = gsap.context(() => {
-            const flipConfig = { duration: 1, ease: "sine.inOut" }
-            const states = stepElements.map((stepElement) => Flip.getState(stepElement))
-            
-            gsap.set(oneElement, {
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              xPercent: 0,
-              yPercent: 0
-            })
-            
-            const tl = gsap.timeline({
-              scrollTrigger: {
-                trigger: parentElement,
-                start: "clamp(top top)",
-                endTrigger: stepElements[stepElements.length - 1],
-                end: "clamp(center center)",
-                scrub: true,
-              },
-            })
-
-            states.forEach((state: any, index: number) => {
-              tl.add(
-                Flip.fit(oneElement, state, {
-                  ...flipConfig,
-                  ease: flipConfig.ease,
-                }),
-                index === 0 ? 0 : `+=${0.5}`
-              )
-            })
+      const createFlipOnScrollAnimation = () => {
+        flipCtx && flipCtx.revert()
+        flipCtx = gsap.context(() => {
+          const flipConfig = { duration: 1, ease: "sine.inOut" }
+          const states = stepElements.map((stepElement) => Flip.getState(stepElement))
+          const tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: parentElement,
+              start: "clamp(center center)",
+              endTrigger: stepElements[stepElements.length - 1],
+              end: "clamp(center center)",
+              scrub: true,
+            },
           })
-        }
+
+          states.forEach((state: any, index: number) => {
+            tl.add(
+              Flip.fit(oneElement, state, {
+                ...flipConfig,
+                ease: index === 0 ? "none" : flipConfig.ease,
+              }),
+              index ? "+=0.5" : 0
+            )
+          })
+        })
+      }
 
       const animateSpansOnScroll = () => {
         document.querySelectorAll(".content__title > span").forEach((span, index) => {
@@ -140,15 +129,14 @@ const createFlipOnScrollAnimation = () => {
         })
       }
 
-preloadImages(".one, .content__img").then(() => {
-          document.body.classList.remove("loading")
-          
-          createFlipOnScrollAnimation()
-          animateSpansOnScroll()
-          animateImagesOnScroll()
-          addParallaxToColumnImages()
-          window.addEventListener("resize", createFlipOnScrollAnimation)
-        })
+      preloadImages(".one, .content__img").then(() => {
+        document.body.classList.remove("loading")
+        createFlipOnScrollAnimation()
+        animateSpansOnScroll()
+        animateImagesOnScroll()
+        addParallaxToColumnImages()
+        window.addEventListener("resize", createFlipOnScrollAnimation)
+      })
 
       return () => {
         flipCtx && flipCtx.revert()
@@ -183,6 +171,8 @@ preloadImages(".one, .content__img").then(() => {
           --color-medium: #393E46;
           --color-title: #EEEEEE;
           --page-padding: 2rem;
+          --gradient-1: rgba(34, 40, 49, 0.8);
+          --gradient-2: rgba(0, 173, 181, 0.15);
         }
 
         .about-page-wrapper {
@@ -194,6 +184,11 @@ preloadImages(".one, .content__img").then(() => {
           width: 100vw;
           overflow-x: hidden;
           min-height: 100vh;
+          background-image: 
+            radial-gradient(ellipse at top, var(--gradient-1), transparent), 
+            radial-gradient(ellipse at bottom, var(--gradient-2), transparent);
+          background-size: 100%, 200%;
+          background-attachment: fixed;
         }
 
         .font-alt {
@@ -231,16 +226,7 @@ preloadImages(".one, .content__img").then(() => {
           z-index: 90;
         }
 
-.content--initial {
-            width: 100vw;
-            height: 100vh;
-            padding: 0;
-            margin: 0;
-            display: block;
-            position: relative;
-          }
-
-          .content--blend {
+        .content--blend {
           mix-blend-mode: overlay;
         }
 
@@ -322,19 +308,17 @@ preloadImages(".one, .content__img").then(() => {
           max-width: none;
         }
 
-.one {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 10;
-            background-size: cover;
-            background-position: 50% 50%;
-            will-change: transform, width, height, filter;
-          }
+        .one {
+          width: 100%;
+          height: 100%;
+          position: relative;
+          z-index: 10;
+          background-size: cover;
+          background-position: 50% 50%;
+          will-change: transform, width, height, filter;
+        }
 
-          .content__img {
+        .content__img {
           background-size: cover;
           background-position: 50% 50%;
           will-change: transform, filter, opacity;
@@ -443,12 +427,12 @@ preloadImages(".one, .content__img").then(() => {
 
       <div className="about-page-wrapper">
         <main ref={mainRef} className="about-main">
-          <section className="content content--initial">
+          <section className="content content--inital">
             <div
               className="one"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1555529669-2269763671c0?q=80&w=1200)",
+                  "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
               }}
             />
           </section>
@@ -456,9 +440,9 @@ preloadImages(".one, .content__img").then(() => {
           <section className="content content--center content--blend">
             <div data-step className="content__img" />
             <h1 className="content__title font-alt">
-              <span>Seraph</span>
+              <span>Full Stack</span>
               <br />
-              <span>Kamos</span>
+              <span>Developer</span>
             </h1>
           </section>
 
@@ -467,14 +451,14 @@ preloadImages(".one, .content__img").then(() => {
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1539109132314-34a9c66d1822?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=600)",
               }}
             />
             <div data-step className="content__img content__img--mid" />
@@ -482,45 +466,45 @@ preloadImages(".one, .content__img").then(() => {
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1504639725590-34d0984388bd?q=80&w=600)",
               }}
             />
           </section>
 
           <section className="content content--lines">
             <h2 className="content__title content__title--medium font-alt">
-              <span>Natural</span>
+              <span>Clean</span>
               <div data-step className="content__img" />
-              <span>Garments</span>
+              <span>Code</span>
             </h2>
             <h2 className="content__title content__title--medium font-alt">
-              <span>Crafted with</span>
+              <span>Built with</span>
               <div
                 className="content__img"
                 style={{
                   backgroundImage:
-                    "url(https://images.unsplash.com/photo-1581044777550-4cfa60707c03?q=80&w=600)",
+                    "url(https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=600)",
                 }}
               />
-              <span>love</span>
+              <span>passion</span>
             </h2>
             <h2 className="content__title content__title--medium font-alt">
-              <span>with</span>
+              <span>and</span>
               <div
                 className="content__img"
                 style={{
                   backgroundImage:
-                    "url(https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=600)",
+                    "url(https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600)",
                 }}
               />
-              <span>respect</span>
+              <span>precision</span>
             </h2>
           </section>
 
@@ -528,9 +512,9 @@ preloadImages(".one, .content__img").then(() => {
             <div data-step className="content__img" />
             <div className="content__text">
               <p>
-                <strong>Welcome to Seraph Kamos</strong> where time meets the eternal. We believe in
-                crafting more than garments—we create connections. Connections to the earth, to
-                human hands, and to the moments that matter.
+                <strong>Welcome to my digital space</strong> where creativity meets technology. I specialize in
+                building modern web applications—crafting seamless user experiences with cutting-edge
+                frameworks and scalable architectures.
               </p>
             </div>
           </section>
@@ -539,8 +523,8 @@ preloadImages(".one, .content__img").then(() => {
             <div data-step className="content__img" />
             <div className="content__text content__text--large">
               <p>
-                We honor the hands that touch every thread, partnering with artisans and communities
-                to ensure fairness, respect, and dignity at every step.
+                I believe in writing clean, maintainable code that stands the test of time—collaborating
+                with teams to deliver products that users love and businesses rely on.
               </p>
             </div>
           </section>
@@ -550,7 +534,7 @@ preloadImages(".one, .content__img").then(() => {
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=600)",
               }}
             />
             <div data-step className="content__img" />
@@ -558,54 +542,54 @@ preloadImages(".one, .content__img").then(() => {
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1532453288454-ba56657463a0?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1537432376149-e84978a29b5d?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1505022610485-0249ba5b3675?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1562813733-b31f71025d54?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1475184414782-5965fb047dd7?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1445205170230-053b83016050?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?q=80&w=600)",
               }}
             />
             <div
               className="content__img"
               style={{
                 backgroundImage:
-                  "url(https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=600)",
+                  "url(https://images.unsplash.com/photo-1629654297299-c8506221ca97?q=80&w=600)",
               }}
             />
           </section>
 
-          <div className="footer-text font-alt">More you might like</div>
+          <div className="footer-text font-alt">Let&apos;s build something amazing</div>
         </main>
       </div>
     </>
