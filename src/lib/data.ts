@@ -147,6 +147,7 @@ export interface Skill {
   category: string
   proficiency: number
   icon_name?: string
+  color?: string
   display_order: number
 }
 
@@ -162,11 +163,24 @@ export interface Experience {
 }
 
 export const skills: Skill[] = [
-  { id: "1", name: "Next.js", category: "Frontend", proficiency: 95, display_order: 1 },
-  { id: "2", name: "TypeScript", category: "Languages", proficiency: 90, display_order: 2 },
-  { id: "3", name: "Node.js", category: "Backend", proficiency: 85, display_order: 3 },
-  { id: "4", name: "Tailwind CSS", category: "Frontend", proficiency: 95, display_order: 4 },
-  { id: "5", name: "PostgreSQL", category: "Database", proficiency: 80, display_order: 5 },
+  { id: "1", name: "React", category: "Frontend", proficiency: 95, color: "#61DAFB", display_order: 1 },
+  { id: "2", name: "Next.js", category: "Frontend", proficiency: 95, color: "#ffffff", display_order: 2 },
+  { id: "3", name: "TypeScript", category: "Languages", proficiency: 90, color: "#3178C6", display_order: 3 },
+  { id: "4", name: "JavaScript", category: "Languages", proficiency: 95, color: "#F7DF1E", display_order: 4 },
+  { id: "5", name: "Node.js", category: "Backend", proficiency: 88, color: "#339933", display_order: 5 },
+  { id: "6", name: "Python", category: "Languages", proficiency: 85, color: "#3776AB", display_order: 6 },
+  { id: "7", name: "Tailwind CSS", category: "Frontend", proficiency: 95, color: "#06B6D4", display_order: 7 },
+  { id: "8", name: "PostgreSQL", category: "Database", proficiency: 85, color: "#4169E1", display_order: 8 },
+  { id: "9", name: "MongoDB", category: "Database", proficiency: 80, color: "#47A248", display_order: 9 },
+  { id: "10", name: "GraphQL", category: "Backend", proficiency: 82, color: "#E10098", display_order: 10 },
+  { id: "11", name: "Docker", category: "DevOps", proficiency: 78, color: "#2496ED", display_order: 11 },
+  { id: "12", name: "AWS", category: "DevOps", proficiency: 75, color: "#FF9900", display_order: 12 },
+  { id: "13", name: "Three.js", category: "Frontend", proficiency: 80, color: "#000000", display_order: 13 },
+  { id: "14", name: "GSAP", category: "Frontend", proficiency: 85, color: "#88CE02", display_order: 14 },
+  { id: "15", name: "Redis", category: "Database", proficiency: 75, color: "#DC382D", display_order: 15 },
+  { id: "16", name: "Git", category: "DevOps", proficiency: 92, color: "#F05032", display_order: 16 },
+  { id: "17", name: "Figma", category: "Design", proficiency: 85, color: "#F24E1E", display_order: 17 },
+  { id: "18", name: "Framer Motion", category: "Frontend", proficiency: 88, color: "#0055FF", display_order: 18 },
 ]
 
 export const experiences: Experience[] = [
