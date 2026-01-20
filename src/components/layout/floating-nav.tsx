@@ -185,32 +185,87 @@ export function FloatingNav() {
         style={{ y: floatY }}
         className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <motion.div
-            initial={hasMounted ? false : { opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="group rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-4 py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30 hover:shadow-[0_20px_40px_-15px_rgba(0,173,181,0.3)]"
-          >
-            <Link href="/">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+            <Link href="/" className="group relative z-[130] hidden lg:block" style={{ position: 'fixed', top: '38px', left: '66px' }}>
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative cursor-pointer"
               >
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#393E46] shadow-inner transition-colors group-hover:bg-[#00ADB5]/10"
-                >
-                  <Code2 className="h-5 w-5 text-[#00ADB5]" />
-                </motion.div>
-                <span className="hidden text-xl font-bold tracking-tight text-[#EEEEEE] sm:block">
-                  Portfolio<span className="text-[#00ADB5]">.</span>
-                </span>
+                {/* Circle - Logo */}
+                <div style={{
+                  width: '105px',
+                  height: '106px',
+                  backgroundColor: '#343b44',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: 10,
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                }}>
+                  <Code2 className="h-10 w-10 text-[#00ADB5]" />
+                </div>
+
+                {/* Rectangle - Portfolio */}
+                <div style={{
+                  width: '163px',
+                  height: '77px',
+                  backgroundColor: '#343b44',
+                  borderRadius: '26px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  position: 'absolute',
+                  top: '15px',
+                  left: '74px',
+                  zIndex: 5,
+                  paddingLeft: '35px',
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+                }}>
+                  <span className="text-lg font-bold tracking-[0.1em] text-[#EEEEEE]">PORTFOLIO</span>
+                </div>
               </motion.div>
             </Link>
-          </motion.div>
+
+            {/* Placeholder for desktop to keep layout consistent, or visible logo for mobile */}
+            <div className="lg:hidden">
+              <motion.div
+                initial={hasMounted ? false : { opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="group rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-4 py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30 hover:shadow-[0_20px_40px_-15px_rgba(0,173,181,0.3)]"
+              >
+                <Link href="/">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2"
+                  >
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#393E46] shadow-inner transition-colors group-hover:bg-[#00ADB5]/10"
+                    >
+                      <Code2 className="h-5 w-5 text-[#00ADB5]" />
+                    </motion.div>
+                    <span className="hidden text-xl font-bold tracking-tight text-[#EEEEEE] sm:block">
+                      Portfolio<span className="text-[#00ADB5]">.</span>
+                    </span>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            </div>
+            
+            {/* Desktop spacer to push tabs to center when logo is fixed */}
+            <div className="hidden w-[240px] lg:block" />
+
 
           <motion.div
             initial={hasMounted ? false : { opacity: 0, y: -20 }}
