@@ -22,6 +22,21 @@ const categoryIcons: Record<string, string> = {
   Design: "✨",
 }
 
+const cardDirections = [
+  { x: -100, y: 0 },
+  { x: 100, y: 0 },
+  { x: 0, y: 100 },
+  { x: -80, y: 60 },
+  { x: 80, y: 60 },
+  { x: -60, y: -80 },
+  { x: 60, y: -80 },
+  { x: -100, y: 40 },
+  { x: 100, y: 40 },
+  { x: 0, y: 80 },
+  { x: -50, y: 100 },
+  { x: 50, y: 100 },
+]
+
 function BentoCard({ 
   children, 
   className = "", 
@@ -36,9 +51,11 @@ function BentoCard({
   glowColor?: string
 }) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovered, setIsHovered] = useState(false)
+
+  const direction = cardDirections[delay % cardDirections.length]
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!ref.current) return
@@ -62,13 +79,13 @@ function BentoCard({
     <HoverContext.Provider value={isHovered}>
       <motion.div
         ref={ref}
-        initial={{ opacity: 0, y: 50, scale: 0.9 }}
-        animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+        initial={{ opacity: 0, x: direction.x, y: direction.y, scale: 0.9 }}
+        animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : {}}
         whileHover={{ scale: 1.02, y: -5 }}
         transition={{ 
-          duration: 0.8, 
-          delay: delay * 0.1,
-          ease: [0.25, 0.46, 0.45, 0.94]
+          duration: 0.9, 
+          delay: delay * 0.08,
+          ease: [0.22, 1, 0.36, 1]
         }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
@@ -550,6 +567,15 @@ function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
   )
 }
 
+const categoryDirections = [
+  { x: -80, y: 0 },
+  { x: 80, y: 0 },
+  { x: 0, y: 80 },
+  { x: -60, y: 50 },
+  { x: 60, y: 50 },
+  { x: 0, y: -60 },
+]
+
 function CategoryCard({ 
   category, 
   skills, 
@@ -565,13 +591,18 @@ function CategoryCard({
   )
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-50px" })
+  const direction = categoryDirections[index % categoryDirections.length]
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
+      initial={{ opacity: 0, x: direction.x, y: direction.y, scale: 0.95 }}
+      animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : {}}
+      transition={{ 
+        delay: index * 0.1, 
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }}
       className="group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-[#222831]/80 p-6 backdrop-blur-sm transition-all duration-500 hover:border-[#00ADB5]/30"
     >
       <div 
@@ -916,20 +947,34 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
               </p>
               
               <div className="flex flex-wrap justify-center gap-3">
-                {["AI/ML", "WebGPU", "Rust", "WebAssembly", "Edge Computing"].map((tech, i) => (
-                  <motion.span
-                    key={tech}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    whileHover={{ scale: 1.1, y: -2 }}
-                    className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-6 py-3 text-sm font-medium text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#00ADB5]/10"
-                  >
-                    {tech}
-                  </motion.span>
-                ))}
-              </div>
+                  {["AI/ML", "WebGPU", "Rust", "WebAssembly", "Edge Computing"].map((tech, i) => {
+                    const techDirections = [
+                      { x: -60, y: 20 },
+                      { x: 60, y: 20 },
+                      { x: 0, y: 60 },
+                      { x: -40, y: 40 },
+                      { x: 40, y: 40 },
+                    ]
+                    const dir = techDirections[i % techDirections.length]
+                    return (
+                      <motion.span
+                        key={tech}
+                        initial={{ opacity: 0, x: dir.x, y: dir.y }}
+                        whileInView={{ opacity: 1, x: 0, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ 
+                          delay: i * 0.12,
+                          duration: 0.7,
+                          ease: [0.22, 1, 0.36, 1]
+                        }}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/20 px-6 py-3 text-sm font-medium text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#00ADB5]/10"
+                      >
+                        {tech}
+                      </motion.span>
+                    )
+                  })}
+                </div>
             </motion.div>
           </div>
         </motion.section>
