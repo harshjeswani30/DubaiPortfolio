@@ -179,13 +179,13 @@ export function AboutContent() {
           font-family: inherit;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          width: 100%;
+          width: 100vw;
           overflow-x: hidden;
           min-height: 100vh;
         }
 
         .font-alt {
-          font-family: inherit;
+          font-family: "harpagan", sans-serif;
           font-weight: 500;
         }
 
@@ -203,7 +203,7 @@ export function AboutContent() {
         .about-main {
           position: relative;
           overflow: hidden;
-          width: 100%;
+          width: 100vw;
         }
 
         .content {
@@ -219,21 +219,26 @@ export function AboutContent() {
           z-index: 90;
         }
 
-        .content--initial {
-          width: 100%;
-          height: 100vh;
-          height: 100dvh;
-          padding: 0;
-          margin: 0;
-          display: block;
-          position: relative;
-        }
+.content--initial {
+            width: 100vw;
+            height: 100vh;
+            padding: 0;
+            margin: 0;
+            display: block;
+            position: relative;
+          }
 
-        .content--initial .one {
-          position: fixed;
-          top: 0;
-          left: 0;
-        }
+          .one {
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            background-size: cover;
+            background-position: 50% 50%;
+            will-change: transform, width, height, filter;
+          }
 
         .content--blend {
           mix-blend-mode: overlay;
@@ -258,8 +263,6 @@ export function AboutContent() {
           margin: 0 auto 20vh;
           z-index: 80;
           justify-items: center;
-          height: auto;
-          padding: 10vh 2rem;
         }
 
         .content--grid {
@@ -269,8 +272,9 @@ export function AboutContent() {
           grid-template-areas: unset;
           width: 120%;
           height: 100vh;
-          margin-left: -10%;
+          left: -10%;
           gap: 1rem;
+          margin: 0 auto;
         }
 
         .content--grid .content__img {
@@ -321,10 +325,7 @@ export function AboutContent() {
         .one {
           width: 100vw;
           height: 100vh;
-          height: 100dvh;
-          position: fixed;
-          top: 0;
-          left: 0;
+          position: relative;
           z-index: 10;
           background-size: cover;
           background-position: 50% 50%;
@@ -435,6 +436,8 @@ export function AboutContent() {
         src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"
         strategy="beforeInteractive"
       />
+
+      <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
 
       <div className="about-page-wrapper">
         <main ref={mainRef} className="about-main">
