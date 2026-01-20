@@ -1112,15 +1112,15 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
     restDelta: 0.001
   })
   
-const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
-    const headerOpacity = useTransform(smoothProgress, [0, 0.25], [1, 0])
+const headerY = useTransform(smoothProgress, [0, 0.15], [0, -50])
+    const headerOpacity = useTransform(smoothProgress, [0, 0.12], [1, 0])
     
-    const gridY = useTransform(smoothProgress, [0, 0.5], [0, -80])
-    const gridScale = useTransform(smoothProgress, [0.1, 0.4], [0.95, 1])
+    const gridY = useTransform(smoothProgress, [0.08, 0.5], [50, -30])
+    const gridScale = useTransform(smoothProgress, [0.08, 0.25], [0.98, 1])
     
-    const categoriesY = useTransform(smoothProgress, [0.2, 0.7], [100, -50])
+    const categoriesY = useTransform(smoothProgress, [0.35, 0.7], [30, -20])
     
-    const learningY = useTransform(smoothProgress, [0.4, 0.9], [150, -30])
+    const learningY = useTransform(smoothProgress, [0.55, 0.9], [40, -15])
   
   const skillsByCategory = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = []
