@@ -419,161 +419,175 @@ export function SkillsContent({ skills }: { skills: Skill[] }) {
         style={{ y: gridY, opacity: gridOpacity }}
       >
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-4">
-            <BentoCard size="large" delay={0}>
-              <div className="flex h-full flex-col">
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="text-3xl">🎨</span>
+<div className="grid auto-rows-[200px] gap-4 md:auto-rows-[180px] md:grid-cols-3">
+              <BentoCard size="large" delay={0}>
+                <div className="flex h-full flex-col">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="text-3xl">🎨</span>
+                    <div>
+                      <h3 className="text-xl font-bold text-[#EEEEEE]">Frontend</h3>
+                      <p className="text-sm text-[#00ADB5]/60">UI/UX Development</p>
+                    </div>
+                  </div>
+                  <div className="grid flex-1 grid-cols-2 gap-2 overflow-hidden">
+                    {frontendSkills.map((skill, i) => (
+                      <SkillPill key={skill.id} skill={skill} delay={i} />
+                    ))}
+                  </div>
+                </div>
+              </BentoCard>
+              
+              <BentoCard size="tall" delay={1}>
+                <div className="flex h-full flex-col">
+                  <div className="mb-4 flex items-center gap-2">
+                    <span className="text-2xl">💻</span>
+                    <h3 className="text-lg font-bold text-[#EEEEEE]">Languages</h3>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    {languageSkills.map((skill, i) => (
+                      <SkillPill key={skill.id} skill={skill} delay={i} />
+                    ))}
+                  </div>
+                </div>
+              </BentoCard>
+              
+              <BentoCard size="default" delay={2}>
+                <div className="flex h-full flex-col items-center justify-center text-center">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="mb-4 h-20 w-20 rounded-full border border-[#00ADB5]/30 bg-gradient-to-br from-[#00ADB5]/20 to-transparent p-4"
+                  >
+                    <div className="flex h-full w-full items-center justify-center rounded-full bg-[#00ADB5]/10 text-3xl">
+                      ⚛️
+                    </div>
+                  </motion.div>
+                  <div className="text-4xl font-bold text-[#EEEEEE]">React</div>
+                  <div className="text-sm text-[#00ADB5]">Primary Framework</div>
+                </div>
+              </BentoCard>
+              
+              <BentoCard size="default" delay={3}>
+                <div className="flex h-full flex-col justify-between">
+                  <div className="text-4xl">⚙️</div>
                   <div>
-                    <h3 className="text-xl font-bold text-[#EEEEEE]">Frontend</h3>
-                    <p className="text-sm text-[#00ADB5]/60">UI/UX Development</p>
+                    <div className="text-3xl font-bold text-[#EEEEEE]">Backend</div>
+                    <div className="text-sm text-[#00ADB5]/60">Server-side Magic</div>
                   </div>
-                </div>
-                <div className="grid flex-1 grid-cols-2 gap-2 overflow-hidden">
-                  {frontendSkills.map((skill, i) => (
-                    <SkillPill key={skill.id} skill={skill} delay={i} />
-                  ))}
-                </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="default" delay={1}>
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  className="mb-4 h-20 w-20 rounded-full border border-[#00ADB5]/30 bg-gradient-to-br from-[#00ADB5]/20 to-transparent p-4"
-                >
-                  <div className="flex h-full w-full items-center justify-center rounded-full bg-[#00ADB5]/10 text-3xl">
-                    ⚛️
-                  </div>
-                </motion.div>
-                <div className="text-4xl font-bold text-[#EEEEEE]">React</div>
-                <div className="text-sm text-[#00ADB5]">Primary Framework</div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="default" delay={2}>
-              <div className="flex h-full flex-col justify-between">
-                <div className="text-4xl">⚙️</div>
-                <div>
-                  <div className="text-3xl font-bold text-[#EEEEEE]">Backend</div>
-                  <div className="text-sm text-[#00ADB5]/60">Server-side Magic</div>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {backendSkills.slice(0, 3).map((skill) => (
-                    <span 
-                      key={skill.id}
-                      className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="tall" delay={3}>
-              <div className="flex h-full flex-col">
-                <div className="mb-4 flex items-center gap-2">
-                  <span className="text-2xl">💻</span>
-                  <h3 className="text-lg font-bold text-[#EEEEEE]">Languages</h3>
-                </div>
-                <div className="flex-1 space-y-2">
-                  {languageSkills.map((skill, i) => (
-                    <SkillPill key={skill.id} skill={skill} delay={i} />
-                  ))}
-                </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="wide" delay={4}>
-              <div className="flex h-full items-center gap-8">
-                <div className="flex-1">
-                  <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]/60">Database</div>
-                  <div className="text-2xl font-bold text-[#EEEEEE]">Data Management</div>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {databaseSkills.map((skill) => (
+                  <div className="flex flex-wrap gap-1">
+                    {backendSkills.slice(0, 3).map((skill) => (
                       <span 
                         key={skill.id}
-                        className="rounded-xl bg-[#00ADB5]/20 px-3 py-1.5 text-sm text-[#00ADB5]"
+                        className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
                       >
                         {skill.name}
                       </span>
                     ))}
                   </div>
                 </div>
-                <div className="hidden md:block">
+              </BentoCard>
+              
+              <BentoCard size="default" delay={4}>
+                <div className="flex h-full flex-col justify-center text-center">
                   <motion.div
-                    animate={{ rotate: [0, 5, -5, 0] }}
-                    transition={{ duration: 4, repeat: Infinity }}
-                    className="text-7xl"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="mb-4 text-5xl"
                   >
-                    🗄️
+                    🚀
                   </motion.div>
+                  <div className="text-2xl font-bold text-[#EEEEEE]">DevOps</div>
+                  <div className="mt-2 flex justify-center gap-1">
+                    {devopsSkills.slice(0, 3).map((skill) => (
+                      <span 
+                        key={skill.id}
+                        className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
+                      >
+                        {skill.name}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="default" delay={5}>
-              <div className="flex h-full flex-col justify-center text-center">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="mb-4 text-5xl"
-                >
-                  🚀
-                </motion.div>
-                <div className="text-2xl font-bold text-[#EEEEEE]">DevOps</div>
-                <div className="mt-2 flex justify-center gap-1">
-                  {devopsSkills.slice(0, 3).map((skill) => (
-                    <span 
-                      key={skill.id}
-                      className="rounded-lg bg-[#00ADB5]/20 px-2 py-1 text-xs text-[#00ADB5]"
-                    >
-                      {skill.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="default" delay={6}>
-              <div className="flex h-full flex-col justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">✨</span>
-                  <span className="text-lg font-bold text-[#EEEEEE]">Design</span>
-                </div>
-                <div className="space-y-2">
-                  {designSkills.map((skill, i) => (
-                    <SkillPill key={skill.id} skill={skill} delay={i} />
-                  ))}
-                </div>
-              </div>
-            </BentoCard>
-            
-            <BentoCard size="wide" delay={7}>
-              <div className="flex h-full items-center justify-between">
-                <div>
-                  <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]">Experience</div>
-                  <div className="text-3xl font-bold text-[#EEEEEE]">5+ Years</div>
-                  <div className="text-sm text-[#00ADB5]/60">Building Digital Products</div>
-                </div>
-                <div className="hidden items-center gap-4 md:flex">
-                  {[...Array(5)].map((_, i) => (
+              </BentoCard>
+              
+              <BentoCard size="wide" delay={5}>
+                <div className="flex h-full items-center gap-8">
+                  <div className="flex-1">
+                    <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]/60">Database</div>
+                    <div className="text-2xl font-bold text-[#EEEEEE]">Data Management</div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {databaseSkills.map((skill) => (
+                        <span 
+                          key={skill.id}
+                          className="rounded-xl bg-[#00ADB5]/20 px-3 py-1.5 text-sm text-[#00ADB5]"
+                        >
+                          {skill.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="hidden md:block">
                     <motion.div
-                      key={i}
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: i * 0.1 }}
-                      className="w-2 rounded-full bg-gradient-to-t from-[#00ADB5] to-[#00ADB5]/40"
-                      style={{ height: `${30 + i * 15}px` }}
-                    />
-                  ))}
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="text-7xl"
+                    >
+                      🗄️
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
-            </BentoCard>
-          </div>
+              </BentoCard>
+              
+              <BentoCard size="default" delay={6}>
+                <div className="flex h-full flex-col justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">✨</span>
+                    <span className="text-lg font-bold text-[#EEEEEE]">Design</span>
+                  </div>
+                  <div className="space-y-2">
+                    {designSkills.map((skill, i) => (
+                      <SkillPill key={skill.id} skill={skill} delay={i} />
+                    ))}
+                  </div>
+                </div>
+              </BentoCard>
+              
+              <BentoCard size="wide" delay={7}>
+                <div className="flex h-full items-center justify-between">
+                  <div>
+                    <div className="mb-2 text-sm uppercase tracking-widest text-[#00ADB5]">Experience</div>
+                    <div className="text-3xl font-bold text-[#EEEEEE]">5+ Years</div>
+                    <div className="text-sm text-[#00ADB5]/60">Building Digital Products</div>
+                  </div>
+                  <div className="hidden items-center gap-4 md:flex">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        className="w-2 rounded-full bg-gradient-to-t from-[#00ADB5] to-[#00ADB5]/40"
+                        style={{ height: `${30 + i * 15}px` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </BentoCard>
+              
+              <BentoCard size="default" delay={8}>
+                <div className="flex h-full flex-col items-center justify-center text-center">
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="mb-3 text-5xl"
+                  >
+                    🎯
+                  </motion.div>
+                  <div className="text-2xl font-bold text-[#EEEEEE]">Problem Solver</div>
+                  <div className="mt-1 text-sm text-[#00ADB5]/60">Creative Solutions</div>
+                </div>
+              </BentoCard>
+            </div>
         </div>
       </motion.section>
       
