@@ -76,7 +76,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
   return (
     <div
-      className="carousel-container h-screen relative flex flex-col gap-4 supports-sda:pointer-events-none overflow-hidden bg-black text-white antialiased pt-24"
+      className="carousel-container h-screen relative isolate flex flex-col gap-4 supports-sda:pointer-events-none overflow-hidden bg-black text-white antialiased pt-20"
       style={{
         timelineScope: timelineScope,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,12 +84,7 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
       } as React.CSSProperties}
       >
 
-        <img
-        className="absolute supports-sda:hidden -z-20 inset-0 h-full w-full object-cover"
-        src={displayProjects[0]?.featured_image || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80"}
-        alt={displayProjects[0]?.title || "Project"}
-      />
-      {displayProjects.map((project, index) => (
+        {displayProjects.map((project, index) => (
         <img
           key={project.id}
           className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
