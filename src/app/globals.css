@@ -237,9 +237,7 @@ body:has(.carousel-container) footer {
   display: none !important;
 }
 
-body:has(.carousel-container) .floating-nav,
-body:has(.carousel-container) .scroll-progress,
-body:has(.carousel-container) .side-menu {
+body:has(.carousel-container) .scroll-progress {
   display: none !important;
 }
 
