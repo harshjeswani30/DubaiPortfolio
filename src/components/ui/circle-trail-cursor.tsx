@@ -3,21 +3,19 @@
 import { useEffect, useRef, useState } from 'react';
 
 export interface CircleTrailCursorProps {
-  strokeColor?: string;
+  fillColor?: string;
   baseRadius?: number;
-  radiusOnEnter?: number;
   triggerSelector?: string;
 }
 
 export function CircleTrailCursor({
-  strokeColor = '#00ADB5',
-  baseRadius = 15,
-  radiusOnEnter = 40,
+  fillColor = '#00ADB5',
+  baseRadius = 8,
   triggerSelector = 'a, button, [data-cursor-hover]'
 }: CircleTrailCursorProps) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const circleRef = useRef<SVGCircleElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const [isCoarse, setIsCoarse] = useState(true);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -27,36 +25,18 @@ export function CircleTrailCursor({
   useEffect(() => {
     if (typeof window === 'undefined' || isCoarse) return;
 
-    const svg = svgRef.current;
-    const circle = circleRef.current;
-    if (!svg || !circle) return;
-
-    let currentRadius = baseRadius;
-    let targetRadius = baseRadius;
+    const cursor = cursorRef.current;
+    if (!cursor) return;
 
     const onMouseMove = (ev: MouseEvent) => {
-      svg.style.transform = `translate(${ev.clientX - 50}px, ${ev.clientY - 50}px)`;
-      svg.style.opacity = '1';
+      cursor.style.transform = `translate(${ev.clientX - baseRadius}px, ${ev.clientY - baseRadius}px)`;
+      cursor.style.opacity = '1';
     };
 
-    const animateRadius = () => {
-      if (Math.abs(currentRadius - targetRadius) > 0.1) {
-        currentRadius += (targetRadius - currentRadius) * 0.15;
-        circle.setAttribute('r', String(currentRadius));
-      }
-      requestAnimationFrame(animateRadius);
-    };
-
-    const enter = () => {
-      targetRadius = radiusOnEnter;
-    };
-
-    const leave = () => {
-      targetRadius = baseRadius;
-    };
+    const enter = () => setIsHovering(true);
+    const leave = () => setIsHovering(false);
 
     window.addEventListener('mousemove', onMouseMove);
-    requestAnimationFrame(animateRadius);
 
     const triggers = document.querySelectorAll(triggerSelector);
     triggers.forEach((trigger) => {
@@ -71,7 +51,7 @@ export function CircleTrailCursor({
         trigger.removeEventListener('mouseleave', leave);
       });
     };
-  }, [baseRadius, radiusOnEnter, triggerSelector, isCoarse]);
+  }, [baseRadius, triggerSelector, isCoarse]);
 
   if (isCoarse) {
     return null;
@@ -81,34 +61,27 @@ export function CircleTrailCursor({
     <>
       <style jsx global>{`
         * {
-          cursor: none !important;
+          cursor: ${isHovering ? 'auto' : 'none'} !important;
         }
       `}</style>
-      <svg 
-        ref={svgRef}
+      <div
+        ref={cursorRef}
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
+          width: baseRadius * 2,
+          height: baseRadius * 2,
+          borderRadius: '50%',
+          backgroundColor: fillColor,
           pointerEvents: 'none',
           zIndex: 10000,
           opacity: 0,
-          willChange: 'transform'
+          willChange: 'transform',
+          transition: 'opacity 0.2s ease',
+          display: isHovering ? 'none' : 'block'
         }}
-        width="100" 
-        height="100" 
-        viewBox="0 0 100 100"
-      >
-        <circle 
-          ref={circleRef}
-          cx="50" 
-          cy="50" 
-          r={baseRadius}
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth="1"
-        />
-      </svg>
+      />
     </>
   );
 }

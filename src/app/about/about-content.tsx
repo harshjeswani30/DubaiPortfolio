@@ -123,38 +123,20 @@ export function AboutContent() {
         })
       }
 
-        const animateBentoGridOnScroll = () => {
-          const bentoItems = document.querySelectorAll(".bento-item:not(.bento-item--main)")
-          gsap.to(bentoItems, {
-            opacity: 0,
-            scale: 0.8,
-            duration: 1,
-            ease: "power2.out",
-            stagger: 0.05,
-            scrollTrigger: {
-              trigger: ".about-main",
-              start: "top top",
-              end: "+=30%",
-              scrub: true,
-            },
-          })
-        }
-
-        const preloadImages = (selector = "img") => {
+      const preloadImages = (selector = "img") => {
         return new Promise((resolve) => {
           imagesLoaded(document.querySelectorAll(selector), { background: true }, resolve)
         })
       }
 
-        preloadImages(".one, .content__img").then(() => {
-          document.body.classList.remove("loading")
-          createFlipOnScrollAnimation()
-          animateSpansOnScroll()
-          animateImagesOnScroll()
-          addParallaxToColumnImages()
-          animateBentoGridOnScroll()
-          window.addEventListener("resize", createFlipOnScrollAnimation)
-        })
+      preloadImages(".one, .content__img").then(() => {
+        document.body.classList.remove("loading")
+        createFlipOnScrollAnimation()
+        animateSpansOnScroll()
+        animateImagesOnScroll()
+        addParallaxToColumnImages()
+        window.addEventListener("resize", createFlipOnScrollAnimation)
+      })
 
       return () => {
         flipCtx && flipCtx.revert()
@@ -231,63 +213,18 @@ export function AboutContent() {
           width: 100vw;
         }
 
-          .bento-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 8px;
-            padding: 8px;
-            z-index: 100;
-            pointer-events: none;
-          }
-
-          .bento-item {
-            background: var(--color-medium);
-            border-radius: 12px;
-            overflow: hidden;
-            opacity: 0.9;
-          }
-
-          .bento-item--main {
-            grid-column: 2 / 4;
-            grid-row: 1 / 3;
-            background: transparent;
-          }
-
-          .bento-item--1 { grid-column: 1; grid-row: 1; }
-          .bento-item--2 { grid-column: 4; grid-row: 1; }
-          .bento-item--3 { grid-column: 1; grid-row: 2; }
-          .bento-item--4 { grid-column: 4; grid-row: 2; }
-          .bento-item--5 { grid-column: 1; grid-row: 3; }
-          .bento-item--6 { grid-column: 2; grid-row: 3; }
-          .bento-item--7 { grid-column: 3; grid-row: 3; }
-          .bento-item--8 { grid-column: 4; grid-row: 3; }
-
-          .bento-item--accent {
-            background: linear-gradient(135deg, var(--color-accent), rgba(0, 173, 181, 0.5));
-          }
-
-          .bento-item--dark {
-            background: rgba(34, 40, 49, 0.95);
-          }
-
-          .content {
-            display: grid;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100vh;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto;
-            grid-template-areas: "content";
-            position: relative;
-            z-index: 90;
-          }
+        .content {
+          display: grid;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100vh;
+          grid-template-columns: 1fr;
+          grid-template-rows: auto;
+          grid-template-areas: "content";
+          position: relative;
+          z-index: 90;
+        }
 
         .content--blend {
           mix-blend-mode: overlay;
@@ -488,19 +425,8 @@ export function AboutContent() {
 
       <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
 
-        <div className="about-page-wrapper">
-          <div className="bento-grid">
-            <div className="bento-item bento-item--1 bento-item--accent"></div>
-            <div className="bento-item bento-item--main"></div>
-            <div className="bento-item bento-item--2 bento-item--dark"></div>
-            <div className="bento-item bento-item--3 bento-item--dark"></div>
-            <div className="bento-item bento-item--4 bento-item--accent"></div>
-            <div className="bento-item bento-item--5 bento-item--dark"></div>
-            <div className="bento-item bento-item--6 bento-item--accent"></div>
-            <div className="bento-item bento-item--7 bento-item--dark"></div>
-            <div className="bento-item bento-item--8 bento-item--dark"></div>
-          </div>
-          <main ref={mainRef} className="about-main">
+      <div className="about-page-wrapper">
+        <main ref={mainRef} className="about-main">
           <section className="content content--inital">
             <div
               className="one"
