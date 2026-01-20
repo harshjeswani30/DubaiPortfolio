@@ -179,13 +179,13 @@ export function AboutContent() {
           font-family: inherit;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
-          width: 100vw;
+          width: 100%;
           overflow-x: hidden;
           min-height: 100vh;
         }
 
         .font-alt {
-          font-family: "harpagan", sans-serif;
+          font-family: inherit;
           font-weight: 500;
         }
 
@@ -203,7 +203,7 @@ export function AboutContent() {
         .about-main {
           position: relative;
           overflow: hidden;
-          width: 100vw;
+          width: 100%;
         }
 
         .content {
@@ -220,10 +220,12 @@ export function AboutContent() {
         }
 
         .content--initial {
-          width: 100vw;
+          width: 100%;
           height: 100vh;
+          height: 100dvh;
           padding: 0;
           margin: 0;
+          display: block;
         }
 
         .content--blend {
@@ -249,6 +251,8 @@ export function AboutContent() {
           margin: 0 auto 20vh;
           z-index: 80;
           justify-items: center;
+          height: auto;
+          padding: 10vh 2rem;
         }
 
         .content--grid {
@@ -258,9 +262,8 @@ export function AboutContent() {
           grid-template-areas: unset;
           width: 120%;
           height: 100vh;
-          left: -10%;
+          margin-left: -10%;
           gap: 1rem;
-          margin: 0 auto;
         }
 
         .content--grid .content__img {
@@ -309,13 +312,15 @@ export function AboutContent() {
         }
 
         .one {
-          width: 100vw;
+          width: 100%;
           height: 100vh;
+          height: 100dvh;
           position: relative;
           z-index: 10;
           background-size: cover;
           background-position: 50% 50%;
           will-change: transform, width, height, filter;
+          display: block;
         }
 
         .content__img {
@@ -422,8 +427,6 @@ export function AboutContent() {
         src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"
         strategy="beforeInteractive"
       />
-
-      <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
 
       <div className="about-page-wrapper">
         <main ref={mainRef} className="about-main">
