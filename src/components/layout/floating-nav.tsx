@@ -192,34 +192,35 @@ export function FloatingNav() {
                   animate={{ opacity: 1, scale: 1 }}
                   whileHover={{ scale: 1.02 }}
                   className="relative cursor-pointer flex items-center"
-                  style={{ height: '46px', width: '180px' }}
+                  style={{ height: '46px', width: '158px' }}
                 >
-                  <div className="absolute inset-0 flex items-center">
-                    <div 
-                      className="absolute rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
-                      style={{
-                        width: '130px',
-                        height: '46px',
-                        left: '28px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        paddingLeft: '24px',
-                      }}
-                    >
-                      <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE]">PORTFOLIO</span>
-                    </div>
-                    <div 
-                      className="absolute rounded-full border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl flex items-center justify-center"
-                      style={{
-                        width: '46px',
-                        height: '46px',
-                        left: 0,
-                        zIndex: 10,
-                      }}
-                    >
-                      <Code2 className="h-6 w-6 text-[#00ADB5]" />
-                    </div>
+                  <div 
+                    className="absolute rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+                    style={{
+                      width: '158px',
+                      height: '46px',
+                      left: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      paddingLeft: '52px',
+                    }}
+                  >
+                    <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE]">PORTFOLIO</span>
+                  </div>
+                  <div 
+                    className="absolute rounded-full bg-[#222831] flex items-center justify-center"
+                    style={{
+                      width: '46px',
+                      height: '46px',
+                      left: 0,
+                      zIndex: 10,
+                      borderTop: '1px solid rgba(57, 62, 70, 0.5)',
+                      borderBottom: '1px solid rgba(57, 62, 70, 0.5)',
+                      borderLeft: '1px solid rgba(57, 62, 70, 0.5)',
+                      borderRight: 'none',
+                    }}
+                  >
+                    <Code2 className="h-6 w-6 text-[#00ADB5]" />
                   </div>
                 </motion.div>
               </Link>
