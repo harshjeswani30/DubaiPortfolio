@@ -185,54 +185,44 @@ export function FloatingNav() {
         style={{ y: floatY }}
         className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-            <Link href="/" className="group relative z-[130]">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileHover={{ scale: 1.02 }}
-                className="relative cursor-pointer h-10 w-[140px]"
-              >
-                {/* Circle - Logo */}
-                <div style={{
-                  width: '40px',
-                  height: '40px',
-                  backgroundColor: '#343b44',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  zIndex: 10,
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                }}>
-                  <Code2 className="h-5 w-5 text-[#00ADB5]" />
-                </div>
-
-                {/* Rectangle - Portfolio */}
-                <div style={{
-                  width: '110px',
-                  height: '32px',
-                  backgroundColor: '#343b44',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'absolute',
-                  top: '4px',
-                  left: '28px',
-                  zIndex: 5,
-                  paddingLeft: '15px',
-                  border: '1px solid rgba(255,255,255,0.05)',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-                }}>
-                  <span className="text-[10px] font-bold tracking-[0.1em] text-[#EEEEEE]">PORTFOLIO</span>
-                </div>
-              </motion.div>
-            </Link>
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+              <Link href="/" className="group relative z-[130]">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative cursor-pointer flex items-center"
+                  style={{ height: '46px', width: '180px' }}
+                >
+                  <div className="absolute inset-0 flex items-center">
+                    <div 
+                      className="absolute rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+                      style={{
+                        width: '130px',
+                        height: '46px',
+                        left: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        paddingLeft: '24px',
+                      }}
+                    >
+                      <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE]">PORTFOLIO</span>
+                    </div>
+                    <div 
+                      className="absolute rounded-full border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl flex items-center justify-center"
+                      style={{
+                        width: '46px',
+                        height: '46px',
+                        left: 0,
+                        zIndex: 10,
+                      }}
+                    >
+                      <Code2 className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                  </div>
+                </motion.div>
+              </Link>
 
             
             <motion.div
