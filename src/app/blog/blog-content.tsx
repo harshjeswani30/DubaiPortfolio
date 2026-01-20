@@ -1,11 +1,11 @@
 "use client"
 
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, useState, useMemo } from "react"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
-import { Clock, ArrowUpRight, Search, TrendingUp, Sparkles, BookOpen, ChevronRight, Calendar } from "lucide-react"
+import { Clock, ArrowUpRight, Search, Sparkles, BookOpen, ChevronRight, Calendar, X, Filter } from "lucide-react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -23,17 +23,30 @@ interface BlogPost {
   published_at: string
 }
 
-const categories = [
-  { name: "All", icon: Sparkles },
-  { name: "Development", icon: BookOpen },
-  { name: "Design", icon: TrendingUp },
-  { name: "Tutorial", icon: BookOpen },
-]
-
 export function BlogContent({ posts }: { posts: BlogPost[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All")
+
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(posts.map(post => post.category))]
+    return ["All", ...uniqueCategories]
+  }, [posts])
+
+  const filteredPosts = useMemo(() => {
+    return posts.filter(post => {
+      const matchesSearch = searchQuery === "" || 
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      
+      const matchesCategory = selectedCategory === "All" || post.category === selectedCategory
+      
+      return matchesSearch && matchesCategory
+    })
+  }, [posts, searchQuery, selectedCategory])
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -41,16 +54,15 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
   })
 
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const heroY = useTransform(smoothProgress, [0, 0.3], [0, -150])
-  const heroOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0])
-  const heroScale = useTransform(smoothProgress, [0, 0.2], [1, 0.95])
+  const heroY = useTransform(smoothProgress, [0, 0.3], [0, -100])
+  const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".hero-text",
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, ease: "power3.out", stagger: 0.1 }
+        { y: 60, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.1 }
       )
 
       gsap.fromTo(
@@ -81,19 +93,6 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
         },
       })
 
-      gsap.fromTo(
-        ".category-pill",
-        { scale: 0, opacity: 0 },
-        {
-          scale: 1,
-          opacity: 1,
-          duration: 0.5,
-          ease: "back.out(1.7)",
-          stagger: 0.08,
-          delay: 0.5,
-        }
-      )
-
       const magnetCards = document.querySelectorAll(".magnetic-card")
       magnetCards.forEach((card) => {
         card.addEventListener("mousemove", (e: Event) => {
@@ -122,8 +121,8 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
     return () => ctx.revert()
   }, [posts])
 
-  const featuredPost = posts[0]
-  const regularPosts = posts.slice(1)
+  const featuredPost = filteredPosts[0]
+  const regularPosts = filteredPosts.slice(1)
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#222831] overflow-hidden">
@@ -148,90 +147,111 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
 
       <motion.section
         ref={heroRef}
-        className="relative min-h-[90vh] flex items-center justify-center pt-24"
-        style={{ y: heroY, opacity: heroOpacity, scale: heroScale }}
+        className="relative min-h-[50vh] flex items-center justify-center pt-32 pb-8"
+        style={{ y: heroY, opacity: heroOpacity }}
       >
         <div className="relative z-10 mx-auto max-w-7xl px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="hero-text mb-6 inline-flex items-center gap-2 rounded-full border border-[#393E46] bg-[#393E46]/20 px-4 py-2 backdrop-blur-sm"
-          >
-            <TrendingUp className="h-4 w-4 text-[#00ADB5]" />
-            <span className="text-sm font-medium text-[#EEEEEE]">Insights & Tutorials</span>
-          </motion.div>
-
           <h1 className="hero-text mb-6 text-5xl font-bold text-[#EEEEEE] md:text-7xl lg:text-8xl">
-            <span className="block">The Developer</span>
+            <span className="inline">The Developer </span>
             <span className="bg-gradient-to-r from-[#00ADB5] via-[#00ADB5] to-[#EEEEEE] bg-clip-text text-transparent">
               Blog
             </span>
           </h1>
 
-          <p className="hero-text mx-auto mb-10 max-w-2xl text-lg text-[#EEEEEE]/60 md:text-xl">
-            Deep dives into web development, design systems, and the latest tech trends. 
-            Learn, build, and grow with practical insights.
+          <p className="hero-text mx-auto mb-8 max-w-2xl text-lg text-[#EEEEEE]/60 md:text-xl">
+            Deep dives into web development, design systems, and the latest tech trends
           </p>
-
-          <div className="hero-text mb-12 flex flex-wrap items-center justify-center gap-3">
-            {categories.map((cat, i) => (
-              <button
-                key={cat.name}
-                className="category-pill group flex items-center gap-2 rounded-full border border-[#393E46] bg-[#393E46]/20 px-5 py-2.5 text-sm font-medium text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#00ADB5]/10 hover:text-[#00ADB5]"
-              >
-                <cat.icon className="h-4 w-4" />
-                {cat.name}
-              </button>
-            ))}
-          </div>
-
-          <div className="hero-text relative mx-auto max-w-xl">
-            <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#393E46]" />
-            <input
-              type="text"
-              placeholder="Search articles..."
-              className="w-full rounded-2xl border border-[#393E46] bg-[#393E46]/20 py-4 pl-12 pr-4 text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 backdrop-blur-sm transition-all focus:border-[#00ADB5] focus:outline-none focus:ring-2 focus:ring-[#00ADB5]/20"
-            />
-          </div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center gap-2"
-          >
-            <span className="text-xs text-[#00ADB5]/60">Scroll to explore</span>
-            <div className="h-10 w-5 rounded-full border border-[#393E46] p-1">
-              <motion.div
-                animate={{ y: [0, 16, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="h-2 w-2 rounded-full bg-[#00ADB5]"
-              />
-            </div>
-          </motion.div>
-        </motion.div>
       </motion.section>
 
-      <section className="relative z-10 cards-section py-20">
+      <section className="relative z-10 pb-8">
+        <div className="mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 backdrop-blur-md"
+          >
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="relative flex-1 max-w-xl">
+                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#EEEEEE]/40" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search articles, topics, or tags..."
+                  className="w-full rounded-xl border border-[#393E46] bg-[#222831]/80 py-3.5 pl-12 pr-10 text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 transition-all focus:border-[#00ADB5] focus:outline-none focus:ring-2 focus:ring-[#00ADB5]/20"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#EEEEEE]/40 hover:bg-[#393E46] hover:text-[#EEEEEE]"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0">
+                <Filter className="h-4 w-4 text-[#EEEEEE]/40 flex-shrink-0" />
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                      selectedCategory === cat
+                        ? "bg-[#00ADB5] text-[#222831]"
+                        : "border border-[#393E46] bg-transparent text-[#EEEEEE]/70 hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {(searchQuery || selectedCategory !== "All") && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-[#EEEEEE]/60">
+                <span>Found {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""}</span>
+                {(searchQuery || selectedCategory !== "All") && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("")
+                      setSelectedCategory("All")
+                    }}
+                    className="ml-2 text-[#00ADB5] hover:underline"
+                  >
+                    Clear filters
+                  </button>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative z-10 cards-section py-12">
         <div ref={cardsRef} className="mx-auto max-w-7xl px-6">
-          {posts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="py-32 text-center"
+              className="py-20 text-center"
             >
               <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-[#393E46]/20">
-                <BookOpen className="h-10 w-10 text-[#00ADB5]" />
+                <Search className="h-10 w-10 text-[#00ADB5]" />
               </div>
-              <h3 className="mb-2 text-xl font-semibold text-[#EEEEEE]">No posts yet</h3>
-              <p className="text-[#EEEEEE]/60">Check back soon for new content!</p>
+              <h3 className="mb-2 text-xl font-semibold text-[#EEEEEE]">No articles found</h3>
+              <p className="text-[#EEEEEE]/60 mb-4">Try adjusting your search or filter criteria</p>
+              <button
+                onClick={() => {
+                  setSearchQuery("")
+                  setSelectedCategory("All")
+                }}
+                className="text-[#00ADB5] hover:underline"
+              >
+                Clear all filters
+              </button>
             </motion.div>
           ) : (
             <>
