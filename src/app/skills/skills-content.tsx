@@ -550,6 +550,434 @@ function SkillPill({ skill, delay = 0 }: { skill: Skill; delay?: number }) {
   )
 }
 
+const categoryColors: Record<string, string> = {
+  Frontend: "#00ADB5",
+  Backend: "#9B59B6",
+  Languages: "#3498DB",
+  Database: "#2ECC71",
+  DevOps: "#E74C3C",
+  Design: "#F1C40F",
+}
+
+function AnimatedPieChart({ 
+  data, 
+  isHovered,
+  selectedIndex,
+  onHover
+}: { 
+  data: { name: string; value: number; color: string }[]
+  isHovered: boolean
+  selectedIndex: number | null
+  onHover: (index: number | null) => void
+}) {
+  const total = data.reduce((sum, d) => sum + d.value, 0)
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+  
+  let currentAngle = -90
+  const segments = data.map((d, i) => {
+    const angle = (d.value / total) * 360
+    const startAngle = currentAngle
+    currentAngle += angle
+    return {
+      ...d,
+      startAngle,
+      endAngle: currentAngle,
+      angle,
+      index: i
+    }
+  })
+
+  const describeArc = (startAngle: number, endAngle: number, radius: number, innerRadius: number) => {
+    const start = polarToCartesian(50, 50, radius, endAngle)
+    const end = polarToCartesian(50, 50, radius, startAngle)
+    const innerStart = polarToCartesian(50, 50, innerRadius, endAngle)
+    const innerEnd = polarToCartesian(50, 50, innerRadius, startAngle)
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1"
+    
+    return [
+      "M", start.x, start.y,
+      "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y,
+      "L", innerEnd.x, innerEnd.y,
+      "A", innerRadius, innerRadius, 0, largeArcFlag, 1, innerStart.x, innerStart.y,
+      "Z"
+    ].join(" ")
+  }
+
+  const polarToCartesian = (cx: number, cy: number, radius: number, angle: number) => {
+    const rad = (angle * Math.PI) / 180
+    return {
+      x: cx + radius * Math.cos(rad),
+      y: cy + radius * Math.sin(rad)
+    }
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <svg viewBox="0 0 100 100" className="h-full w-full">
+        <defs>
+          {segments.map((seg, i) => (
+            <filter key={`glow-${i}`} id={`glow-${i}`}>
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+          ))}
+        </defs>
+        
+        {segments.map((seg, i) => {
+          const isSelected = selectedIndex === i
+          const baseRadius = 42
+          const selectedRadius = 45
+          const innerRadius = 28
+          
+          return (
+            <motion.path
+              key={seg.name}
+              d={describeArc(seg.startAngle, seg.endAngle, isSelected ? selectedRadius : baseRadius, innerRadius)}
+              fill={seg.color}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={isInView ? { 
+                opacity: selectedIndex === null || isSelected ? 1 : 0.4,
+                scale: 1,
+              } : {}}
+              transition={{ 
+                duration: 0.6, 
+                delay: i * 0.1,
+                type: "spring",
+                stiffness: 100
+              }}
+              style={{
+                transformOrigin: "50px 50px",
+                filter: isSelected ? `url(#glow-${i})` : "none",
+                cursor: "pointer"
+              }}
+              onMouseEnter={() => onHover(i)}
+              onMouseLeave={() => onHover(null)}
+              whileHover={{ scale: 1.05 }}
+            />
+          )
+        })}
+        
+        <motion.circle
+          cx="50"
+          cy="50"
+          r="25"
+          fill="#222831"
+          initial={{ scale: 0 }}
+          animate={isInView ? { scale: 1 } : {}}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+        />
+        
+        <motion.text
+          x="50"
+          y="48"
+          textAnchor="middle"
+          className="fill-[#EEEEEE] text-[8px] font-bold"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.7 }}
+        >
+          {selectedIndex !== null ? `${data[selectedIndex].value}%` : `${data.length}`}
+        </motion.text>
+        <motion.text
+          x="50"
+          y="56"
+          textAnchor="middle"
+          className="fill-[#00ADB5]/70 text-[4px]"
+          initial={{ opacity: 0 }}
+          animate={isInView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.8 }}
+        >
+          {selectedIndex !== null ? data[selectedIndex].name : "Categories"}
+        </motion.text>
+      </svg>
+    </div>
+  )
+}
+
+function InteractivePieChartSection({ 
+  skillsByCategory 
+}: { 
+  skillsByCategory: Record<string, Skill[]> 
+}) {
+  const [hoveredCategory, setHoveredCategory] = useState<number | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const categoryData = Object.entries(skillsByCategory).map(([category, skills]) => ({
+    name: category,
+    value: Math.round(skills.reduce((acc, s) => acc + s.proficiency, 0) / skills.length),
+    color: categoryColors[category] || "#00ADB5",
+    skills,
+    icon: categoryIcons[category] || "⚡"
+  }))
+
+  const totalSkills = Object.values(skillsByCategory).flat().length
+  const overallAvg = Math.round(
+    Object.values(skillsByCategory).flat().reduce((acc, s) => acc + s.proficiency, 0) / totalSkills
+  )
+
+  return (
+    <div ref={ref} className="grid gap-8 lg:grid-cols-2">
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        animate={isInView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.8 }}
+        className="relative flex flex-col items-center justify-center"
+      >
+        <div className="relative h-80 w-80 md:h-96 md:w-96">
+          <motion.div
+            className="absolute inset-0 rounded-full bg-[#00ADB5]/5"
+            animate={{ 
+              boxShadow: hoveredCategory !== null 
+                ? `0 0 60px ${categoryData[hoveredCategory]?.color}40` 
+                : "0 0 40px rgba(0, 173, 181, 0.1)"
+            }}
+            transition={{ duration: 0.3 }}
+          />
+          
+          <AnimatedPieChart 
+            data={categoryData}
+            isHovered={hoveredCategory !== null}
+            selectedIndex={hoveredCategory}
+            onHover={setHoveredCategory}
+          />
+          
+          <motion.div
+            className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-6 py-3 backdrop-blur-sm"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 1 }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#00ADB5]">{totalSkills}</div>
+                <div className="text-xs text-[#EEEEEE]/50">Skills</div>
+              </div>
+              <div className="h-8 w-px bg-[#393E46]" />
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#00ADB5]">{overallAvg}%</div>
+                <div className="text-xs text-[#EEEEEE]/50">Average</div>
+              </div>
+              <div className="h-8 w-px bg-[#393E46]" />
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#00ADB5]">{categoryData.length}</div>
+                <div className="text-xs text-[#EEEEEE]/50">Categories</div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
+      
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        animate={isInView ? { opacity: 1, x: 0 } : {}}
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="flex flex-col justify-center space-y-3"
+      >
+        {categoryData.map((cat, index) => (
+          <motion.div
+            key={cat.name}
+            initial={{ opacity: 0, x: 30 }}
+            animate={isInView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.4 + index * 0.1 }}
+            onMouseEnter={() => setHoveredCategory(index)}
+            onMouseLeave={() => setHoveredCategory(null)}
+            onClick={() => setSelectedCategory(selectedCategory === cat.name ? null : cat.name)}
+            className={`group relative cursor-pointer overflow-hidden rounded-2xl border transition-all duration-300 ${
+              hoveredCategory === index 
+                ? "border-[#00ADB5]/50 bg-[#393E46]/40" 
+                : "border-[#393E46]/30 bg-[#393E46]/20"
+            }`}
+          >
+            <motion.div
+              className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              style={{ 
+                background: `linear-gradient(135deg, ${cat.color}15, transparent 60%)` 
+              }}
+            />
+            
+            <div className="relative flex items-center gap-4 p-4">
+              <motion.div
+                className="flex h-12 w-12 items-center justify-center rounded-xl text-2xl"
+                style={{ backgroundColor: `${cat.color}20` }}
+                animate={hoveredCategory === index ? { scale: 1.1, rotate: [0, -5, 5, 0] } : { scale: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                {cat.icon}
+              </motion.div>
+              
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold text-[#EEEEEE]">{cat.name}</h4>
+                  <motion.span
+                    className="rounded-full px-3 py-1 text-sm font-bold"
+                    style={{ 
+                      color: cat.color,
+                      backgroundColor: `${cat.color}20`
+                    }}
+                    animate={hoveredCategory === index ? { scale: 1.1 } : { scale: 1 }}
+                  >
+                    {cat.value}%
+                  </motion.span>
+                </div>
+                
+                <div className="mt-2 h-2 overflow-hidden rounded-full bg-[#393E46]/50">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: cat.color }}
+                    initial={{ width: 0 }}
+                    animate={isInView ? { width: `${cat.value}%` } : {}}
+                    transition={{ duration: 1, delay: 0.5 + index * 0.1 }}
+                  />
+                </div>
+                
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {cat.skills.slice(0, 3).map((skill, i) => (
+                    <motion.span
+                      key={skill.id}
+                      className="rounded-lg bg-[#222831]/80 px-2 py-0.5 text-xs text-[#EEEEEE]/60"
+                      initial={{ opacity: 0 }}
+                      animate={hoveredCategory === index ? { opacity: 1 } : { opacity: 0.5 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      {skill.name}
+                    </motion.span>
+                  ))}
+                  {cat.skills.length > 3 && (
+                    <span className="rounded-lg bg-[#222831]/80 px-2 py-0.5 text-xs text-[#EEEEEE]/40">
+                      +{cat.skills.length - 3}
+                    </span>
+                  )}
+                </div>
+              </div>
+              
+              <motion.div
+                className="h-16 w-1 rounded-full"
+                style={{ backgroundColor: cat.color }}
+                initial={{ scaleY: 0 }}
+                animate={isInView ? { scaleY: 1 } : {}}
+                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+              />
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
+function RadialSkillChart({ skills, category, color }: { skills: Skill[]; category: string; color: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-50px" })
+  const [hoveredSkill, setHoveredSkill] = useState<string | null>(null)
+  
+  const avgProficiency = Math.round(skills.reduce((acc, s) => acc + s.proficiency, 0) / skills.length)
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 0.6 }}
+      className="group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-[#222831]/80 p-6 backdrop-blur-sm transition-all duration-500 hover:border-[#00ADB5]/30"
+    >
+      <motion.div 
+        className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+        style={{ 
+          background: `radial-gradient(circle at 50% 0%, ${color}20, transparent 70%)` 
+        }}
+      />
+      
+      <div className="relative flex flex-col items-center">
+        <div className="relative mb-4 h-32 w-32">
+          <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+            <circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke="#393E46"
+              strokeWidth="8"
+            />
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="40"
+              fill="none"
+              stroke={color}
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={`${2 * Math.PI * 40}`}
+              initial={{ strokeDashoffset: 2 * Math.PI * 40 }}
+              animate={isInView ? { 
+                strokeDashoffset: 2 * Math.PI * 40 * (1 - avgProficiency / 100) 
+              } : {}}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              style={{ filter: `drop-shadow(0 0 8px ${color}60)` }}
+            />
+          </svg>
+          
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <motion.span
+              className="text-3xl font-bold"
+              style={{ color }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.8, type: "spring" }}
+            >
+              {avgProficiency}%
+            </motion.span>
+            <span className="text-xs text-[#EEEEEE]/50">avg</span>
+          </div>
+        </div>
+        
+        <div className="mb-2 flex items-center gap-2">
+          <span className="text-xl">{categoryIcons[category]}</span>
+          <h3 className="text-lg font-semibold text-[#EEEEEE]">{category}</h3>
+        </div>
+        
+        <div className="w-full space-y-2">
+          {skills.map((skill, i) => (
+            <motion.div
+              key={skill.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={isInView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              onMouseEnter={() => setHoveredSkill(skill.id)}
+              onMouseLeave={() => setHoveredSkill(null)}
+              className="relative"
+            >
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-[#EEEEEE]/70">{skill.name}</span>
+                <motion.span
+                  style={{ color }}
+                  animate={hoveredSkill === skill.id ? { scale: 1.2 } : { scale: 1 }}
+                >
+                  {skill.proficiency}%
+                </motion.span>
+              </div>
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#393E46]/50">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: color }}
+                  initial={{ width: 0 }}
+                  animate={isInView ? { width: `${skill.proficiency}%` } : {}}
+                  transition={{ duration: 0.8, delay: 0.5 + i * 0.1 }}
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
 function CategoryCard({ 
   category, 
   skills, 
@@ -875,23 +1303,40 @@ const headerY = useTransform(smoothProgress, [0, 0.3], [0, -150])
               className="mb-16 text-center"
             >
               <h2 className="mb-4 text-4xl font-bold text-[#EEEEEE] md:text-5xl">
-                Skill Categories
+                Skill <span className="text-[#00ADB5]">Statistics</span>
               </h2>
               <p className="text-[#00ADB5]/70">
-                Hover to explore proficiency levels
+                Interactive overview of proficiency across categories
               </p>
             </motion.div>
             
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {Object.entries(skillsByCategory).map(([category, categorySkills], index) => (
-                <CategoryCard
-                  key={category}
-                  category={category}
-                  skills={categorySkills}
-                  index={index}
-                />
-              ))}
-            </div>
+            <InteractivePieChartSection skillsByCategory={skillsByCategory} />
+            
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-20"
+            >
+              <motion.h3
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className="mb-8 text-center text-2xl font-bold text-[#EEEEEE]"
+              >
+                Detailed Breakdown
+              </motion.h3>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {Object.entries(skillsByCategory).map(([category, categorySkills], index) => (
+                  <RadialSkillChart
+                    key={category}
+                    category={category}
+                    skills={categorySkills}
+                    color={categoryColors[category] || "#00ADB5"}
+                  />
+                ))}
+              </div>
+            </motion.div>
           </div>
         </motion.section>
       
