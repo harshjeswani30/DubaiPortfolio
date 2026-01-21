@@ -12,13 +12,10 @@ interface Project {
   title: string
   slug: string
   description: string
-  tech_stack: string[]
+  technologies: string[]
   category: string
-  tagline?: string
-  tagline_highlight?: string
-  featured_image?: string
-  preview_video?: string
-  live_url?: string
+  image?: string
+  demo_url?: string
   github_url?: string
 }
 
@@ -55,9 +52,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const handleMouseEnter = () => {
     setIsHovered(true)
     glowOpacity.set(1)
-    if (videoRef.current && project.preview_video) {
-      videoRef.current.play().catch(() => {})
-    }
+
   }
 
   const handleMouseLeave = () => {
@@ -65,10 +60,6 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     rotateY.set(0)
     setIsHovered(false)
     glowOpacity.set(0)
-    if (videoRef.current && project.preview_video) {
-      videoRef.current.pause()
-      videoRef.current.currentTime = 0
-    }
   }
 
     const handleProjectClick = (e: React.MouseEvent) => {
@@ -79,16 +70,16 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       sessionStorage.setItem('projectSource', 'home')
       
       const rect = cardRef.current.getBoundingClientRect()
-      startTransition(
-        {
-          originRect: rect,
-          targetSlug: project.slug,
-          projectTitle: project.title,
-          projectCategory: project.category,
-          projectImage: project.featured_image,
-        },
-        `/projects/${project.slug}`
-      )
+        startTransition(
+          {
+            originRect: rect,
+            targetSlug: project.slug,
+            projectTitle: project.title,
+            projectCategory: project.category,
+            projectImage: project.image,
+          },
+          `/projects/${project.slug}`
+        )
     }
 
   return (
@@ -141,84 +132,60 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
             </div>
 
             <div className="relative aspect-[16/10] overflow-hidden">
-                {project.preview_video ? (
-                  <motion.div
-                    className="h-full w-full"
-                    animate={{ scale: isHovered ? 1.05 : 1 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    {project.featured_image && (
+                  {project.image ? (
+                    <motion.div
+                      className="h-full w-full"
+                      animate={{ scale: isHovered ? 1.1 : 1 }}
+                      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    >
                       <Image
-                        src={project.featured_image}
+                        src={project.image}
                         alt={project.title}
                         fill
-                        className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                    )}
-                    <video
-                      ref={videoRef}
-                      src={project.preview_video}
-                      muted
-                      loop
-                      playsInline
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                    />
-                  </motion.div>
-                ) : project.featured_image ? (
-                  <motion.div
-                    className="h-full w-full"
-                    animate={{ scale: isHovered ? 1.1 : 1 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <Image
-                      src={project.featured_image}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </motion.div>
-                ) : (
-                  <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
-                    <div className="absolute inset-0">
-                      <motion.div
-                        className="absolute inset-0"
-                        animate={{ 
-                          backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                        style={{
-                          backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
-                          backgroundSize: '200% 200%'
-                        }}
-                      />
-                    </div>
-                    
-                    <motion.div
-                      animate={{ 
-                        scale: isHovered ? 1.15 : 1,
-                        rotate: isHovered ? 5 : 0
-                      }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="relative z-10"
-                    >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                        className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
-                      />
-                      <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                        className="absolute -inset-8 rounded-full border border-[#393E46]/30"
-                      />
-                      <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
-                        {project.title.charAt(0)}
-                      </span>
                     </motion.div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
+                      <div className="absolute inset-0">
+                        <motion.div
+                          className="absolute inset-0"
+                          animate={{ 
+                            backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
+                          }}
+                          transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                          style={{
+                            backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
+                            backgroundSize: '200% 200%'
+                          }}
+                        />
+                      </div>
+                      
+                      <motion.div
+                        animate={{ 
+                          scale: isHovered ? 1.15 : 1,
+                          rotate: isHovered ? 5 : 0
+                        }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        className="relative z-10"
+                      >
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                          className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
+                        />
+                        <motion.div
+                          animate={{ rotate: -360 }}
+                          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                          className="absolute -inset-8 rounded-full border border-[#393E46]/30"
+                        />
+                        <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
+                          {project.title.charAt(0)}
+                        </span>
+                      </motion.div>
+                    </div>
+                  )}
 
 <motion.div 
                     className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-transparent"
