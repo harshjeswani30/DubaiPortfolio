@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export interface CircleTrailCursorProps {
   fillColor?: string;
@@ -21,6 +22,8 @@ export function CircleTrailCursor({
   triggerSelector = 'a, button, [data-cursor-hover]',
   lerpAmount = 0.2
 }: CircleTrailCursorProps) {
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith('/admin');
   const svgRef = useRef<SVGSVGElement>(null);
   const [isCoarse, setIsCoarse] = useState(true);
   const cursorPos = useRef({ x: 0, y: 0 });
@@ -39,7 +42,7 @@ export function CircleTrailCursor({
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || isCoarse) return;
+    if (typeof window === 'undefined' || isCoarse || isAdmin) return;
 
     const svg = svgRef.current;
     if (!svg) return;
@@ -120,7 +123,7 @@ export function CircleTrailCursor({
     };
   }, [size, scaleOnEnter, opacityOnEnter, triggerSelector, lerpAmount, isCoarse]);
 
-  if (isCoarse) {
+  if (isCoarse || isAdmin) {
     return null;
   }
 
