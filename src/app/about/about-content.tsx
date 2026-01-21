@@ -5,11 +5,10 @@ import Script from "next/script"
 
 export function AboutContent() {
   const mainRef = useRef<HTMLElement>(null)
-  const initialized = useRef(false)
 
   useEffect(() => {
-    if (initialized.current) return
-    initialized.current = true
+    let cleanup: (() => void) | null = null
+    let checkInterval: NodeJS.Timeout | null = null
 
     const initAnimation = () => {
       const gsap = (window as any).gsap
@@ -19,17 +18,18 @@ export function AboutContent() {
       const imagesLoaded = (window as any).imagesLoaded
 
       if (!gsap || !ScrollTrigger || !Flip || !Lenis || !imagesLoaded) {
-        setTimeout(initAnimation, 100)
-        return
+        return false
       }
 
+      ScrollTrigger.getAll().forEach((t: any) => t.kill())
       gsap.registerPlugin(ScrollTrigger, Flip)
 
       const lenis = new Lenis({ lerp: 0.1 })
       lenis.on("scroll", ScrollTrigger.update)
-      gsap.ticker.add((time: number) => {
+      const tickerCallback = (time: number) => {
         lenis.raf(time * 1000)
-      })
+      }
+      gsap.ticker.add(tickerCallback)
       gsap.ticker.lagSmoothing(0)
 
       const oneElement = document.querySelector(".one") as HTMLElement
@@ -138,15 +138,20 @@ export function AboutContent() {
         window.addEventListener("resize", createFlipOnScrollAnimation)
       })
 
-      return () => {
+      cleanup = () => {
         flipCtx && flipCtx.revert()
+        ScrollTrigger.getAll().forEach((t: any) => t.kill())
+        gsap.ticker.remove(tickerCallback)
         lenis.destroy()
+        window.removeEventListener("resize", createFlipOnScrollAnimation)
       }
+
+      return true
     }
 
     if (typeof window !== "undefined") {
       document.body.classList.add("loading")
-      const checkLibraries = setInterval(() => {
+      checkInterval = setInterval(() => {
         if (
           (window as any).gsap &&
           (window as any).ScrollTrigger &&
@@ -154,10 +159,15 @@ export function AboutContent() {
           (window as any).Lenis &&
           (window as any).imagesLoaded
         ) {
-          clearInterval(checkLibraries)
+          if (checkInterval) clearInterval(checkInterval)
           initAnimation()
         }
       }, 100)
+    }
+
+    return () => {
+      if (checkInterval) clearInterval(checkInterval)
+      if (cleanup) cleanup()
     }
   }, [])
 
