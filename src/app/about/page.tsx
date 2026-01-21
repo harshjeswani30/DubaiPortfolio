@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getAboutPage, getSiteSettings } from "@/lib/data"
+import { getFullAboutData } from "@/lib/data"
 import { AboutContent } from "./about-content"
 
 export const metadata: Metadata = {
@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function AboutPage() {
-  const [aboutData, siteSettings] = await Promise.all([
-    getAboutPage(),
-    getSiteSettings(),
-  ])
-  
-  return <AboutContent aboutData={aboutData} siteSettings={siteSettings} />
+  const data = await getFullAboutData()
+  return <AboutContent {...data} />
 }

@@ -1,945 +1,749 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import Script from "next/script"
-
-interface AboutData {
-  intro_eyebrow: string
-  intro_title: string
-  intro_title_highlight: string
-  intro_description: string
-  main_title: string
-  footer_text: string
-  images: string[]
-  stats: { value: string; label: string }[]
-}
-
-interface SiteSettings {
-  years_experience: number
-  projects_completed: number
-  happy_clients: number
-}
+import { useRef } from "react"
+import { motion, useScroll, useTransform } from "framer-motion"
+import { format } from "date-fns"
+import Link from "next/link"
+import {
+  Users,
+  Code,
+  BookOpen,
+  UsersRound,
+  Github,
+  PenTool,
+  Gamepad2,
+  Camera,
+  Dumbbell,
+  Plane,
+  Mail,
+  MapPin,
+  Calendar,
+  Briefcase,
+  GraduationCap,
+  Award,
+  Trophy,
+  ArrowRight,
+  Sparkles,
+  Heart,
+  Linkedin,
+  Globe,
+  Star,
+  Zap,
+  Target,
+  Rocket,
+  ChevronRight,
+} from "lucide-react"
+import type { AboutPage, SiteSettings, Experience, Skill, Education, Service, SocialLink } from "@/lib/data"
 
 interface AboutContentProps {
-  aboutData?: AboutData | null
-  siteSettings?: SiteSettings | null
+  aboutPage: AboutPage | null
+  siteSettings: SiteSettings | null
+  experiences: Experience[]
+  skills: Skill[]
+  education: Education[]
+  services: Service[]
+  socialLinks: SocialLink[]
 }
 
-export function AboutContent({ aboutData, siteSettings }: AboutContentProps) {
-  const mainRef = useRef<HTMLElement>(null)
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  users: Users,
+  code: Code,
+  "book-open": BookOpen,
+  "users-round": UsersRound,
+  github: Github,
+  "pen-tool": PenTool,
+  "gamepad-2": Gamepad2,
+  camera: Camera,
+  dumbbell: Dumbbell,
+  plane: Plane,
+  linkedin: Linkedin,
+  globe: Globe,
+  star: Star,
+  zap: Zap,
+  target: Target,
+  rocket: Rocket,
+  heart: Heart,
+}
 
-  const introEyebrow = aboutData?.intro_eyebrow || "Welcome"
-  const introTitle = aboutData?.intro_title || "Creating Digital"
-  const introTitleHighlight = aboutData?.intro_title_highlight || "Experiences"
-  const introDescription = aboutData?.intro_description || "Passionate about transforming ideas into elegant, functional solutions. I craft modern web experiences that blend aesthetics with performance."
-  const mainTitle = aboutData?.main_title || "Full Stack Developer"
-  const footerText = aboutData?.footer_text || "Let's build something amazing"
-  const images = aboutData?.images?.length ? aboutData.images : []
-  const stats = aboutData?.stats?.length ? aboutData.stats : [
-    { value: `${siteSettings?.years_experience || 5}+`, label: "Years Exp" },
-    { value: `${siteSettings?.projects_completed || 50}+`, label: "Projects" },
-    { value: `${siteSettings?.happy_clients || 30}+`, label: "Clients" },
-  ]
-  
-  const mainTitleParts = mainTitle.split(" ")
-  const firstPart = mainTitleParts.slice(0, Math.ceil(mainTitleParts.length / 2)).join(" ")
-  const secondPart = mainTitleParts.slice(Math.ceil(mainTitleParts.length / 2)).join(" ")
+const serviceIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  code: Code,
+  globe: Globe,
+  zap: Zap,
+  target: Target,
+  rocket: Rocket,
+  users: Users,
+  star: Star,
+}
 
-  useEffect(() => {
-    let cleanup: (() => void) | null = null
-    let checkInterval: NodeJS.Timeout | null = null
+export function AboutContent({
+  aboutPage,
+  siteSettings,
+  experiences,
+  skills,
+  education,
+  services,
+  socialLinks,
+}: AboutContentProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  })
 
-    window.scrollTo(0, 0)
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
+  const heroScale = useTransform(scrollYProgress, [0, 0.1], [1, 0.95])
 
-    const initAnimation = () => {
-      const gsap = (window as any).gsap
-      const ScrollTrigger = (window as any).ScrollTrigger
-      const Flip = (window as any).Flip
-      const Lenis = (window as any).Lenis
-      const imagesLoaded = (window as any).imagesLoaded
+  const stats = aboutPage?.stats?.length
+    ? aboutPage.stats
+    : [
+        { value: `${siteSettings?.years_experience || 5}+`, label: "Years Experience" },
+        { value: `${siteSettings?.projects_completed || 50}+`, label: "Projects Completed" },
+        { value: `${siteSettings?.happy_clients || 30}+`, label: "Happy Clients" },
+      ]
 
-      if (!gsap || !ScrollTrigger || !Flip || !Lenis || !imagesLoaded) {
-        return false
-      }
-
-        ScrollTrigger.getAll().forEach((t: any) => t.kill())
-        ScrollTrigger.clearScrollMemory()
-        gsap.registerPlugin(ScrollTrigger, Flip)
-
-      const lenis = new Lenis({ lerp: 0.1 })
-      lenis.on("scroll", ScrollTrigger.update)
-      const tickerCallback = (time: number) => {
-        lenis.raf(time * 1000)
-      }
-      gsap.ticker.add(tickerCallback)
-      gsap.ticker.lagSmoothing(0)
-
-      const oneElement = document.querySelector(".one") as HTMLElement
-      const parentElement = oneElement?.parentNode as HTMLElement
-      const stepElements = [...document.querySelectorAll("[data-step]")]
-
-      let flipCtx: any
-
-      const createFlipOnScrollAnimation = () => {
-        flipCtx && flipCtx.revert()
-        flipCtx = gsap.context(() => {
-          const flipConfig = { duration: 1, ease: "sine.inOut" }
-          const states = stepElements.map((stepElement) => Flip.getState(stepElement))
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              trigger: parentElement,
-              start: "clamp(center center)",
-              endTrigger: stepElements[stepElements.length - 1],
-              end: "clamp(center center)",
-              scrub: true,
-            },
-          })
-
-          states.forEach((state: any, index: number) => {
-            tl.add(
-              Flip.fit(oneElement, state, {
-                ...flipConfig,
-                ease: index === 0 ? "none" : flipConfig.ease,
-              }),
-              index ? "+=0.5" : 0
-            )
-          })
-        })
-      }
-
-      const animateSpansOnScroll = () => {
-        document.querySelectorAll(".content__title > span").forEach((span, index) => {
-          const direction = index % 2 === 0 ? -150 : 150
-          const triggerElement = span.closest(".content--center") ? span.parentNode : span
-          gsap.from(span, {
-            x: direction,
-            duration: 1,
-            ease: "sine",
-            scrollTrigger: {
-              trigger: triggerElement,
-              start: "top bottom",
-              end: "+=45%",
-              scrub: true,
-            },
-          })
-        })
-      }
-
-      const animateImagesOnScroll = () => {
-        document
-          .querySelectorAll(
-            ".content--lines .content__img:not([data-step]), .content--grid .content__img:not([data-step])"
-          )
-          .forEach((image) => {
-            gsap.fromTo(
-              image,
-              { scale: 0, autoAlpha: 0, filter: "brightness(180%) saturate(0%)" },
-              {
-                scale: 1,
-                autoAlpha: 1,
-                filter: "brightness(100%) saturate(100%)",
-                duration: 1,
-                ease: "sine",
-                scrollTrigger: { trigger: image, start: "top bottom", end: "+=45%", scrub: true },
-              }
-            )
-          })
-      }
-
-      const addParallaxToColumnImages = () => {
-        const columnImages = [
-          ...document.querySelectorAll(".content--column .content__img:not([data-step])"),
-        ]
-        const middleIndex = (columnImages.length - 1) / 2
-        columnImages.forEach((image, index) => {
-          const intensity = Math.abs(index - middleIndex) * 75
-          gsap.fromTo(
-            image,
-            { y: intensity },
-            {
-              y: -intensity,
-              ease: "sine",
-              scrollTrigger: { trigger: image, start: "top bottom", end: "bottom top", scrub: true },
-            }
-          )
-        })
-      }
-
-      const preloadImages = (selector = "img") => {
-        return new Promise((resolve) => {
-          imagesLoaded(document.querySelectorAll(selector), { background: true }, resolve)
-        })
-      }
-
-          const animateIntroContent = () => {
-            const introContent = document.querySelector(".intro-content")
-            if (introContent) {
-              gsap.fromTo(
-                ".intro-eyebrow",
-                { opacity: 0, y: 30, filter: "blur(10px)" },
-                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power2.out", delay: 0.2 }
-              )
-              gsap.fromTo(
-                ".intro-title",
-                { opacity: 0, y: 40, filter: "blur(15px)" },
-                { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, ease: "power2.out", delay: 0.4 }
-              )
-              gsap.fromTo(
-                ".intro-description",
-                { opacity: 0, y: 30, filter: "blur(10px)" },
-                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power2.out", delay: 0.6 }
-              )
-              gsap.fromTo(
-                ".intro-stat",
-                { opacity: 0, y: 20, filter: "blur(8px)" },
-                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "power2.out", stagger: 0.15, delay: 0.8 }
-              )
-              gsap.fromTo(
-                ".intro-decorative-circle",
-                { opacity: 0, scale: 0.8 },
-                { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out", delay: 0.5 }
-              )
-
-              gsap.fromTo(
-                introContent,
-                { opacity: 1, x: 0 },
-                {
-                  opacity: 0,
-                  x: 100,
-                  ease: "power2.inOut",
-                  scrollTrigger: {
-                    trigger: ".content--inital",
-                    start: "top top",
-                    end: "bottom top",
-                    scrub: 0.5,
-                  },
-                }
-              )
-              gsap.fromTo(
-                ".intro-line",
-                { scaleX: 1 },
-                {
-                  scaleX: 0,
-                  ease: "power2.inOut",
-                  stagger: 0.05,
-                  scrollTrigger: {
-                    trigger: ".content--inital",
-                    start: "top top",
-                    end: "50% top",
-                    scrub: 0.5,
-                  },
-                }
-              )
-            }
-          }
-
-          preloadImages(".one, .content__img").then(() => {
-            document.body.classList.remove("loading")
-            createFlipOnScrollAnimation()
-            animateSpansOnScroll()
-            animateImagesOnScroll()
-            addParallaxToColumnImages()
-            animateIntroContent()
-            window.addEventListener("resize", createFlipOnScrollAnimation)
-            ScrollTrigger.refresh()
-          })
-
-      cleanup = () => {
-        flipCtx && flipCtx.revert()
-        ScrollTrigger.getAll().forEach((t: any) => t.kill())
-        gsap.ticker.remove(tickerCallback)
-        lenis.destroy()
-        window.removeEventListener("resize", createFlipOnScrollAnimation)
-      }
-
-      return true
-    }
-
-    if (typeof window !== "undefined") {
-      document.body.classList.add("loading")
-      checkInterval = setInterval(() => {
-        if (
-          (window as any).gsap &&
-          (window as any).ScrollTrigger &&
-          (window as any).Flip &&
-          (window as any).Lenis &&
-          (window as any).imagesLoaded
-        ) {
-          if (checkInterval) clearInterval(checkInterval)
-          initAnimation()
-        }
-      }, 100)
-    }
-
-    return () => {
-      if (checkInterval) clearInterval(checkInterval)
-      if (cleanup) cleanup()
-    }
-  }, [])
+  const skillsByCategory = skills.reduce(
+    (acc, skill) => {
+      if (!acc[skill.category]) acc[skill.category] = []
+      acc[skill.category].push(skill)
+      return acc
+    },
+    {} as Record<string, Skill[]>
+  )
 
   return (
-    <>
-      <style jsx global>{`
-        .about-page-wrapper {
-          --color-text: #EEEEEE;
-          --color-bg: #222831;
-          --color-accent: #00ADB5;
-          --color-medium: #393E46;
-          --color-title: #EEEEEE;
-          --page-padding: 2rem;
-          --gradient-1: rgba(34, 40, 49, 0.8);
-          --gradient-2: rgba(0, 173, 181, 0.15);
-        }
+    <div ref={containerRef} className="min-h-screen bg-[#222831]">
+      <motion.section
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+        style={{ opacity: heroOpacity, scale: heroScale }}
+      >
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#00ADB5]/5 via-transparent to-transparent" />
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+            className="absolute -right-[400px] -top-[400px] h-[800px] w-[800px] opacity-10"
+          >
+            <div className="absolute inset-0 rounded-full border border-[#00ADB5]/30" />
+            <div className="absolute inset-[100px] rounded-full border border-[#00ADB5]/20" />
+            <div className="absolute inset-[200px] rounded-full border border-[#00ADB5]/10" />
+          </motion.div>
+        </div>
 
-        .about-page-wrapper {
-          color: var(--color-text);
-          background-color: var(--color-bg);
-          font-family: inherit;
-          -webkit-font-smoothing: antialiased;
-          -moz-osx-font-smoothing: grayscale;
-          width: 100vw;
-          overflow-x: hidden;
-          min-height: 100vh;
-          background-image: 
-            radial-gradient(ellipse at top, var(--gradient-1), transparent), 
-            radial-gradient(ellipse at bottom, var(--gradient-2), transparent);
-          background-size: 100%, 200%;
-          background-attachment: fixed;
-        }
+        <div className="relative z-10 mx-auto max-w-6xl px-6 py-20">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
+              >
+                <Sparkles className="h-4 w-4 text-[#00ADB5]" />
+                <span className="text-sm text-[#00ADB5]">
+                  {aboutPage?.intro_eyebrow || "About Me"}
+                </span>
+              </motion.div>
 
-        .font-alt {
-          font-family: "harpagan", sans-serif;
-          font-weight: 500;
-        }
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="mb-4 text-4xl font-bold text-[#EEEEEE] md:text-6xl"
+              >
+                {aboutPage?.intro_title || "Creating Digital"}
+                <br />
+                <span className="bg-gradient-to-r from-[#00ADB5] to-cyan-400 bg-clip-text text-transparent">
+                  {aboutPage?.intro_title_highlight || "Experiences"}
+                </span>
+              </motion.h1>
 
-        .js .loading:before {
-          content: "";
-          position: fixed;
-          z-index: 10000;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: var(--color-bg);
-        }
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mb-6 text-lg text-[#EEEEEE]/70 leading-relaxed"
+              >
+                {aboutPage?.intro_description ||
+                  "Passionate about transforming ideas into elegant, functional solutions."}
+              </motion.p>
 
-        .about-main {
-          position: relative;
-          overflow: hidden;
-          width: 100vw;
-        }
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mb-8 flex flex-wrap items-center gap-4 text-sm text-[#EEEEEE]/60"
+              >
+                {siteSettings?.location && (
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-[#00ADB5]" />
+                    {siteSettings.location}
+                  </span>
+                )}
+                {siteSettings?.email && (
+                  <span className="flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-[#00ADB5]" />
+                    {siteSettings.email}
+                  </span>
+                )}
+              </motion.div>
 
-            .content--inital {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 0;
-              position: relative;
-              height: 100vh;
-            }
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="flex flex-wrap gap-4"
+              >
+                <Link href="/contact">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-6 py-3 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
+                  >
+                    Get in Touch
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </motion.button>
+                </Link>
+                <Link href="/resume">
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-6 py-3 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5]"
+                  >
+                    View Resume
+                  </motion.button>
+                </Link>
+              </motion.div>
 
-            .content--inital .one {
-              width: 100%;
-              height: 100%;
-              max-height: 100vh;
-            }
+              {socialLinks.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                  className="mt-8 flex items-center gap-3"
+                >
+                  {socialLinks.map((link) => {
+                    const Icon = iconMap[link.icon_name?.toLowerCase()] || Globe
+                    return (
+                      <motion.a
+                        key={link.id}
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE]/60 transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                      >
+                        <Icon className="h-5 w-5" />
+                      </motion.a>
+                    )
+                  })}
+                </motion.div>
+              )}
+            </motion.div>
 
-          .intro-content {
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 45%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 4rem;
-            background: linear-gradient(90deg, transparent 0%, rgba(34, 40, 49, 0.95) 20%);
-            z-index: 20;
-          }
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                {stats.map((stat, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-transparent p-6 backdrop-blur-sm"
+                  >
+                    <p className="text-3xl font-bold text-[#00ADB5] md:text-4xl">{stat.value}</p>
+                    <p className="mt-1 text-sm text-[#EEEEEE]/60">{stat.label}</p>
+                  </motion.div>
+                ))}
+              </div>
 
-          .intro-eyebrow {
-              display: flex;
-              align-items: center;
-              gap: 1rem;
-              margin-bottom: 1.5rem;
-              opacity: 0;
-            }
+              {aboutPage?.images?.[0] && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="mt-4 overflow-hidden rounded-2xl border border-[#393E46]/50"
+                >
+                  <img
+                    src={aboutPage.images[0]}
+                    alt="About"
+                    className="h-64 w-full object-cover"
+                  />
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
+        </div>
 
-            .intro-line {
-              height: 1px;
-              width: 60px;
-              background: var(--color-accent);
-              transform-origin: left;
-            }
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="flex flex-col items-center gap-2"
+          >
+            <span className="text-xs text-[#00ADB5]/60">Scroll to explore</span>
+            <div className="h-10 w-5 rounded-full border border-[#393E46] p-1">
+              <motion.div
+                animate={{ y: [0, 16, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="h-2 w-2 rounded-full bg-[#00ADB5]"
+              />
+            </div>
+          </motion.div>
+        </motion.div>
+      </motion.section>
 
-            .intro-eyebrow-text {
-              font-size: 0.75rem;
-              letter-spacing: 0.3em;
-              text-transform: uppercase;
-              color: var(--color-accent);
-              font-weight: 500;
-            }
-
-            .intro-title {
-              font-size: clamp(2.5rem, 5vw, 4rem);
-              font-weight: 300;
-              line-height: 1.1;
-              margin-bottom: 2rem;
-              color: var(--color-title);
-              opacity: 0;
-            }
-
-            .intro-title-highlight {
-              display: block;
-              font-weight: 600;
-              background: linear-gradient(135deg, var(--color-accent) 0%, #00d4de 100%);
-              -webkit-background-clip: text;
-              -webkit-text-fill-color: transparent;
-              background-clip: text;
-            }
-
-            .intro-description {
-              font-size: 1rem;
-              line-height: 1.8;
-              color: rgba(238, 238, 238, 0.7);
-              margin-bottom: 2.5rem;
-              max-width: 400px;
-              opacity: 0;
-            }
-
-            .intro-stats {
-              display: flex;
-              gap: 3rem;
-            }
-
-            .intro-stat {
-              display: flex;
-              flex-direction: column;
-              opacity: 0;
-            }
-
-            .intro-stat-number {
-              font-size: 2.5rem;
-              font-weight: 600;
-              color: var(--color-accent);
-              line-height: 1;
-            }
-
-            .intro-stat-label {
-              font-size: 0.75rem;
-              letter-spacing: 0.1em;
-              text-transform: uppercase;
-              color: rgba(238, 238, 238, 0.5);
-              margin-top: 0.5rem;
-            }
-
-            .intro-scroll-indicator {
-              position: absolute;
-              bottom: 3rem;
-              left: 50%;
-              transform: translateX(-50%);
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 0.5rem;
-              color: rgba(238, 238, 238, 0.4);
-              font-size: 0.7rem;
-              letter-spacing: 0.2em;
-              text-transform: uppercase;
-            }
-
-            .intro-scroll-line {
-              width: 1px;
-              height: 40px;
-              background: linear-gradient(to bottom, var(--color-accent), transparent);
-              animation: scrollPulse 2s ease-in-out infinite;
-            }
-
-            @keyframes scrollPulse {
-              0%, 100% { transform: scaleY(1); opacity: 1; }
-              50% { transform: scaleY(0.5); opacity: 0.5; }
-            }
-
-            .intro-decorative-circle {
-              position: absolute;
-              width: 300px;
-              height: 300px;
-              right: -100px;
-              top: 50%;
-              transform: translateY(-50%);
-              pointer-events: none;
-              opacity: 0;
-            }
-
-            .intro-circle-svg {
-              width: 100%;
-              height: 100%;
-              animation: rotateCircle 25s linear infinite;
-            }
-
-            .circle-outer {
-              fill: none;
-              stroke: rgba(0, 173, 181, 0.15);
-              stroke-width: 1;
-            }
-
-            .circle-middle {
-              fill: none;
-              stroke: rgba(0, 173, 181, 0.2);
-              stroke-width: 1;
-              stroke-dasharray: 10 5;
-            }
-
-            .circle-inner {
-              fill: none;
-              stroke: rgba(0, 173, 181, 0.25);
-              stroke-width: 1;
-            }
-
-            .circle-dot {
-              fill: var(--color-accent);
-              opacity: 0.6;
-            }
-
-            @keyframes rotateCircle {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-            }
-
-          @media screen and (max-width: 53em) {
-            .intro-content {
-              width: 100%;
-              background: linear-gradient(0deg, rgba(34, 40, 49, 0.98) 0%, rgba(34, 40, 49, 0.8) 100%);
-              padding: 2rem;
-            }
-            .intro-stats {
-              gap: 2rem;
-            }
-            .intro-stat-number {
-              font-size: 2rem;
-            }
-            .intro-decorative-circle {
-              display: none;
-            }
-          }
-
-          .content {
-          display: grid;
-          align-items: center;
-          justify-content: center;
-          width: 100%;
-          height: 100vh;
-          grid-template-columns: 1fr;
-          grid-template-rows: auto;
-          grid-template-areas: "content";
-          position: relative;
-          z-index: 90;
-        }
-
-        .content--blend {
-          mix-blend-mode: overlay;
-        }
-
-        .content--center {
-          height: 100vh;
-          text-align: center;
-          justify-items: center;
-          display: grid;
-          gap: 1.5rem;
-          align-content: center;
-          position: relative;
-        }
-
-        .content--column {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          grid-template-areas: unset;
-          gap: 2rem;
-          max-width: 1400px;
-          margin: 0 auto 20vh;
-          z-index: 80;
-          justify-items: center;
-        }
-
-        .content--grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          grid-template-rows: repeat(3, 1fr);
-          grid-template-areas: unset;
-          width: 120%;
-          height: 100vh;
-          left: -10%;
-          gap: 1rem;
-          margin: 0 auto;
-        }
-
-        .content--grid .content__img {
-          width: 100%;
-          height: 100%;
-        }
-
-        .content__title {
-          grid-area: content;
-          margin: 0;
-          line-height: 0.9;
-          text-transform: uppercase;
-          font-size: clamp(3rem, 19vw, 8rem);
-          max-width: 1000px;
-          color: var(--color-title);
-        }
-
-        .content__title span {
-          display: inline-block;
-        }
-
-        .content__title--medium {
-          line-height: 1.1;
-          max-width: none;
-          font-size: clamp(2rem, 12vw, 6rem);
-        }
-
-        .content__text {
-          grid-area: content;
-          padding: var(--page-padding);
-          margin: 0 auto;
-          font-size: 1rem;
-          font-weight: 400;
-          position: relative;
-          max-width: 500px;
-          color: var(--color-text);
-        }
-
-        .content__text strong {
-          color: var(--color-accent);
-        }
-
-        .content__text--large {
-          font-size: clamp(1rem, 4vw, 2rem);
-          max-width: none;
-        }
-
-        .one {
-          width: 100%;
-          height: 100%;
-          position: relative;
-          z-index: 10;
-          background-size: cover;
-          background-position: 50% 50%;
-          will-change: transform, width, height, filter;
-        }
-
-        .content__img {
-          background-size: cover;
-          background-position: 50% 50%;
-          will-change: transform, filter, opacity;
-        }
-
-        .content--sides {
-          display: grid;
-          grid-template-columns: 1fr;
-          grid-template-areas: "img" "content";
-        }
-
-        .content--sides .content__img {
-          grid-area: img;
-          height: 50vh;
-        }
-
-        .content--center .content__img {
-          height: 38vh;
-          width: auto;
-          aspect-ratio: 0.8;
-          grid-area: 1 / 1 / -1 / -1;
-        }
-
-        .content--center-tall {
-          padding-top: 20vh;
-          margin-bottom: 30vh;
-        }
-
-        .content--center-tall .content__img {
-          height: 30vh;
-          width: auto;
-          aspect-ratio: 0.8;
-        }
-
-        .content--column .content__img {
-          height: auto;
-          width: 100%;
-          max-width: 150px;
-          aspect-ratio: 0.8;
-        }
-
-        .content--lines {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .content--lines .content__title {
-          display: flex;
-          flex-wrap: wrap;
-          align-self: center;
-          gap: 10px;
-        }
-
-        .content--lines .content__img {
-          height: 0.725em;
-          width: auto;
-          aspect-ratio: 16/9;
-          align-self: center;
-          flex: none;
-        }
-
-        .footer-text {
-          text-align: center;
-          padding: 10vh 0;
-          font-size: 1.5rem;
-          color: var(--color-accent);
-        }
-
-        @media screen and (min-width: 53em) {
-          .content--sides {
-            grid-template-columns: 40% 1fr;
-            grid-template-areas: "img content";
-          }
-          .content--lines .content__title {
-            white-space: nowrap;
-            flex-wrap: nowrap;
-          }
-          .content--grid {
-            height: 160vh;
-          }
-        }
-      `}</style>
-
-      <Script
-        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"
-        strategy="beforeInteractive"
-      />
-
-      <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
-
-        <div className="about-page-wrapper">
-          <main ref={mainRef} className="about-main">
-              <section className="content content--inital">
-                <div
-                  className="one"
-                  style={{
-                    backgroundImage: images[0]
-                      ? `url(${images[0]})`
-                      : "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
-                  }}
-                />
-                <div className="intro-content">
-                  <div className="intro-eyebrow">
-                    <span className="intro-line" />
-                    <span className="intro-eyebrow-text">{introEyebrow}</span>
-                    <span className="intro-line" />
-                  </div>
-                  <h2 className="intro-title">
-                    {introTitle}
-                    <span className="intro-title-highlight">{introTitleHighlight}</span>
-                  </h2>
-                  <p className="intro-description">
-                    {introDescription}
+      <div className="relative mx-auto max-w-6xl px-6 py-20">
+        {aboutPage?.story_content && (
+          <section className="py-16">
+            <SectionHeader
+              icon={<Heart className="h-5 w-5" />}
+              title={aboutPage.story_title || "My Story"}
+            />
+            <div className="grid gap-12 lg:grid-cols-2 items-center">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                {aboutPage.story_content.split("\n\n").map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="mb-4 text-[#EEEEEE]/70 leading-relaxed last:mb-0"
+                  >
+                    {paragraph}
                   </p>
-                  <div className="intro-stats">
-                    {stats.map((stat, index) => (
-                      <div key={index} className="intro-stat">
-                        <span className="intro-stat-number">{stat.value}</span>
-                        <span className="intro-stat-label">{stat.label}</span>
-                      </div>
+                ))}
+              </motion.div>
+              {aboutPage.story_image && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="relative"
+                >
+                  <div className="overflow-hidden rounded-2xl border border-[#393E46]/50">
+                    <img
+                      src={aboutPage.story_image}
+                      alt="My Story"
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                  <div className="absolute -bottom-4 -right-4 h-full w-full rounded-2xl border border-[#00ADB5]/20 -z-10" />
+                </motion.div>
+              )}
+            </div>
+          </section>
+        )}
+
+        {aboutPage?.values && aboutPage.values.length > 0 && (
+          <section className="py-16">
+            <SectionHeader
+              icon={<Target className="h-5 w-5" />}
+              title={aboutPage.values_title || "My Values"}
+            />
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {aboutPage.values.map((value, index) => {
+                const Icon = iconMap[value.icon] || Star
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.03, y: -4 }}
+                    className="group rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 transition-all hover:border-[#00ADB5]/50"
+                  >
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                      <Icon className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                      {value.title}
+                    </h3>
+                    <p className="text-sm text-[#EEEEEE]/60 leading-relaxed">
+                      {value.description}
+                    </p>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {experiences.length > 0 && aboutPage?.show_experience !== false && (
+          <section className="py-16">
+            <SectionHeader
+              icon={<Briefcase className="h-5 w-5" />}
+              title="Work Experience"
+            />
+            <div className="relative">
+              <div className="absolute left-[19px] top-0 h-full w-[2px] bg-gradient-to-b from-[#00ADB5] via-[#00ADB5]/50 to-transparent md:left-1/2 md:-translate-x-1/2" />
+
+              <div className="space-y-12">
+                {experiences.map((exp, index) => (
+                  <motion.div
+                    key={exp.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className={`relative flex flex-col md:flex-row ${
+                      index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
+                    }`}
+                  >
+                    <div className="absolute left-[12px] top-0 z-10 h-4 w-4 rounded-full border-4 border-[#222831] bg-[#00ADB5] md:left-1/2 md:-translate-x-1/2" />
+
+                    <div
+                      className={`ml-12 md:ml-0 md:w-1/2 ${
+                        index % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12"
+                      }`}
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.02, y: -4 }}
+                        className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50"
+                      >
+                        <div
+                          className={`mb-2 flex items-center gap-2 text-sm text-[#00ADB5] ${
+                            index % 2 === 0 ? "md:justify-end" : ""
+                          }`}
+                        >
+                          <Calendar className="h-4 w-4" />
+                          {format(new Date(exp.start_date), "MMM yyyy")} -{" "}
+                          {exp.end_date
+                            ? format(new Date(exp.end_date), "MMM yyyy")
+                            : "Present"}
+                        </div>
+                        <h3 className="mb-1 text-xl font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                          {exp.position}
+                        </h3>
+                        <p className="mb-3 font-medium text-[#00ADB5]/80">
+                          {exp.company}
+                        </p>
+                        {exp.location && (
+                          <p className="mb-3 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
+                            <MapPin className="h-3 w-3" />
+                            {exp.location}
+                          </p>
+                        )}
+                        <p className="text-sm text-[#EEEEEE]/70 leading-relaxed">
+                          {exp.description}
+                        </p>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {Object.keys(skillsByCategory).length > 0 && aboutPage?.show_skills !== false && (
+          <section className="py-16">
+            <SectionHeader icon={<Code className="h-5 w-5" />} title="Technical Skills" />
+            <div className="space-y-8">
+              {Object.entries(skillsByCategory).map(([category, categorySkills], catIndex) => (
+                <motion.div
+                  key={category}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: catIndex * 0.1 }}
+                >
+                  <h3 className="mb-4 text-lg font-semibold text-[#EEEEEE]">{category}</h3>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {categorySkills.map((skill) => (
+                      <motion.div
+                        key={skill.id}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        className="group relative overflow-hidden rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                            {skill.name}
+                          </span>
+                          <span className="text-sm text-[#00ADB5]">{skill.proficiency}%</span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-[#393E46]/50">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${skill.proficiency}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: 0.2 }}
+                            className="h-full rounded-full bg-gradient-to-r from-[#00ADB5] to-cyan-400"
+                          />
+                        </div>
+                      </motion.div>
                     ))}
                   </div>
-                                <div className="intro-decorative-circle">
-                  <svg viewBox="0 0 300 300" className="intro-circle-svg">
-                    <circle cx="150" cy="150" r="145" className="circle-outer" />
-                    <circle cx="150" cy="150" r="115" className="circle-middle" />
-                    <circle cx="150" cy="150" r="85" className="circle-inner" />
-                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(140px, 0)' }} />
-                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(-140px, 0)' }} />
-                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(0, 140px)' }} />
-                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(0, -140px)' }} />
-                  </svg>
-                </div>
-              </div>
-              <div className="intro-scroll-indicator">
-                <span>Scroll</span>
-                <div className="intro-scroll-line" />
-              </div>
-            </section>
-
-            <section className="content content--center content--blend">
-              <div data-step className="content__img" />
-              <h1 className="content__title font-alt">
-                <span>{firstPart}</span>
-                <br />
-                <span>{secondPart}</span>
-              </h1>
-            </section>
-
-          <section className="content content--column">
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=600)",
-              }}
-            />
-            <div data-step className="content__img content__img--mid" />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1504639725590-34d0984388bd?q=80&w=600)",
-              }}
-            />
-          </section>
-
-          <section className="content content--lines">
-            <h2 className="content__title content__title--medium font-alt">
-              <span>Clean</span>
-              <div data-step className="content__img" />
-              <span>Code</span>
-            </h2>
-            <h2 className="content__title content__title--medium font-alt">
-              <span>Built with</span>
-              <div
-                className="content__img"
-                style={{
-                  backgroundImage:
-                    "url(https://images.unsplash.com/photo-1550439062-609e1531270e?q=80&w=600)",
-                }}
-              />
-              <span>passion</span>
-            </h2>
-            <h2 className="content__title content__title--medium font-alt">
-              <span>and</span>
-              <div
-                className="content__img"
-                style={{
-                  backgroundImage:
-                    "url(https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=600)",
-                }}
-              />
-              <span>precision</span>
-            </h2>
-          </section>
-
-          <section className="content content--sides">
-            <div data-step className="content__img" />
-            <div className="content__text">
-              <p>
-                <strong>Welcome to my digital space</strong> where creativity meets technology. I specialize in
-                building modern web applications—crafting seamless user experiences with cutting-edge
-                frameworks and scalable architectures.
-              </p>
+                </motion.div>
+              ))}
             </div>
           </section>
+        )}
 
-          <section className="content content--center content--center-tall">
-            <div data-step className="content__img" />
-            <div className="content__text content__text--large">
-              <p>
-                I believe in writing clean, maintainable code that stands the test of time—collaborating
-                with teams to deliver products that users love and businesses rely on.
-              </p>
+        {education.length > 0 && aboutPage?.show_education !== false && (
+          <section className="py-16">
+            <SectionHeader icon={<GraduationCap className="h-5 w-5" />} title="Education" />
+            <div className="grid gap-6 md:grid-cols-2">
+              {education.map((edu, index) => (
+                <motion.div
+                  key={edu.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -4 }}
+                  className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50"
+                >
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                      <GraduationCap className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <span className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs text-[#EEEEEE]/70">
+                      {edu.start_year}
+                      {edu.end_year && edu.end_year !== edu.start_year
+                        ? ` - ${edu.end_year}`
+                        : ""}
+                    </span>
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                    {edu.degree}
+                  </h3>
+                  <p className="mb-1 font-medium text-[#00ADB5]/80">{edu.institution}</p>
+                  {edu.location && (
+                    <p className="mb-4 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
+                      <MapPin className="h-3 w-3" />
+                      {edu.location}
+                    </p>
+                  )}
+                  {edu.gpa && <p className="mb-3 text-sm text-[#EEEEEE]/70">GPA: {edu.gpa}</p>}
+                  {edu.highlights.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {edu.highlights.map((h, i) => (
+                        <span
+                          key={i}
+                          className="rounded-full bg-[#00ADB5]/10 px-3 py-1 text-xs text-[#00ADB5]"
+                        >
+                          {h}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
             </div>
           </section>
+        )}
 
-          <section className="content content--grid">
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1607799279861-4dd421887fb3?q=80&w=600)",
-              }}
-            />
-            <div data-step className="content__img" />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1537432376149-e84978a29b5d?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1562813733-b31f71025d54?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1605379399642-870262d3d051?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1633356122102-3fe601e05bd2?q=80&w=600)",
-              }}
-            />
-            <div
-              className="content__img"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1629654297299-c8506221ca97?q=80&w=600)",
-              }}
-            />
+        {services.length > 0 && aboutPage?.show_services !== false && (
+          <section className="py-16">
+            <SectionHeader icon={<Rocket className="h-5 w-5" />} title="What I Do" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {services.map((service, index) => {
+                const Icon = serviceIconMap[service.icon_name?.toLowerCase()] || Code
+                return (
+                  <motion.div
+                    key={service.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.03, y: -4 }}
+                    className="group rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 transition-all hover:border-[#00ADB5]/50"
+                  >
+                    <div
+                      className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl"
+                      style={{ background: service.gradient || "rgba(0, 173, 181, 0.1)" }}
+                    >
+                      <Icon className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                      {service.title}
+                    </h3>
+                    <p className="mb-4 text-sm text-[#EEEEEE]/60 leading-relaxed">
+                      {service.description}
+                    </p>
+                    {service.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {service.skills.slice(0, 4).map((skill, i) => (
+                          <span
+                            key={i}
+                            className="rounded-full bg-[#393E46]/50 px-2 py-0.5 text-xs text-[#EEEEEE]/70"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </div>
           </section>
+        )}
 
-            <div className="footer-text font-alt">{footerText}</div>
-        </main>
+        {aboutPage?.achievements && aboutPage.achievements.length > 0 && (
+          <section className="py-16">
+            <SectionHeader
+              icon={<Trophy className="h-5 w-5" />}
+              title={aboutPage.achievements_title || "Achievements"}
+            />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {aboutPage.achievements.map((achievement, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  className="group flex items-start gap-4 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-5 transition-all hover:border-[#00ADB5]/50"
+                >
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                    <Award className="h-6 w-6 text-[#00ADB5]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                        {achievement.title}
+                      </h3>
+                      <span className="flex-shrink-0 rounded-full bg-[#00ADB5]/10 px-2 py-0.5 text-xs text-[#00ADB5]">
+                        {achievement.year}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-sm text-[#EEEEEE]/60">{achievement.description}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {aboutPage?.interests && aboutPage.interests.length > 0 && (
+          <section className="py-16">
+            <SectionHeader
+              icon={<Heart className="h-5 w-5" />}
+              title={aboutPage.interests_title || "Beyond Code"}
+            />
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {aboutPage.interests.map((interest, index) => {
+                const Icon = iconMap[interest.icon] || Star
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    className="group flex items-center gap-4 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
+                  >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#00ADB5]/10">
+                      <Icon className="h-5 w-5 text-[#00ADB5]" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                        {interest.title}
+                      </h4>
+                      <p className="text-sm text-[#EEEEEE]/50">{interest.description}</p>
+                    </div>
+                  </motion.div>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        <motion.section
+          className="py-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 text-center md:p-12">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
+            >
+              {aboutPage?.footer_text || "Let's Build Something Amazing"}
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
+            >
+              I&apos;m always excited to collaborate on new projects and bring ideas to life.
+              Whether you have a project in mind or just want to chat, feel free to reach out!
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-wrap items-center justify-center gap-4"
+            >
+              <Link href="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-8 py-4 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
+                >
+                  <Mail className="h-5 w-5" />
+                  Get in Touch
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </motion.button>
+              </Link>
+              <Link href="/projects">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 rounded-xl border-2 border-[#393E46] px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
+                >
+                  View My Work
+                </motion.button>
+              </Link>
+            </motion.div>
+          </div>
+        </motion.section>
       </div>
-    </>
+    </div>
+  )
+}
+
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="mb-8 flex items-center gap-3"
+    >
+      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10 text-[#00ADB5]">
+        {icon}
+      </div>
+      <h2 className="text-2xl font-bold text-[#EEEEEE]">{title}</h2>
+      <div className="h-[2px] flex-1 bg-gradient-to-r from-[#00ADB5]/50 to-transparent" />
+    </motion.div>
   )
 }
