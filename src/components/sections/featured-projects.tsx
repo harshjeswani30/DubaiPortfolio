@@ -17,6 +17,9 @@ interface Project {
   image?: string
   demo_url?: string
   github_url?: string
+  live_url?: string
+  tagline?: string
+  tagline_highlight?: string
 }
 
 interface FeaturedProjectsProps {
@@ -262,24 +265,24 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {project.tech_stack.slice(0, 3).map((tech, techIndex) => (
-                    <motion.span
-                      key={tech}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ delay: 0.4 + index * 0.08 + techIndex * 0.04, duration: 0.25 }}
-                      whileHover={{ scale: 1.05, y: -1 }}
-                      className="rounded-md bg-[#393E46]/35 px-2.5 py-1 text-[11px] font-medium text-[#00ADB5] transition-all hover:bg-[#00ADB5]/15 border border-transparent hover:border-[#00ADB5]/25"
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                  {project.tech_stack.length > 3 && (
-                    <span className="rounded-md bg-[#393E46]/20 px-2.5 py-1 text-[11px] font-medium text-[#EEEEEE]/35">
-                      +{project.tech_stack.length - 3}
-                    </span>
-                  )}
-                </div>
+                    {(project.technologies || []).slice(0, 3).map((tech, techIndex) => (
+                      <motion.span
+                        key={tech}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                        transition={{ delay: 0.4 + index * 0.08 + techIndex * 0.04, duration: 0.25 }}
+                        whileHover={{ scale: 1.05, y: -1 }}
+                        className="rounded-md bg-[#393E46]/35 px-2.5 py-1 text-[11px] font-medium text-[#00ADB5] transition-all hover:bg-[#00ADB5]/15 border border-transparent hover:border-[#00ADB5]/25"
+                      >
+                        {tech}
+                      </motion.span>
+                    ))}
+                    {(project.technologies || []).length > 3 && (
+                      <span className="rounded-md bg-[#393E46]/20 px-2.5 py-1 text-[11px] font-medium text-[#EEEEEE]/35">
+                        +{project.technologies.length - 3}
+                      </span>
+                    )}
+                  </div>
 
                 <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
                       <Link 
@@ -314,19 +317,19 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                     </motion.button>
                   )}
                   
-                  {project.live_url && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(project.live_url, '_blank')
-                      }}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </motion.button>
-                  )}
+                    {project.demo_url && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          window.open(project.demo_url, '_blank')
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" />
+                      </motion.button>
+                    )}
                 </div>
 
                 <motion.div
