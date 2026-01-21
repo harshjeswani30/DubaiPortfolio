@@ -177,7 +177,7 @@ export function FloatingNav() {
     }
   }, [isMenuOpen])
   
-  if (pathname?.startsWith("/admin")) {
+  if (pathname === "/admin/login") {
     return null
   }
 

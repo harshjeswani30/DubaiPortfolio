@@ -22,7 +22,7 @@ const footerLinks = [
 export function Footer() {
   const pathname = usePathname()
   
-  if (pathname?.startsWith("/admin")) {
+  if (pathname === "/admin/login") {
     return null
   }
   
