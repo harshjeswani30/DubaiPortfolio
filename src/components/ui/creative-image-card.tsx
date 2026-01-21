@@ -183,16 +183,16 @@ export function CreativeImageCard({ onHoverChange }: CreativeImageCardProps) {
             transition={{ duration: 0.4 }}
           >
             <Image
-              src="/owner.jpg"
-              alt="Developer Portrait"
-              fill
-              className="object-cover transition-all duration-700"
-              style={{
-                transform: isHovered ? "scale(1.08)" : "scale(1)",
-                filter: isHovered ? "brightness(1.1)" : "brightness(1)",
-              }}
-              priority
-            />
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=face"
+                alt="Developer Portrait"
+                fill
+                className="object-cover transition-all duration-700"
+                style={{
+                  transform: isHovered ? "scale(1.08)" : "scale(1)",
+                  filter: isHovered ? "brightness(1.1)" : "brightness(1)",
+                }}
+                priority
+              />
 
             <motion.div
               className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent"
