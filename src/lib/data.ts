@@ -1,30 +1,47 @@
-import { createAdminClient } from "./supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 export interface Project {
   id: string
-  slug: string
   title: string
+  slug: string
   description: string
-  long_description?: string
-  image: string
-  technologies: string[]
+  content?: string
+  tech_stack: string[]
   category: string
-  demo_url?: string
+  tagline?: string
+  tagline_highlight?: string
+  featured_image?: string
+  images?: string[]
+  live_url?: string
   github_url?: string
-  featured: boolean
+  is_featured: boolean
+  is_published: boolean
   display_order: number
-  is_active: boolean
+  duration?: string
+  client?: string
+  role?: string
+  challenges?: string[]
+  solutions?: string[]
+  results?: string[]
+  testimonial?: {
+    quote: string
+    author: string
+    position: string
+  }
 }
 
-export interface Service {
+export interface BlogPost {
   id: string
   title: string
-  description: string
-  icon: string
-  skills: string[]
-  color: string
-  gradient: string
-  display_order: number
+  slug: string
+  excerpt: string
+  content: string
+  featured_image?: string
+  category: string
+  tags: string[]
+  reading_time: number
+  published_at: string
+  is_published: boolean
 }
 
 export interface Skill {
@@ -32,48 +49,9 @@ export interface Skill {
   name: string
   category: string
   proficiency: number
-  icon: string
-  color: string
-}
-
-export interface BlogPost {
-  id: string
-  slug: string
-  title: string
-  excerpt: string
-  content: string
-  cover_image: string
-  category: string
-  tags: string[]
-  read_time: string
-  published: boolean
-  published_at: string
-  created_at: string
-}
-
-export interface HeroSection {
-  title: string
-  title_highlight: string
-  subtitle: string
-  description: string
-  primary_button_text: string
-  primary_button_link: string
-  secondary_button_text: string
-  secondary_button_link: string
-  rotating_texts: string[]
-  stats: { icon: string; value: string; label: string }[]
-  profile_image: string
-}
-
-export interface AboutContent {
-  name: string
-  role: string
-  bio: string
-  long_bio: string
-  email: string
-  location: string
-  profile_image: string
-  resume_url: string
+  icon_name?: string
+  color?: string
+  display_order: number
 }
 
 export interface Experience {
@@ -82,146 +60,294 @@ export interface Experience {
   position: string
   location: string
   start_date: string
-  end_date: string
+  end_date?: string
   description: string
-  achievements: string[]
-  is_current: boolean
+  display_order: number
 }
 
-export interface SocialLink {
+export interface Service {
   id: string
-  platform: string
-  url: string
-  icon: string
+  title: string
+  description: string
+  icon_name: string
+  skills: string[]
+  color: string
+  gradient: string
+  display_order: number
 }
 
-export interface ContactInfo {
+export interface SiteSettings {
+  id: string
+  name: string
+  role: string
+  bio: string
   email: string
   phone: string
   location: string
-  availability_text: string
-  is_available: boolean
+  available_for_work: boolean
+  years_experience: number
+  projects_completed: number
+  happy_clients: number
+}
+
+export interface HeroSection {
+  id: string
+  tagline: string
+  highlight_text: string
+  description: string
+  primary_button_text: string
+  primary_button_link: string
+  secondary_button_text: string
+  secondary_button_link: string
+  rotating_texts: string[]
+}
+
+export interface ContactInfo {
+  id: string
+  type: string
+  label: string
+  value: string
+  icon_name: string
+  color_gradient: string
+  display_order: number
+}
+
+export interface AboutPage {
+  id: string
+  intro_eyebrow: string
+  intro_title: string
+  intro_title_highlight: string
+  intro_description: string
+  main_title: string
+  footer_text: string
+  images: string[]
+  stats: { value: string; label: string }[]
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("is_active", true)
+    .eq("is_published", true)
     .order("display_order", { ascending: true })
-  return data || []
+
+  if (error || !data) return []
+
+  return data.map((p) => ({
+    ...p,
+    tech_stack: p.tech_stack || [],
+    images: p.images || [],
+    challenges: p.challenges || [],
+    solutions: p.solutions || [],
+    results: p.results || [],
+    testimonial: p.testimonial_quote
+      ? {
+          quote: p.testimonial_quote,
+          author: p.testimonial_author,
+          position: p.testimonial_position,
+        }
+      : undefined,
+  }))
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("projects")
     .select("*")
-    .eq("is_active", true)
-    .eq("featured", true)
+    .eq("is_published", true)
+    .eq("is_featured", true)
     .order("display_order", { ascending: true })
     .limit(3)
-  return data || []
+
+  if (error || !data) return []
+
+  return data.map((p) => ({
+    ...p,
+    tech_stack: p.tech_stack || [],
+    images: p.images || [],
+    challenges: p.challenges || [],
+    solutions: p.solutions || [],
+    results: p.results || [],
+    testimonial: p.testimonial_quote
+      ? {
+          quote: p.testimonial_quote,
+          author: p.testimonial_author,
+          position: p.testimonial_position,
+        }
+      : undefined,
+  }))
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("projects")
     .select("*")
     .eq("slug", slug)
-    .eq("is_active", true)
+    .eq("is_published", true)
     .single()
-  return data
+
+  if (error || !data) return null
+
+  return {
+    ...data,
+    tech_stack: data.tech_stack || [],
+    images: data.images || [],
+    challenges: data.challenges || [],
+    solutions: data.solutions || [],
+    results: data.results || [],
+    testimonial: data.testimonial_quote
+      ? {
+          quote: data.testimonial_quote,
+          author: data.testimonial_author,
+          position: data.testimonial_position,
+        }
+      : undefined,
+  }
 }
 
-export async function getServices(): Promise<Service[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("services")
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("blog_posts")
     .select("*")
-    .eq("is_active", true)
-    .order("display_order", { ascending: true })
-  return data || []
+    .eq("is_published", true)
+    .order("published_at", { ascending: false })
+
+  if (error || !data) return []
+
+  return data.map((p) => ({
+    ...p,
+    tags: p.tags || [],
+  }))
+}
+
+export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select("*")
+    .eq("slug", slug)
+    .eq("is_published", true)
+    .single()
+
+  if (error || !data) return null
+
+  return {
+    ...data,
+    tags: data.tags || [],
+  }
 }
 
 export async function getSkills(): Promise<Skill[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("skills")
     .select("*")
     .eq("is_active", true)
     .order("display_order", { ascending: true })
-  return data || []
-}
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("published", true)
-    .order("published_at", { ascending: false })
-  return data || []
-}
-
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("blog_posts")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .single()
-  return data
-}
-
-export async function getHeroSection(): Promise<HeroSection | null> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("hero_section")
-    .select("*")
-    .eq("is_active", true)
-    .single()
-  return data
-}
-
-export async function getAboutContent(): Promise<AboutContent | null> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("about_content")
-    .select("*")
-    .limit(1)
-    .single()
+  if (error || !data) return []
   return data
 }
 
 export async function getExperience(): Promise<Experience[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("experience")
-    .select("*")
-    .order("display_order", { ascending: true })
-  return data || []
-}
-
-export async function getSocialLinks(): Promise<SocialLink[]> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
-    .from("social_links")
     .select("*")
     .eq("is_active", true)
     .order("display_order", { ascending: true })
-  return data || []
+
+  if (error || !data) return []
+  return data
 }
 
-export async function getContactInfo(): Promise<ContactInfo | null> {
-  const supabase = await createAdminClient()
-  const { data } = await supabase
+export async function getServices(): Promise<Service[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("services")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
+
+  return data.map((s) => ({
+    ...s,
+    skills: s.skills || [],
+  }))
+}
+
+export async function getSiteSettings(): Promise<SiteSettings | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("site_settings").select("*").single()
+
+  if (error || !data) return null
+  return data
+}
+
+export async function getHeroSection(): Promise<HeroSection | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("hero_section").select("*").single()
+
+  if (error || !data) return null
+  return {
+    ...data,
+    rotating_texts: data.rotating_texts || [],
+  }
+}
+
+export async function getContactInfo(): Promise<ContactInfo[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
     .from("contact_info")
     .select("*")
-    .limit(1)
-    .single()
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
   return data
+}
+
+export async function getAboutPage(): Promise<AboutPage | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("about_page").select("*").single()
+
+  if (error || !data) return null
+  return {
+    ...data,
+    images: data.images || [],
+    stats: data.stats || [],
+  }
+}
+
+export async function getAboutData() {
+  const [settings, experiences, skills] = await Promise.all([
+    getSiteSettings(),
+    getExperience(),
+    getSkills(),
+  ])
+
+  return {
+    about: settings
+      ? {
+          name: settings.name,
+          role: settings.role,
+          bio: settings.bio,
+          email: settings.email,
+          location: settings.location,
+        }
+      : {
+          name: "Dubai Developer",
+          role: "Full Stack Developer",
+          bio: "",
+          email: "",
+          location: "Dubai, UAE",
+        },
+    experiences,
+    skills,
+  }
 }
