@@ -1,106 +1,215 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { AdminShell } from "@/components/admin/admin-shell"
+import {
+  AdminInput,
+  AdminTextarea,
+  AdminSwitch,
+  AdminButton,
+  AdminCard,
+  AdminCardContent,
+  AdminCardHeader,
+} from "@/components/admin/form-elements"
+import { Save, RefreshCw } from "lucide-react"
 
-type EditorBlockProps = {
-  title: string
-  endpoint: string
+interface SiteSettings {
+  id?: string
+  name: string
+  role: string
+  bio: string
+  email: string
+  phone: string
+  location: string
+  available_for_work: boolean
+  years_experience: number
+  projects_completed: number
+  happy_clients: number
 }
 
-function JsonEditorBlock({ title, endpoint }: EditorBlockProps) {
-  const [jsonText, setJsonText] = useState("")
+export default function SiteSettingsPage() {
+  const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [settings, setSettings] = useState<SiteSettings>({
+    name: "",
+    role: "",
+    bio: "",
+    email: "",
+    phone: "",
+    location: "",
+    available_for_work: true,
+    years_experience: 5,
+    projects_completed: 50,
+    happy_clients: 30,
+  })
 
-  const load = async () => {
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
     setLoading(true)
-    setError(null)
     try {
-      const res = await fetch(endpoint)
+      const res = await fetch("/api/admin/settings/site")
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load")
-      setJsonText(JSON.stringify(json.data, null, 2))
-    } catch (e: any) {
-      setError(e?.message || "Failed to load")
+      if (json.data) {
+        setSettings(json.data)
+      }
+    } catch (error) {
+      console.error("Failed to load settings:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    load()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint])
-
-  const save = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setSaving(true)
-    setError(null)
     try {
-      const payload = JSON.parse(jsonText)
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/admin/settings/site", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(settings),
       })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json?.error || "Failed to save")
-      setJsonText(JSON.stringify(json.data, null, 2))
-    } catch (e: any) {
-      setError(e?.message || "Failed to save")
+      if (res.ok) {
+        router.refresh()
+      }
+    } catch (error) {
+      console.error("Failed to save settings:", error)
     } finally {
       setSaving(false)
     }
   }
 
-  return (
-    <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4 space-y-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-white">{title}</h3>
-          <p className="text-xs text-zinc-500">{loading ? "Loading..." : endpoint}</p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={save}
-            disabled={saving || loading}
-            className="rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-60"
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-          <button
-            onClick={load}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/10"
-          >
-            Refresh
-          </button>
-        </div>
-      </div>
-      {error ? (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-200">
-          {error}
-        </div>
-      ) : null}
-      <textarea
-        value={jsonText}
-        onChange={(e) => setJsonText(e.target.value)}
-        className="min-h-[360px] w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 font-mono text-xs text-white outline-none focus:border-indigo-500/60"
-        spellCheck={false}
-      />
-    </div>
-  )
-}
+  const updateField = (field: keyof SiteSettings, value: any) => {
+    setSettings((prev) => ({ ...prev, [field]: value }))
+  }
 
-export default function AdminSettingsPage() {
+  if (loading) {
+    return (
+      <AdminShell title="Site Settings" description="Configure your portfolio profile">
+        <div className="flex items-center justify-center py-20">
+          <RefreshCw className="h-8 w-8 animate-spin text-cyan-500" />
+        </div>
+      </AdminShell>
+    )
+  }
+
   return (
-    <AdminShell title="Settings" description="Singleton content blocks.">
-      <div className="grid gap-6 lg:grid-cols-2">
-        <JsonEditorBlock title="Site Settings" endpoint="/api/admin/settings/site" />
-        <JsonEditorBlock title="Hero Section" endpoint="/api/admin/settings/hero" />
-        <JsonEditorBlock title="About Page" endpoint="/api/admin/settings/about" />
-      </div>
+    <AdminShell
+      title="Site Settings"
+      description="Configure your portfolio profile and contact information"
+      actions={
+        <AdminButton onClick={handleSubmit} loading={saving}>
+          <Save className="h-4 w-4" />
+          Save Changes
+        </AdminButton>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <AdminCard>
+          <AdminCardHeader>
+            <h3 className="text-lg font-semibold text-white">Personal Information</h3>
+            <p className="text-sm text-zinc-500">Basic details about yourself</p>
+          </AdminCardHeader>
+          <AdminCardContent className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <AdminInput
+                label="Full Name"
+                value={settings.name}
+                onChange={(e) => updateField("name", e.target.value)}
+                placeholder="John Doe"
+                required
+              />
+              <AdminInput
+                label="Professional Role"
+                value={settings.role}
+                onChange={(e) => updateField("role", e.target.value)}
+                placeholder="Full Stack Developer"
+                required
+              />
+            </div>
+            <AdminTextarea
+              label="Bio / About"
+              value={settings.bio}
+              onChange={(e) => updateField("bio", e.target.value)}
+              placeholder="A short description about yourself..."
+              hint="This will appear in the about section"
+            />
+          </AdminCardContent>
+        </AdminCard>
+
+        <AdminCard>
+          <AdminCardHeader>
+            <h3 className="text-lg font-semibold text-white">Contact Information</h3>
+            <p className="text-sm text-zinc-500">How people can reach you</p>
+          </AdminCardHeader>
+          <AdminCardContent className="space-y-5">
+            <div className="grid gap-5 sm:grid-cols-2">
+              <AdminInput
+                label="Email Address"
+                type="email"
+                value={settings.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                placeholder="hello@example.com"
+                required
+              />
+              <AdminInput
+                label="Phone Number"
+                value={settings.phone}
+                onChange={(e) => updateField("phone", e.target.value)}
+                placeholder="+971 50 123 4567"
+              />
+            </div>
+            <AdminInput
+              label="Location"
+              value={settings.location}
+              onChange={(e) => updateField("location", e.target.value)}
+              placeholder="Dubai, UAE"
+            />
+          </AdminCardContent>
+        </AdminCard>
+
+        <AdminCard>
+          <AdminCardHeader>
+            <h3 className="text-lg font-semibold text-white">Stats & Availability</h3>
+            <p className="text-sm text-zinc-500">Numbers displayed on your portfolio</p>
+          </AdminCardHeader>
+          <AdminCardContent className="space-y-5">
+            <AdminSwitch
+              label="Available for Work"
+              description="Show a badge indicating you're open to new opportunities"
+              checked={settings.available_for_work}
+              onChange={(checked) => updateField("available_for_work", checked)}
+            />
+            <div className="grid gap-5 sm:grid-cols-3">
+              <AdminInput
+                label="Years of Experience"
+                type="number"
+                value={settings.years_experience}
+                onChange={(e) => updateField("years_experience", parseInt(e.target.value) || 0)}
+                min={0}
+              />
+              <AdminInput
+                label="Projects Completed"
+                type="number"
+                value={settings.projects_completed}
+                onChange={(e) => updateField("projects_completed", parseInt(e.target.value) || 0)}
+                min={0}
+              />
+              <AdminInput
+                label="Happy Clients"
+                type="number"
+                value={settings.happy_clients}
+                onChange={(e) => updateField("happy_clients", parseInt(e.target.value) || 0)}
+                min={0}
+              />
+            </div>
+          </AdminCardContent>
+        </AdminCard>
+      </form>
     </AdminShell>
   )
 }
-
