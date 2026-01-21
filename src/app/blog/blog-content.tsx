@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
-import { Clock, ArrowUpRight, Search, Sparkles, BookOpen, ChevronRight, Calendar, X, Filter } from "lucide-react"
+import { Clock, ArrowUpRight, Search, Sparkles, BookOpen, ChevronRight, Calendar, X } from "lucide-react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -29,6 +29,7 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
   const cardsRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
 
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(posts.map(post => post.category))]
@@ -164,71 +165,82 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
         </div>
       </motion.section>
 
-      <section className="relative z-10 pb-8">
-        <div className="mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 backdrop-blur-md"
-          >
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="relative flex-1 max-w-xl">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#EEEEEE]/40" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search articles, topics, or tags..."
-                  className="w-full rounded-xl border border-[#393E46] bg-[#222831]/80 py-3.5 pl-12 pr-10 text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 transition-all focus:border-[#00ADB5] focus:outline-none focus:ring-2 focus:ring-[#00ADB5]/20"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-[#EEEEEE]/40 hover:bg-[#393E46] hover:text-[#EEEEEE]"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                )}
+        <section className="relative z-10 pb-8">
+          <div className="mx-auto max-w-7xl px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="relative group">
+                <motion.div
+                  className={`flex items-center gap-2 rounded-full border bg-[#222831]/90 backdrop-blur-md transition-all duration-300 ${
+                    isSearchFocused 
+                      ? "border-[#00ADB5] w-72 shadow-lg shadow-[#00ADB5]/10" 
+                      : "border-[#393E46]/50 w-44 hover:border-[#393E46]"
+                  }`}
+                >
+                  <Search className={`ml-3 h-4 w-4 flex-shrink-0 transition-colors ${isSearchFocused ? "text-[#00ADB5]" : "text-[#EEEEEE]/40"}`} />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    placeholder={isSearchFocused ? "Search articles..." : "Search..."}
+                    className="w-full bg-transparent py-2.5 pr-3 text-sm text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 focus:outline-none"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="mr-2 rounded-full p-1 text-[#EEEEEE]/40 hover:bg-[#393E46] hover:text-[#EEEEEE] transition-colors"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </motion.div>
               </div>
 
-              <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0">
-                <Filter className="h-4 w-4 text-[#EEEEEE]/40 flex-shrink-0" />
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`flex-shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                    className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
                       selectedCategory === cat
                         ? "bg-[#00ADB5] text-[#222831]"
-                        : "border border-[#393E46] bg-transparent text-[#EEEEEE]/70 hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
+                        : "bg-[#393E46]/20 text-[#EEEEEE]/60 hover:bg-[#393E46]/40 hover:text-[#EEEEEE]"
                     }`}
                   >
                     {cat}
                   </button>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {(searchQuery || selectedCategory !== "All") && (
-              <div className="mt-4 flex items-center gap-2 text-sm text-[#EEEEEE]/60">
-                <span>Found {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""}</span>
-                {(searchQuery || selectedCategory !== "All") && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("")
-                      setSelectedCategory("All")
-                    }}
-                    className="ml-2 text-[#00ADB5] hover:underline"
-                  >
-                    Clear filters
-                  </button>
-                )}
-              </div>
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 flex items-center gap-2 text-xs text-[#EEEEEE]/50"
+              >
+                <span>{filteredPosts.length} result{filteredPosts.length !== 1 ? "s" : ""}</span>
+                <span className="text-[#393E46]">•</span>
+                <button
+                  onClick={() => {
+                    setSearchQuery("")
+                    setSelectedCategory("All")
+                  }}
+                  className="text-[#00ADB5] hover:underline"
+                >
+                  Clear
+                </button>
+              </motion.div>
             )}
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
 
       <section className="relative z-10 cards-section py-12">
         <div ref={cardsRef} className="mx-auto max-w-7xl px-6">

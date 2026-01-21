@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect, useCallback } from "react"
 import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Zap } from "lucide-react"
+import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Zap, ChevronLeft, ChevronRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -375,8 +375,11 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
 
 export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const carouselRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-80px" })
   const [activeFilter, setActiveFilter] = useState<string | null>(null)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -393,6 +396,24 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const filteredProjects = activeFilter 
     ? projects.filter(p => p.category === activeFilter)
     : projects
+
+  const nextSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % filteredProjects.length)
+  }, [filteredProjects.length])
+
+  const prevSlide = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length)
+  }, [filteredProjects.length])
+
+  useEffect(() => {
+    if (isPaused || filteredProjects.length <= 1) return
+    const interval = setInterval(nextSlide, 4000)
+    return () => clearInterval(interval)
+  }, [isPaused, nextSlide, filteredProjects.length])
+
+  useEffect(() => {
+    setCurrentIndex(0)
+  }, [activeFilter])
 
   return (
     <section id="featured-projects" ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
@@ -559,22 +580,72 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
           </div>
         </motion.div>
 
-        <motion.div 
-          className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-          layout
+        <div 
+          className="relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, i) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
-                index={i} 
-                isInView={isInView}
-                totalProjects={filteredProjects.length}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
+          <div className="overflow-hidden" ref={carouselRef}>
+            <motion.div 
+              className="flex gap-5"
+              animate={{ x: `-${currentIndex * (100 / Math.min(filteredProjects.length, 3))}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            >
+              {filteredProjects.map((project, i) => (
+                <div 
+                  key={project.id} 
+                  className="w-full flex-shrink-0 md:w-[calc(50%-10px)] lg:w-[calc(33.333%-14px)]"
+                >
+                  <ProjectCard 
+                    project={project} 
+                    index={i} 
+                    isInView={isInView}
+                    totalProjects={filteredProjects.length}
+                  />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+
+          {filteredProjects.length > 3 && (
+            <>
+              <motion.button
+                initial={{ opacity: 0, x: -20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.5 }}
+                onClick={prevSlide}
+                className="absolute -left-4 top-1/2 z-10 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full border border-[#393E46] bg-[#222831]/90 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#00ADB5] hover:text-[#222831] shadow-lg"
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </motion.button>
+              <motion.button
+                initial={{ opacity: 0, x: 20 }}
+                animate={isInView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.5 }}
+                onClick={nextSlide}
+                className="absolute -right-4 top-1/2 z-10 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full border border-[#393E46] bg-[#222831]/90 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5] hover:bg-[#00ADB5] hover:text-[#222831] shadow-lg"
+              >
+                <ChevronRight className="h-5 w-5" />
+              </motion.button>
+            </>
+          )}
+
+          {filteredProjects.length > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-2">
+              {filteredProjects.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  className={`h-2 rounded-full transition-all duration-300 ${
+                    i === currentIndex 
+                      ? "w-8 bg-[#00ADB5]" 
+                      : "w-2 bg-[#393E46] hover:bg-[#393E46]/80"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </div>
 
         {projects.length === 0 && (
           <motion.div
