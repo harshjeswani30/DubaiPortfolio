@@ -20,10 +20,12 @@ import {
   X,
   Wrench,
   Home,
+  PanelsTopLeft,
 } from "lucide-react"
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/pages", label: "Pages", icon: PanelsTopLeft },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/skills", label: "Skills", icon: Code },
   { href: "/admin/services", label: "Services", icon: Wrench },
