@@ -3,7 +3,7 @@
 import { useRef, useState, useCallback, useEffect } from "react"
 import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Clock, CheckCircle2, TrendingUp, Sparkles } from "lucide-react"
+import { ArrowRight, Clock, CheckCircle2, TrendingUp, Briefcase } from "lucide-react"
 
 interface MagneticButtonProps {
   children: React.ReactNode
@@ -211,7 +211,7 @@ export function CTASection() {
                 className="h-2 w-2 rounded-full bg-[#00ADB5]"
               />
               <span className="text-sm font-medium text-[#00ADB5]">Available for work</span>
-              <Sparkles className="h-3.5 w-3.5 text-[#00ADB5]/70" />
+                <Briefcase className="h-3.5 w-3.5 text-[#00ADB5]/70" />
             </motion.div>
 
             <motion.h2

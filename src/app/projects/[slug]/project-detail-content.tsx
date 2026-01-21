@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, useScroll, useTransform, useSpring, useInView, useMotionValue, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ExternalLink, Github, Layers, Code2, Sparkles, Eye, ArrowUpRight, Calendar, Clock, Zap, Target, CheckCircle2, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, ExternalLink, Github, Layers, Code2, Trophy, Eye, ArrowUpRight, Calendar, Clock, Zap, Target, CheckCircle2, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -306,7 +306,7 @@ return (
               animate={{ y: [0, 12, 0], scale: [1, 1.1, 1] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
             >
-              <Sparkles className="h-6 w-6 text-[#00ADB5]/15" />
+                <Trophy className="h-6 w-6 text-[#00ADB5]/15" />
             </motion.div>
           </div>
 
@@ -606,7 +606,7 @@ return (
 
                     <div className="mt-6 rounded-2xl border border-[#00ADB5]/20 bg-gradient-to-br from-[#00ADB5]/10 to-transparent p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <Sparkles className="h-5 w-5 text-[#00ADB5]" />
+                          <Trophy className="h-5 w-5 text-[#00ADB5]" />
                         <span className="font-semibold text-[#EEEEEE]">Key Highlights</span>
                       </div>
                       <ul className="space-y-2">

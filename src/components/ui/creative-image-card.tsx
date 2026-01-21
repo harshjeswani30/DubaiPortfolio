@@ -4,7 +4,7 @@ import { useRef, useState } from "react"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { Code2, Palette, Sparkles, MessageCircle, ArrowRight } from "lucide-react"
+import { Code2, Palette, Wand2, MessageCircle, ArrowRight } from "lucide-react"
 
 interface FloatingTag {
   icon: React.ElementType
@@ -16,7 +16,7 @@ interface FloatingTag {
 const floatingTags: FloatingTag[] = [
   { icon: Code2, text: "React", color: "#61DAFB", position: "top-left" },
   { icon: Palette, text: "UI/UX", color: "#FF6B6B", position: "right" },
-  { icon: Sparkles, text: "Creative", color: "#00ADB5", position: "bottom-left" },
+  { icon: Wand2, text: "Creative", color: "#00ADB5", position: "bottom-left" },
 ]
 
 function CornerCircleDecoration({ 

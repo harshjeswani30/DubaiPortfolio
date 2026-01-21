@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
-import { Clock, ArrowUpRight, Search, Sparkles, BookOpen, ChevronRight, Calendar, X } from "lucide-react"
+import { Clock, ArrowUpRight, Search, Newspaper, BookOpen, ChevronRight, Calendar, X, Mail } from "lucide-react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -277,7 +277,7 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
                     className="mb-8 flex items-center gap-3"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10">
-                      <Sparkles className="h-5 w-5 text-[#00ADB5]" />
+                        <Newspaper className="h-5 w-5 text-[#00ADB5]" />
                     </div>
                     <h2 className="text-2xl font-bold text-[#EEEEEE]">Featured Article</h2>
                     <div className="h-[2px] flex-1 bg-gradient-to-r from-[#00ADB5]/50 to-transparent" />
@@ -474,7 +474,7 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
             className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/5 via-[#393E46]/10 to-transparent p-8 md:p-12 text-center backdrop-blur-sm"
           >
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00ADB5]/10">
-              <Sparkles className="h-8 w-8 text-[#00ADB5]" />
+                <Mail className="h-8 w-8 text-[#00ADB5]" />
             </div>
             <h2 className="mb-4 text-2xl font-bold text-[#EEEEEE] md:text-3xl">
               Stay Updated

@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect } from "react"
 import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Code, Cpu, Database, Palette, Sparkles, Layers, Zap, Globe } from "lucide-react"
+import { ArrowRight, Code, Cpu, Database, Palette, Lightbulb, Layers, Zap, Globe } from "lucide-react"
 
 function useParallax(value: ReturnType<typeof useSpring>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance])
@@ -45,7 +45,7 @@ const services = [
 ]
 
 const floatingIcons = [
-  { icon: Sparkles, x: "10%", y: "20%", delay: 0 },
+  { icon: Lightbulb, x: "10%", y: "20%", delay: 0 },
   { icon: Layers, x: "85%", y: "15%", delay: 0.5 },
   { icon: Zap, x: "5%", y: "70%", delay: 1 },
   { icon: Globe, x: "90%", y: "75%", delay: 1.5 },

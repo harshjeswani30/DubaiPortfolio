@@ -4,7 +4,7 @@ import { useRef, useState, useEffect, useCallback } from "react"
 import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Sparkles, Code2, Zap, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowUpRight, Folder, ExternalLink, Github, Layers, Star, Code2, Zap, ChevronLeft, ChevronRight } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -448,7 +448,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
           animate={{ y: [0, 10, 0], scale: [1, 1.08, 1] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         >
-          <Sparkles className="h-5 w-5 text-[#00ADB5]/12" />
+            <Star className="h-5 w-5 text-[#00ADB5]/12" />
         </motion.div>
         <motion.div
           className="absolute top-1/2 right-[8%]"

@@ -262,23 +262,23 @@ export function AboutContent() {
 
             .content--inital {
               display: grid;
-              grid-template-columns: 55% 45%;
+              grid-template-columns: 1fr 1fr;
               gap: 0;
               position: relative;
               height: 100vh;
-              overflow: hidden;
             }
 
             .content--inital .one {
               width: 100%;
-              height: 100vh;
+              height: 100%;
               max-height: 100vh;
-              object-fit: cover;
             }
 
           .intro-content {
-            position: relative;
-            width: 100%;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 45%;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -408,14 +408,6 @@ export function AboutContent() {
           }
 
           @media screen and (max-width: 53em) {
-            .content--inital {
-              grid-template-columns: 1fr;
-              grid-template-rows: 50vh 50vh;
-            }
-            .content--inital .one {
-              height: 50vh;
-              max-height: 50vh;
-            }
             .intro-content {
               width: 100%;
               background: linear-gradient(0deg, rgba(34, 40, 49, 0.98) 0%, rgba(34, 40, 49, 0.8) 100%);
