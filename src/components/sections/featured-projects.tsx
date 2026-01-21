@@ -73,6 +73,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
 
     const handleProjectClick = (e: React.MouseEvent) => {
       e.preventDefault()
+      e.stopPropagation()
       if (!cardRef.current) return
       
       sessionStorage.setItem('projectSource', 'home')
@@ -106,9 +107,9 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       onMouseLeave={handleMouseLeave}
       className="relative"
       style={{ perspective: 1200 }}
-    >
-      <div onClick={handleProjectClick} className="cursor-pointer">
-        <motion.div
+      >
+        <div className="cursor-pointer">
+          <motion.div
           style={{
             rotateX: smoothRotateX,
             rotateY: smoothRotateY,
@@ -314,14 +315,20 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 </div>
 
                 <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
-                  >
-                    <span>View Details</span>
-                    <ArrowUpRight className="h-3 w-3" />
-                  </motion.button>
+                    <Link 
+                      href={`/projects/${project.slug}`}
+                      onClick={() => sessionStorage.setItem('projectSource', 'home')}
+                      className="flex-1"
+                    >
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
+                      >
+                        <span>View Details</span>
+                        <ArrowUpRight className="h-3 w-3" />
+                      </motion.button>
+                    </Link>
                   
                   {project.github_url && (
                     <motion.button
