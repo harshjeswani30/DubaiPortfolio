@@ -293,13 +293,39 @@ body:has(.carousel-container) .scroll-progress {
 @keyframes text {
   0%, 25% {
     opacity: 0;
+    pointer-events: none;
   }
   50% {
     opacity: 1;
     transform: none;
+    pointer-events: auto;
   }
   75%, 100% {
     opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.animate-buttons {
+  animation: buttons linear both;
+}
+
+@keyframes buttons {
+  0%, 25% {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  50% {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    visibility: visible;
+  }
+  75%, 100% {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
   }
 }
 
