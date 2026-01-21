@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
-import { clearAdminSession } from "@/lib/admin-auth"
+import { deleteSession } from "@/lib/auth"
 
 export async function POST() {
-  await clearAdminSession()
+  await deleteSession()
   return NextResponse.json({ success: true })
 }
+

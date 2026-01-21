@@ -1,38 +1,27 @@
 import { NextRequest, NextResponse } from "next/server"
-import {
-  authenticateAdmin,
-  createAdminToken,
-  setAdminSession,
-} from "@/lib/admin-auth"
+import { createSession } from "@/lib/auth"
+
+const FIXED_ADMIN_EMAIL = "harshjeswani30@gmail.com"
+const FIXED_ADMIN_PASSWORD = "Harsh0000.."
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const body = await request.json().catch(() => null)
+    const email = body?.email
+    const password = body?.password
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
-      )
+    if (typeof email !== "string" || typeof password !== "string") {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
     }
 
-    const user = await authenticateAdmin(email, password)
-    if (!user) {
-      return NextResponse.json(
-        { error: "Invalid credentials" },
-        { status: 401 }
-      )
+    if (email.toLowerCase() !== FIXED_ADMIN_EMAIL.toLowerCase() || password !== FIXED_ADMIN_PASSWORD) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 
-    const token = await createAdminToken(user)
-    await setAdminSession(token)
-
-    return NextResponse.json({ success: true, user })
-  } catch (error) {
-    console.error("Login error:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
+    await createSession("admin")
+    return NextResponse.json({ success: true })
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
+

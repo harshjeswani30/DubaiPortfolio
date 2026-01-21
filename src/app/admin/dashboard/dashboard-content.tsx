@@ -1,20 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import {
-  LayoutDashboard,
   FolderKanban,
   Code,
   FileText,
   Mail,
   Settings,
-  LogOut,
   User,
   Eye,
 } from "lucide-react"
 import { formatDate } from "@/lib/utils"
+import { AdminShell } from "@/components/admin/admin-shell"
 
 interface Message {
   id: string
@@ -32,15 +30,6 @@ interface DashboardProps {
   unreadMessages: Message[]
 }
 
-const navItems = [
-  { href: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/admin/projects", icon: FolderKanban, label: "Projects" },
-  { href: "/admin/skills", icon: Code, label: "Skills" },
-  { href: "/admin/blog", icon: FileText, label: "Blog Posts" },
-  { href: "/admin/messages", icon: Mail, label: "Messages" },
-  { href: "/admin/settings", icon: Settings, label: "Settings" },
-]
-
 const stats = [
   { label: "Total Projects", icon: FolderKanban, color: "from-blue-500 to-cyan-500" },
   { label: "Skills", icon: Code, color: "from-green-500 to-emerald-500" },
@@ -54,64 +43,23 @@ export function AdminDashboardContent({
   postCount,
   unreadMessages,
 }: DashboardProps) {
-  const router = useRouter()
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" })
-    router.push("/admin")
-  }
-
   const statValues = [projectCount, skillCount, postCount, unreadMessages.length]
 
   return (
-    <div className="flex min-h-screen bg-black">
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-white/10 bg-zinc-950">
-        <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center gap-2 border-b border-white/10 px-6">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600" />
-            <span className="font-bold text-white">Admin Panel</span>
-          </div>
-
-          <nav className="flex-1 space-y-1 p-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-              >
-                <item.icon className="h-5 w-5" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          <div className="border-t border-white/10 p-4">
-            <button
-              onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-red-400"
-            >
-              <LogOut className="h-5 w-5" />
-              Logout
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <main className="ml-64 flex-1 p-8">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-            <p className="text-zinc-400">Welcome back, Admin</p>
-          </div>
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10"
-          >
-            <Eye className="h-4 w-4" />
-            View Site
-          </Link>
-        </div>
+    <AdminShell
+      title="Dashboard"
+      description="Welcome back, Admin"
+      actions={
+        <Link
+          href="/"
+          target="_blank"
+          className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 transition-colors hover:bg-white/10"
+        >
+          <Eye className="h-4 w-4" />
+          View Site
+        </Link>
+      }
+    >
 
         <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, i) => (
@@ -219,7 +167,6 @@ export function AdminDashboardContent({
             </div>
           </motion.div>
         </div>
-      </main>
-    </div>
+    </AdminShell>
   )
 }
