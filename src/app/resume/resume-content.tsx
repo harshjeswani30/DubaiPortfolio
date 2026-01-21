@@ -21,15 +21,15 @@ import {
   ChevronRight
 } from "lucide-react"
 import Link from "next/link"
+import type { Education, Certification, Language, Project, SocialLink } from "@/lib/data"
 
 interface ResumeContentProps {
   about: {
     name?: string
     role?: string
-    title: string
-    subtitle: string
-    bio: string
+    bio?: string
     email?: string
+    phone?: string
     location?: string
   } | null
   experiences: Array<{
@@ -49,66 +49,29 @@ interface ResumeContentProps {
     proficiency: number
     color?: string
   }>
+  education: Education[]
+  certifications: Certification[]
+  languages: Language[]
+  projects: Project[]
+  socialLinks: SocialLink[]
 }
 
-const education = [
-  {
-    id: "1",
-    degree: "Bachelor of Science in Computer Science",
-    institution: "Dubai University",
-    location: "Dubai, UAE",
-    year: "2018 - 2022",
-    gpa: "3.8/4.0",
-    highlights: ["Dean's List", "Best Capstone Project", "Programming Club Lead"]
-  },
-  {
-    id: "2",
-    degree: "Full Stack Web Development Bootcamp",
-    institution: "Tech Academy",
-    location: "Online",
-    year: "2022",
-    highlights: ["Top 5% of cohort", "Built 12+ production projects"]
-  }
-]
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  linkedin: Linkedin,
+  github: Github,
+  globe: Globe,
+}
 
-const certifications = [
-  { id: "1", name: "AWS Certified Solutions Architect", issuer: "Amazon Web Services", year: "2024" },
-  { id: "2", name: "Google Cloud Professional Developer", issuer: "Google", year: "2023" },
-  { id: "3", name: "Meta Frontend Developer Certificate", issuer: "Meta", year: "2023" },
-  { id: "4", name: "MongoDB Database Administrator", issuer: "MongoDB", year: "2022" },
-]
-
-const languages = [
-  { name: "English", level: "Native/Fluent", proficiency: 100 },
-  { name: "Arabic", level: "Professional", proficiency: 85 },
-  { name: "Hindi", level: "Conversational", proficiency: 60 },
-]
-
-const featuredProjects = [
-  {
-    id: "1",
-    name: "E-Commerce Platform",
-    description: "Full-stack marketplace with real-time inventory and payment processing",
-    tech: ["Next.js", "Stripe", "PostgreSQL"],
-    link: "/projects/ecommerce"
-  },
-  {
-    id: "2", 
-    name: "AI Dashboard",
-    description: "Analytics dashboard with ML-powered insights and predictions",
-    tech: ["React", "Python", "TensorFlow"],
-    link: "/projects/ai-dashboard"
-  },
-  {
-    id: "3",
-    name: "Real Estate Portal",
-    description: "Property listing platform with 3D virtual tours",
-    tech: ["Next.js", "Three.js", "MongoDB"],
-    link: "/projects/real-estate"
-  }
-]
-
-export function ResumeContent({ about, experiences, skills }: ResumeContentProps) {
+export function ResumeContent({ 
+  about, 
+  experiences, 
+  skills, 
+  education, 
+  certifications, 
+  languages, 
+  projects,
+  socialLinks 
+}: ResumeContentProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -140,159 +103,185 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
   return (
     <div ref={containerRef} className="min-h-screen bg-[#222831]">
 <motion.section 
-          className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-32"
-          style={{ y: heroY, opacity: heroOpacity }}
+        className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-32"
+        style={{ y: heroY, opacity: heroOpacity }}
+      >
+      <div className="absolute inset-0 dot-background opacity-30" />
+      
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+        className="absolute -right-[300px] -top-[300px] h-[600px] w-[600px] opacity-20"
+      >
+        <div className="absolute inset-0 rounded-full border border-[#393E46]/30" />
+        <div className="absolute inset-[80px] rounded-full border border-[#00ADB5]/20" />
+        <div className="absolute inset-[160px] rounded-full border border-[#EEEEEE]/10" />
+      </motion.div>
+
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+          <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="mb-4 text-5xl font-bold text-[#EEEEEE] md:text-7xl"
         >
-        <div className="absolute inset-0 dot-background opacity-30" />
+          {about?.name || "Dubai Developer"}
+        </motion.h1>
         
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-          className="absolute -right-[300px] -top-[300px] h-[600px] w-[600px] opacity-20"
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mb-6 text-xl text-[#00ADB5] md:text-2xl"
         >
-          <div className="absolute inset-0 rounded-full border border-[#393E46]/30" />
-          <div className="absolute inset-[80px] rounded-full border border-[#00ADB5]/20" />
-          <div className="absolute inset-[160px] rounded-full border border-[#EEEEEE]/10" />
-        </motion.div>
+          {about?.role || "Full Stack Developer & UI/UX Enthusiast"}
+        </motion.p>
 
-        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-            <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="mb-4 text-5xl font-bold text-[#EEEEEE] md:text-7xl"
-          >
-            {about?.name || "Dubai Developer"}
-          </motion.h1>
-          
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-6 text-xl text-[#00ADB5] md:text-2xl"
-          >
-            {about?.role || about?.subtitle || "Full Stack Developer & UI/UX Enthusiast"}
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-[#EEEEEE]/70"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-[#EEEEEE]/70"
+        >
+          {about?.email && (
             <span className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-[#00ADB5]" />
-              {about?.email || "hello@dubaideveloper.com"}
+              {about.email}
             </span>
+          )}
+          {about?.location && (
             <span className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-[#00ADB5]" />
-              {about?.location || "Dubai, UAE"}
+              {about.location}
             </span>
+          )}
+          {about?.phone && (
             <span className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-[#00ADB5]" />
-              +971 50 123 4567
+              {about.phone}
             </span>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="flex flex-wrap items-center justify-center gap-4"
-          >
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-6 py-3 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
-            >
-              <Download className="h-5 w-5" />
-              Download Resume
-            </motion.button>
-            <div className="flex items-center gap-3">
-              <motion.a
-                whileHover={{ scale: 1.1, y: -2 }}
-                href="https://linkedin.com"
-                target="_blank"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-              >
-                <Linkedin className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1, y: -2 }}
-                href="https://github.com"
-                target="_blank"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-              >
-                <Github className="h-5 w-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1, y: -2 }}
-                href="https://portfolio.com"
-                target="_blank"
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-              >
-                <Globe className="h-5 w-5" />
-              </motion.a>
-            </div>
-          </motion.div>
-        </div>
-
-        </motion.section>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="flex justify-center py-8"
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center gap-2"
-          >
-            <span className="text-xs text-[#00ADB5]/60">Scroll to explore</span>
-            <div className="h-10 w-5 rounded-full border border-[#393E46] p-1">
-              <motion.div
-                animate={{ y: [0, 16, 0] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="h-2 w-2 rounded-full bg-[#00ADB5]"
-              />
-            </div>
-          </motion.div>
+          )}
         </motion.div>
 
-      <div className="relative mx-auto max-w-6xl px-6 pb-32">
-        <motion.section 
-          className="py-16"
-          style={{ y: summaryY }}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex flex-wrap items-center justify-center gap-4"
         >
-          <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Professional Summary" />
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 md:p-8 backdrop-blur-sm"
+          <motion.button
+            whileHover={{ scale: 1.05, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-6 py-3 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
           >
-            <p className="text-lg leading-relaxed text-[#EEEEEE]/80">
-              {about?.bio || "Passionate Full Stack Developer with 5+ years of experience crafting high-performance web applications. Specialized in React, Next.js, and Node.js ecosystems with a strong focus on creating exceptional user experiences. Proven track record of delivering scalable solutions for startups and enterprises across fintech, real estate, and e-commerce sectors. Committed to writing clean, maintainable code and staying current with emerging technologies."}
-            </p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                {["React Expert", "Node.js", "TypeScript", "Cloud Architecture", "Team Lead"].map((tag) => (
-                  <motion.span
-                    key={tag}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                    className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]"
+            <Download className="h-5 w-5" />
+            Download Resume
+          </motion.button>
+          <div className="flex items-center gap-3">
+            {socialLinks.length > 0 ? (
+              socialLinks.map((link) => {
+                const Icon = iconMap[link.icon_name?.toLowerCase()] || Globe
+                return (
+                  <motion.a
+                    key={link.id}
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
                   >
-                    {tag}
-                  </motion.span>
-                ))}
-              </div>
-          </motion.div>
-        </motion.section>
+                    <Icon className="h-5 w-5" />
+                  </motion.a>
+                )
+              })
+            ) : (
+              <>
+                <motion.a
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  href="https://linkedin.com"
+                  target="_blank"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </motion.a>
+                <motion.a
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  href="https://github.com"
+                  target="_blank"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                >
+                  <Github className="h-5 w-5" />
+                </motion.a>
+                <motion.a
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  href="/"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                >
+                  <Globe className="h-5 w-5" />
+                </motion.a>
+              </>
+            )}
+          </div>
+        </motion.div>
+      </div>
 
+      </motion.section>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+        className="flex justify-center py-8"
+      >
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="flex flex-col items-center gap-2"
+        >
+          <span className="text-xs text-[#00ADB5]/60">Scroll to explore</span>
+          <div className="h-10 w-5 rounded-full border border-[#393E46] p-1">
+            <motion.div
+              animate={{ y: [0, 16, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="h-2 w-2 rounded-full bg-[#00ADB5]"
+            />
+          </div>
+        </motion.div>
+      </motion.div>
+
+    <div className="relative mx-auto max-w-6xl px-6 pb-32">
+      <motion.section 
+        className="py-16"
+        style={{ y: summaryY }}
+      >
+        <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Professional Summary" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 md:p-8 backdrop-blur-sm"
+        >
+          <p className="text-lg leading-relaxed text-[#EEEEEE]/80">
+            {about?.bio || "Passionate Full Stack Developer with 5+ years of experience crafting high-performance web applications. Specialized in React, Next.js, and Node.js ecosystems with a strong focus on creating exceptional user experiences. Proven track record of delivering scalable solutions for startups and enterprises across fintech, real estate, and e-commerce sectors. Committed to writing clean, maintainable code and staying current with emerging technologies."}
+          </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {["React Expert", "Node.js", "TypeScript", "Cloud Architecture", "Team Lead"].map((tag) => (
+                <motion.span
+                  key={tag}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]"
+                >
+                  {tag}
+                </motion.span>
+              ))}
+            </div>
+        </motion.div>
+      </motion.section>
+
+      {experiences.length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: experienceY }}
@@ -340,7 +329,9 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             </div>
           </div>
         </motion.section>
+      )}
 
+      {education.length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: educationY }}
@@ -362,35 +353,41 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
                     <GraduationCap className="h-6 w-6 text-[#00ADB5]" />
                   </div>
                   <span className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs font-medium text-[#EEEEEE]/70">
-                    {edu.year}
+                    {edu.start_year}{edu.end_year && edu.end_year !== edu.start_year ? ` - ${edu.end_year}` : ""}
                   </span>
                 </div>
                 <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
                   {edu.degree}
                 </h3>
                 <p className="mb-1 font-medium text-[#00ADB5]/80">{edu.institution}</p>
-                <p className="mb-4 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
-                  <MapPin className="h-3 w-3" />
-                  {edu.location}
-                </p>
+                {edu.location && (
+                  <p className="mb-4 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
+                    <MapPin className="h-3 w-3" />
+                    {edu.location}
+                  </p>
+                )}
                 {edu.gpa && (
                   <p className="mb-3 text-sm text-[#EEEEEE]/70">GPA: {edu.gpa}</p>
                 )}
-                <div className="flex flex-wrap gap-2">
-                  {edu.highlights.map((highlight) => (
-                    <span
-                      key={highlight}
-                      className="rounded-full bg-[#00ADB5]/10 px-3 py-1 text-xs text-[#00ADB5]"
-                    >
-                      {highlight}
-                    </span>
-                  ))}
-                </div>
+                {edu.highlights.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {edu.highlights.map((highlight) => (
+                      <span
+                        key={highlight}
+                        className="rounded-full bg-[#00ADB5]/10 px-3 py-1 text-xs text-[#00ADB5]"
+                      >
+                        {highlight}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             ))}
           </div>
         </motion.section>
+      )}
 
+      {Object.keys(skillsByCategory).length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: skillsY }}
@@ -439,7 +436,9 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             ))}
           </div>
         </motion.section>
+      )}
 
+      {certifications.length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: certY }}
@@ -463,14 +462,22 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
                   <h3 className="font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors truncate">
                     {cert.name}
                   </h3>
-                  <p className="text-sm text-[#EEEEEE]/60">{cert.issuer} • {cert.year}</p>
+                  <p className="text-sm text-[#EEEEEE]/60">{cert.issuer} {cert.year && `• ${cert.year}`}</p>
                 </div>
-                <ChevronRight className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
+                {cert.credential_url ? (
+                  <a href={cert.credential_url} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
+                  </a>
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
+                )}
               </motion.div>
             ))}
           </div>
         </motion.section>
+      )}
 
+      {languages.length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: langY }}
@@ -479,7 +486,7 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
           <div className="grid gap-4 sm:grid-cols-3">
             {languages.map((lang) => (
               <motion.div
-                key={lang.name}
+                key={lang.id}
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -525,14 +532,16 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             ))}
           </div>
         </motion.section>
+      )}
 
+      {projects.length > 0 && (
         <motion.section 
           className="py-16"
           style={{ y: projectsY }}
         >
           <SectionHeader icon={<Folder className="h-5 w-5" />} title="Featured Projects" />
           <div className="grid gap-6 md:grid-cols-3">
-            {featuredProjects.map((project) => (
+            {projects.map((project) => (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 40 }}
@@ -540,7 +549,7 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                <Link href={project.link}>
+                <Link href={`/projects/${project.slug}`}>
                   <motion.div
                     whileHover={{ scale: 1.03, y: -8 }}
                     className="group h-full rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 transition-all hover:border-[#00ADB5]/50 hover:shadow-xl hover:shadow-[#00ADB5]/5"
@@ -550,13 +559,13 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
                       <ExternalLink className="h-5 w-5 text-[#393E46] transition-colors group-hover:text-[#00ADB5]" />
                     </div>
                     <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                      {project.name}
+                      {project.title}
                     </h3>
                     <p className="mb-4 text-sm text-[#EEEEEE]/60 line-clamp-2">
                       {project.description}
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {project.tech.map((tech) => (
+                      {project.tech_stack.slice(0, 3).map((tech) => (
                         <span
                           key={tech}
                           className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs text-[#EEEEEE]/70"
@@ -588,64 +597,65 @@ export function ResumeContent({ about, experiences, skills }: ResumeContentProps
             </Link>
           </motion.div>
         </motion.section>
+      )}
 
-          <motion.section 
-          className="py-16"
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
-          <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 md:p-12 text-center">
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
-            >
-              Let&apos;s Work Together
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
-            >
-              I&apos;m currently open to new opportunities and exciting projects. 
-              Let&apos;s discuss how we can create something amazing together.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="flex flex-wrap items-center justify-center gap-4"
-            >
-              <Link href="/contact">
-                <motion.button
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 rounded-xl bg-[#00ADB5] px-8 py-4 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
-                >
-                  <Mail className="h-5 w-5" />
-                  Get in Touch
-                </motion.button>
-              </Link>
+        <motion.section 
+        className="py-16"
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
+        <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 md:p-12 text-center">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
+          >
+            Let&apos;s Work Together
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
+          >
+            I&apos;m currently open to new opportunities and exciting projects. 
+            Let&apos;s discuss how we can create something amazing together.
+          </motion.p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex flex-wrap items-center justify-center gap-4"
+          >
+            <Link href="/contact">
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 rounded-xl border-2 border-[#393E46] px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
+                className="flex items-center gap-2 rounded-xl bg-[#00ADB5] px-8 py-4 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
               >
-                <Download className="h-5 w-5" />
-                Download Resume
+                <Mail className="h-5 w-5" />
+                Get in Touch
               </motion.button>
-            </motion.div>
-          </div>
-        </motion.section>
-      </div>
+            </Link>
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 rounded-xl border-2 border-[#393E46] px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
+            >
+              <Download className="h-5 w-5" />
+              Download Resume
+            </motion.button>
+          </motion.div>
+        </div>
+      </motion.section>
     </div>
+  </div>
   )
 }
 

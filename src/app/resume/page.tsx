@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getAboutData } from "@/lib/data"
+import { getResumeData } from "@/lib/data"
 import { ResumeContent } from "./resume-content"
 
 export const metadata: Metadata = {
@@ -10,6 +10,6 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function ResumePage() {
-  const { about, experiences, skills } = await getAboutData()
-  return <ResumeContent about={about} experiences={experiences} skills={skills} />
+  const data = await getResumeData()
+  return <ResumeContent {...data} />
 }

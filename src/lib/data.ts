@@ -148,6 +148,35 @@ export interface AboutPage {
   stats: { value: string; label: string }[]
 }
 
+export interface Education {
+  id: string
+  degree: string
+  institution: string
+  location?: string
+  start_year?: string
+  end_year?: string
+  gpa?: string
+  highlights: string[]
+  display_order: number
+}
+
+export interface Certification {
+  id: string
+  name: string
+  issuer: string
+  year?: string
+  credential_url?: string
+  display_order: number
+}
+
+export interface Language {
+  id: string
+  name: string
+  level: string
+  proficiency: number
+  display_order: number
+}
+
 export async function getProjects(): Promise<Project[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -371,6 +400,45 @@ export async function getAboutPage(): Promise<AboutPage | null> {
   }
 }
 
+export async function getEducation(): Promise<Education[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("education")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
+  return data.map((e) => ({
+    ...e,
+    highlights: e.highlights || [],
+  }))
+}
+
+export async function getCertifications(): Promise<Certification[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("certifications")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
+  return data
+}
+
+export async function getLanguages(): Promise<Language[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("languages")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
+  return data
+}
+
 export async function getAboutData() {
   const [settings, experiences, skills] = await Promise.all([
     getSiteSettings(),
@@ -396,5 +464,38 @@ export async function getAboutData() {
         },
     experiences,
     skills,
+  }
+}
+
+export async function getResumeData() {
+  const [settings, experiences, skills, education, certifications, languages, projects, socialLinks] = await Promise.all([
+    getSiteSettings(),
+    getExperience(),
+    getSkills(),
+    getEducation(),
+    getCertifications(),
+    getLanguages(),
+    getFeaturedProjects(),
+    getSocialLinks(),
+  ])
+
+  return {
+    about: settings
+      ? {
+          name: settings.name,
+          role: settings.role,
+          bio: settings.bio,
+          email: settings.email,
+          phone: settings.phone,
+          location: settings.location,
+        }
+      : null,
+    experiences,
+    skills,
+    education,
+    certifications,
+    languages,
+    projects,
+    socialLinks,
   }
 }
