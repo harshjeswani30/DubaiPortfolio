@@ -4,25 +4,34 @@ import { useEffect, useRef, useState } from 'react';
 
 export interface CircleTrailCursorProps {
   fillColor?: string;
-  baseRadius?: number;
-  hoverRadius?: number;
+  size?: number;
+  scaleOnEnter?: number;
+  opacityOnEnter?: number;
   triggerSelector?: string;
-  proximityThreshold?: number;
+  lerpAmount?: number;
 }
+
+const lerp = (a: number, b: number, n: number) => (1 - n) * a + n * b;
 
 export function CircleTrailCursor({
   fillColor = '#00ADB5',
-  baseRadius = 8,
-  hoverRadius = 20,
+  size = 24,
+  scaleOnEnter = 2,
+  opacityOnEnter = 0.8,
   triggerSelector = 'a, button, [data-cursor-hover]',
-  proximityThreshold = 50
+  lerpAmount = 0.2
 }: CircleTrailCursorProps) {
-  const cursorRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const [isCoarse, setIsCoarse] = useState(true);
-  const [isHovering, setIsHovering] = useState(false);
-  const posRef = useRef({ x: 0, y: 0 });
-  const shrinkTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isNearTriggerRef = useRef(false);
+  const cursorPos = useRef({ x: 0, y: 0 });
+  const renderedStyles = useRef({
+    tx: { previous: 0, current: 0 },
+    ty: { previous: 0, current: 0 },
+    scale: { previous: 1, current: 1 },
+    opacity: { previous: 1, current: 1 }
+  });
+  const rafId = useRef<number | null>(null);
+  const initialized = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -32,59 +41,62 @@ export function CircleTrailCursor({
   useEffect(() => {
     if (typeof window === 'undefined' || isCoarse) return;
 
-    const cursor = cursorRef.current;
-    if (!cursor) return;
+    const svg = svgRef.current;
+    if (!svg) return;
 
-    const checkProximity = (x: number, y: number) => {
-      const triggers = document.querySelectorAll(triggerSelector);
-      for (const trigger of triggers) {
-        const rect = trigger.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-        const threshold = Math.max(rect.width, rect.height) / 2 + proximityThreshold;
-        if (distance < threshold) {
-          return true;
-        }
-      }
-      return false;
-    };
+    svg.style.opacity = '0';
 
     const onMouseMove = (ev: MouseEvent) => {
-      posRef.current = { x: ev.clientX, y: ev.clientY };
-      const currentRadius = isHovering ? hoverRadius : baseRadius;
-      cursor.style.transform = `translate(${ev.clientX - currentRadius}px, ${ev.clientY - currentRadius}px)`;
-      cursor.style.opacity = '1';
-      
-      isNearTriggerRef.current = checkProximity(ev.clientX, ev.clientY);
+      cursorPos.current = { x: ev.clientX, y: ev.clientY };
+
+      if (!initialized.current) {
+        renderedStyles.current.tx.previous = renderedStyles.current.tx.current = cursorPos.current.x - size / 2;
+        renderedStyles.current.ty.previous = renderedStyles.current.ty.current = cursorPos.current.y - size / 2;
+        svg.style.opacity = '1';
+        initialized.current = true;
+        render();
+      }
     };
 
     const enter = () => {
-      if (shrinkTimeoutRef.current) {
-        clearTimeout(shrinkTimeoutRef.current);
-        shrinkTimeoutRef.current = null;
-      }
-      setIsHovering(true);
+      renderedStyles.current.scale.current = scaleOnEnter;
+      renderedStyles.current.opacity.current = opacityOnEnter;
     };
 
     const leave = () => {
-      if (shrinkTimeoutRef.current) {
-        clearTimeout(shrinkTimeoutRef.current);
-      }
-      shrinkTimeoutRef.current = setTimeout(() => {
-        if (!isNearTriggerRef.current) {
-          setIsHovering(false);
-        } else {
-          const checkAndShrink = () => {
-            if (!isNearTriggerRef.current) {
-              setIsHovering(false);
-            } else {
-              shrinkTimeoutRef.current = setTimeout(checkAndShrink, 100);
-            }
-          };
-          shrinkTimeoutRef.current = setTimeout(checkAndShrink, 100);
-        }
-      }, 150);
+      renderedStyles.current.scale.current = 1;
+      renderedStyles.current.opacity.current = 1;
+    };
+
+    const render = () => {
+      renderedStyles.current.tx.current = cursorPos.current.x - size / 2;
+      renderedStyles.current.ty.current = cursorPos.current.y - size / 2;
+
+      renderedStyles.current.tx.previous = lerp(
+        renderedStyles.current.tx.previous,
+        renderedStyles.current.tx.current,
+        lerpAmount
+      );
+      renderedStyles.current.ty.previous = lerp(
+        renderedStyles.current.ty.previous,
+        renderedStyles.current.ty.current,
+        lerpAmount
+      );
+      renderedStyles.current.scale.previous = lerp(
+        renderedStyles.current.scale.previous,
+        renderedStyles.current.scale.current,
+        lerpAmount
+      );
+      renderedStyles.current.opacity.previous = lerp(
+        renderedStyles.current.opacity.previous,
+        renderedStyles.current.opacity.current,
+        lerpAmount
+      );
+
+      svg.style.transform = `translateX(${renderedStyles.current.tx.previous}px) translateY(${renderedStyles.current.ty.previous}px) scale(${renderedStyles.current.scale.previous})`;
+      svg.style.opacity = String(renderedStyles.current.opacity.previous);
+
+      rafId.current = requestAnimationFrame(render);
     };
 
     window.addEventListener('mousemove', onMouseMove);
@@ -101,52 +113,51 @@ export function CircleTrailCursor({
         trigger.removeEventListener('mouseenter', enter);
         trigger.removeEventListener('mouseleave', leave);
       });
-      if (shrinkTimeoutRef.current) {
-        clearTimeout(shrinkTimeoutRef.current);
+      if (rafId.current) {
+        cancelAnimationFrame(rafId.current);
       }
+      initialized.current = false;
     };
-  }, [baseRadius, hoverRadius, triggerSelector, isCoarse, isHovering, proximityThreshold]);
-
-  useEffect(() => {
-    if (isCoarse) return;
-    const cursor = cursorRef.current;
-    if (!cursor) return;
-    
-    const currentRadius = isHovering ? hoverRadius : baseRadius;
-    cursor.style.transform = `translate(${posRef.current.x - currentRadius}px, ${posRef.current.y - currentRadius}px)`;
-  }, [isHovering, baseRadius, hoverRadius, isCoarse]);
+  }, [size, scaleOnEnter, opacityOnEnter, triggerSelector, lerpAmount, isCoarse]);
 
   if (isCoarse) {
     return null;
   }
 
-  const currentRadius = isHovering ? hoverRadius : baseRadius;
-
   return (
     <>
       <style jsx global>{`
-        * {
-          cursor: none !important;
+        @media (any-pointer: fine) {
+          * {
+            cursor: none !important;
+          }
         }
       `}</style>
-      <div
-        ref={cursorRef}
+      <svg
+        ref={svgRef}
+        className="cursor"
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
         style={{
           position: 'fixed',
           top: 0,
           left: 0,
-          width: currentRadius * 2,
-          height: currentRadius * 2,
-          borderRadius: '50%',
-          backgroundColor: isHovering ? 'transparent' : fillColor,
-          border: isHovering ? `2px solid ${fillColor}` : 'none',
+          display: 'block',
           pointerEvents: 'none',
           zIndex: 10000,
           opacity: 0,
-          willChange: 'transform',
-          transition: 'width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border 0.2s ease',
+          willChange: 'transform, opacity'
         }}
-      />
+      >
+        <circle
+          className="cursor__inner"
+          cx="12"
+          cy="12"
+          r="6"
+          fill={fillColor}
+        />
+      </svg>
     </>
   );
 }
