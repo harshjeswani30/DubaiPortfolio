@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Bogard';
-  src: url('https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/a48095a5-6e68-4fb6-8052-dbec7362d4dc/bogard-regular-1768994818414.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 :root {
   --primary-dark: #222831;
   --primary-medium: #393E46;
@@ -218,10 +210,6 @@ body {
 
 .font-serif {
   font-family: var(--font-cardo), Georgia, serif;
-}
-
-.font-bogard {
-  font-family: 'Bogard', sans-serif;
 }
 
 .scrollbar-hidden {
