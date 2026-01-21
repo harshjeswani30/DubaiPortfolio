@@ -18,21 +18,21 @@ import {
   ChevronLeft,
   Menu,
   X,
-  Wrench,
   Home,
-  PanelsTopLeft,
+  MessageSquare,
+  FileUser,
 } from "lucide-react"
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/pages", label: "Pages", icon: PanelsTopLeft },
-  { href: "/admin/projects", label: "Projects", icon: FolderKanban },
-  { href: "/admin/skills", label: "Skills", icon: Code },
-  { href: "/admin/services", label: "Services", icon: Wrench },
-  { href: "/admin/experience", label: "Experience", icon: Briefcase },
-  { href: "/admin/blog", label: "Blog Posts", icon: FileText },
-  { href: "/admin/messages", label: "Messages", icon: Mail },
-  { href: "/admin/contact-info", label: "Contact Info", icon: Phone },
+  { href: "/admin/pages/home", label: "Home Page", icon: Home },
+  { href: "/admin/pages/about", label: "About Page", icon: User },
+  { href: "/admin/pages/projects", label: "Projects Page", icon: FolderKanban },
+  { href: "/admin/pages/blog", label: "Blog Page", icon: FileText },
+  { href: "/admin/pages/skills", label: "Skills Page", icon: Code },
+  { href: "/admin/pages/contact", label: "Contact Page", icon: Phone },
+  { href: "/admin/pages/resume", label: "Resume Page", icon: FileUser },
+  { href: "/admin/messages", label: "Messages", icon: MessageSquare },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ]
 
@@ -100,7 +100,8 @@ export function AdminShell({
         <nav className="flex-1 overflow-y-auto p-4">
           <div className="space-y-1">
             {navItems.map((item) => {
-              const isActive = pathname === item.href || pathname?.startsWith(item.href + "/")
+              const isActive = pathname === item.href || pathname?.startsWith(item.href + "/") || 
+                (item.href !== "/admin/dashboard" && pathname?.startsWith(item.href.replace("/pages", "")))
               return (
                 <Link
                   key={item.href}
