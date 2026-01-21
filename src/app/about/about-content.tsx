@@ -3,8 +3,47 @@
 import { useEffect, useRef } from "react"
 import Script from "next/script"
 
-export function AboutContent() {
+interface AboutData {
+  intro_eyebrow: string
+  intro_title: string
+  intro_title_highlight: string
+  intro_description: string
+  main_title: string
+  footer_text: string
+  images: string[]
+  stats: { value: string; label: string }[]
+}
+
+interface SiteSettings {
+  years_experience: number
+  projects_completed: number
+  happy_clients: number
+}
+
+interface AboutContentProps {
+  aboutData?: AboutData | null
+  siteSettings?: SiteSettings | null
+}
+
+export function AboutContent({ aboutData, siteSettings }: AboutContentProps) {
   const mainRef = useRef<HTMLElement>(null)
+
+  const introEyebrow = aboutData?.intro_eyebrow || "Welcome"
+  const introTitle = aboutData?.intro_title || "Creating Digital"
+  const introTitleHighlight = aboutData?.intro_title_highlight || "Experiences"
+  const introDescription = aboutData?.intro_description || "Passionate about transforming ideas into elegant, functional solutions. I craft modern web experiences that blend aesthetics with performance."
+  const mainTitle = aboutData?.main_title || "Full Stack Developer"
+  const footerText = aboutData?.footer_text || "Let's build something amazing"
+  const images = aboutData?.images?.length ? aboutData.images : []
+  const stats = aboutData?.stats?.length ? aboutData.stats : [
+    { value: `${siteSettings?.years_experience || 5}+`, label: "Years Exp" },
+    { value: `${siteSettings?.projects_completed || 50}+`, label: "Projects" },
+    { value: `${siteSettings?.happy_clients || 30}+`, label: "Clients" },
+  ]
+  
+  const mainTitleParts = mainTitle.split(" ")
+  const firstPart = mainTitleParts.slice(0, Math.ceil(mainTitleParts.length / 2)).join(" ")
+  const secondPart = mainTitleParts.slice(Math.ceil(mainTitleParts.length / 2)).join(" ")
 
   useEffect(() => {
     let cleanup: (() => void) | null = null
@@ -696,44 +735,38 @@ export function AboutContent() {
 
       <link rel="stylesheet" href="https://use.typekit.net/klj1rev.css" />
 
-      <div className="about-page-wrapper">
-        <main ref={mainRef} className="about-main">
-            <section className="content content--inital">
-              <div
-                className="one"
-                style={{
-                  backgroundImage:
-                    "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
-                }}
-              />
-              <div className="intro-content">
-                <div className="intro-eyebrow">
-                  <span className="intro-line" />
-                  <span className="intro-eyebrow-text">Welcome</span>
-                  <span className="intro-line" />
-                </div>
-                <h2 className="intro-title">
-                  Creating Digital
-                  <span className="intro-title-highlight">Experiences</span>
-                </h2>
-                <p className="intro-description">
-                  Passionate about transforming ideas into elegant, functional solutions. 
-                  I craft modern web experiences that blend aesthetics with performance.
-                </p>
-                <div className="intro-stats">
-                  <div className="intro-stat">
-                    <span className="intro-stat-number">5+</span>
-                    <span className="intro-stat-label">Years Exp</span>
+        <div className="about-page-wrapper">
+          <main ref={mainRef} className="about-main">
+              <section className="content content--inital">
+                <div
+                  className="one"
+                  style={{
+                    backgroundImage: images[0]
+                      ? `url(${images[0]})`
+                      : "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
+                  }}
+                />
+                <div className="intro-content">
+                  <div className="intro-eyebrow">
+                    <span className="intro-line" />
+                    <span className="intro-eyebrow-text">{introEyebrow}</span>
+                    <span className="intro-line" />
                   </div>
-                  <div className="intro-stat">
-                    <span className="intro-stat-number">50+</span>
-                    <span className="intro-stat-label">Projects</span>
+                  <h2 className="intro-title">
+                    {introTitle}
+                    <span className="intro-title-highlight">{introTitleHighlight}</span>
+                  </h2>
+                  <p className="intro-description">
+                    {introDescription}
+                  </p>
+                  <div className="intro-stats">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="intro-stat">
+                        <span className="intro-stat-number">{stat.value}</span>
+                        <span className="intro-stat-label">{stat.label}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="intro-stat">
-                    <span className="intro-stat-number">30+</span>
-                    <span className="intro-stat-label">Clients</span>
-                  </div>
-                </div>
                                 <div className="intro-decorative-circle">
                   <svg viewBox="0 0 300 300" className="intro-circle-svg">
                     <circle cx="150" cy="150" r="145" className="circle-outer" />
@@ -752,14 +785,14 @@ export function AboutContent() {
               </div>
             </section>
 
-          <section className="content content--center content--blend">
-            <div data-step className="content__img" />
-            <h1 className="content__title font-alt">
-              <span>Full Stack</span>
-              <br />
-              <span>Developer</span>
-            </h1>
-          </section>
+            <section className="content content--center content--blend">
+              <div data-step className="content__img" />
+              <h1 className="content__title font-alt">
+                <span>{firstPart}</span>
+                <br />
+                <span>{secondPart}</span>
+              </h1>
+            </section>
 
           <section className="content content--column">
             <div
@@ -904,7 +937,7 @@ export function AboutContent() {
             />
           </section>
 
-          <div className="footer-text font-alt">Let&apos;s build something amazing</div>
+            <div className="footer-text font-alt">{footerText}</div>
         </main>
       </div>
     </>

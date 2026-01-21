@@ -3,6 +3,8 @@ import { notFound } from "next/navigation"
 import { getProjectBySlug } from "@/lib/data"
 import { ProjectDetailContent } from "./project-detail-content"
 
+export const revalidate = 0
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>
 }

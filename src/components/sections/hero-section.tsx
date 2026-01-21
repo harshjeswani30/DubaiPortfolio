@@ -7,11 +7,27 @@ import { ArrowRight, Briefcase, Users, Clock } from "lucide-react"
 import RotatingText from "@/components/ui/rotating-text"
 import { CreativeImageCard } from "@/components/ui/creative-image-card"
 
-const stats = [
-  { icon: Clock, value: "5+", label: "Years Experience" },
-  { icon: Briefcase, value: "50+", label: "Projects Completed" },
-  { icon: Users, value: "30+", label: "Happy Clients" },
-]
+interface HeroData {
+  tagline: string
+  highlight_text: string
+  description: string
+  primary_button_text: string
+  primary_button_link: string
+  secondary_button_text: string
+  secondary_button_link: string
+  rotating_texts: string[]
+}
+
+interface SiteSettings {
+  years_experience: number
+  projects_completed: number
+  happy_clients: number
+}
+
+interface HeroSectionProps {
+  heroData?: HeroData | null
+  siteSettings?: SiteSettings | null
+}
 
 function useParallax(value: MotionValue<number>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance])
@@ -29,12 +45,29 @@ const hoverGradient = {
   angle: 145,
 }
 
-export function HeroSection() {
+export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const cardContainerRef = useRef<HTMLDivElement>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [cardPosition, setCardPosition] = useState<"left" | "center" | "right">("center")
+  
+  const tagline = heroData?.tagline || "Crafting Digital Experiences"
+  const highlightText = heroData?.highlight_text || "Digital"
+  const description = heroData?.description || "Full-stack developer based in Dubai, turning complex problems into elegant solutions. Let's build something extraordinary together."
+  const primaryButtonText = heroData?.primary_button_text || "View My Work"
+  const primaryButtonLink = heroData?.primary_button_link || "/projects"
+  const secondaryButtonText = heroData?.secondary_button_text || "Get in Touch"
+  const secondaryButtonLink = heroData?.secondary_button_link || "/contact"
+  const rotatingTexts = heroData?.rotating_texts?.length ? heroData.rotating_texts : ['Full-Stack Web Developer', 'Creative UI/UX Designer', 'Software Engineer']
+
+  const stats = [
+    { icon: Clock, value: `${siteSettings?.years_experience || 5}+`, label: "Years Experience" },
+    { icon: Briefcase, value: `${siteSettings?.projects_completed || 50}+`, label: "Projects Completed" },
+    { icon: Users, value: `${siteSettings?.happy_clients || 30}+`, label: "Happy Clients" },
+  ]
+
+  const taglineParts = tagline.split(highlightText)
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -283,7 +316,7 @@ export function HeroSection() {
                 </span>
                 <div className="relative flex items-center">
                   <RotatingText
-                    texts={['Full-Stack Web Developer', 'Creative UI/UX Designer', 'Software Engineer']}
+                    texts={rotatingTexts}
                     mainClassName="overflow-hidden justify-center text-sm font-medium text-[#EEEEEE]"
                     staggerFrom="last"
                     initial={{ y: "100%" }}
@@ -304,17 +337,23 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-3xl font-bold leading-[1.1] tracking-tight text-[#EEEEEE] sm:text-4xl md:text-5xl lg:text-6xl"
             >
-              Crafting
-              <span className="relative mx-2 inline-block">
-                <span className="gradient-text">Digital</span>
-                <motion.span
-                  animate={{ width: ["0%", "100%", "100%", "0%"] }}
-                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
-                  className="absolute -bottom-1 left-0 h-1 rounded-full bg-gradient-to-r from-[#00ADB5] to-[#EEEEEE]"
-                />
-              </span>
-              <br />
-              Experiences
+              {taglineParts[0]}
+              {highlightText && (
+                <span className="relative mx-2 inline-block">
+                  <span className="gradient-text">{highlightText}</span>
+                  <motion.span
+                    animate={{ width: ["0%", "100%", "100%", "0%"] }}
+                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
+                    className="absolute -bottom-1 left-0 h-1 rounded-full bg-gradient-to-r from-[#00ADB5] to-[#EEEEEE]"
+                  />
+                </span>
+              )}
+              {taglineParts[1] && (
+                <>
+                  <br />
+                  {taglineParts[1]}
+                </>
+              )}
             </motion.h1>
 
             <motion.p
@@ -323,7 +362,7 @@ export function HeroSection() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="mt-4 max-w-md text-sm text-[#00ADB5]/80 md:text-base leading-relaxed"
             >
-              Full-stack developer based in Dubai, turning complex problems into elegant solutions. Let&apos;s build something extraordinary together.
+              {description}
             </motion.p>
 
             <motion.div
@@ -332,7 +371,7 @@ export function HeroSection() {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="mt-6 flex flex-wrap items-center gap-3"
             >
-              <Link href="/projects">
+              <Link href={primaryButtonLink}>
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
@@ -345,17 +384,17 @@ export function HeroSection() {
                     transition={{ duration: 0.3 }}
                     className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
                   />
-                  View My Work
+                  {primaryButtonText}
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </motion.button>
               </Link>
-              <Link href="/contact">
+              <Link href={secondaryButtonLink}>
                 <motion.button
                   whileHover={{ scale: 1.02, y: -2 }}
                   whileTap={{ scale: 0.98 }}
                   className="rounded-xl border-2 border-[#393E46] bg-transparent px-5 py-3 text-sm font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
                 >
-                  Get in Touch
+                  {secondaryButtonText}
                 </motion.button>
               </Link>
             </motion.div>

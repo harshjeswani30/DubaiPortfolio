@@ -3,6 +3,8 @@ import { notFound } from "next/navigation"
 import { getBlogPostBySlug } from "@/lib/data"
 import { BlogPostContent } from "./blog-post-content"
 
+export const revalidate = 0
+
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
 }

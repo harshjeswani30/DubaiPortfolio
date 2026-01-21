@@ -3,44 +3,85 @@
 import { useRef, useState, useEffect } from "react"
 import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { ArrowRight, Code, Cpu, Database, Palette, Lightbulb, Layers, Zap, Globe } from "lucide-react"
+import { ArrowRight, Code, Cpu, Database, Palette, Lightbulb, Layers, Zap, Globe, LucideIcon } from "lucide-react"
 
 function useParallax(value: ReturnType<typeof useSpring>, distance: number) {
   return useTransform(value, [0, 1], [-distance, distance])
 }
 
-const services = [
+interface Service {
+  id: string
+  title: string
+  description: string
+  icon_name: string
+  skills: string[]
+  color: string
+  gradient: string
+  display_order: number
+}
+
+interface SiteSettings {
+  years_experience: number
+  projects_completed: number
+  happy_clients: number
+}
+
+interface ServicesSectionProps {
+  services?: Service[]
+  siteSettings?: SiteSettings | null
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Code,
+  Cpu,
+  Database,
+  Palette,
+  Lightbulb,
+  Layers,
+  Zap,
+  Globe,
+}
+
+const defaultServices = [
   {
-    icon: Code,
+    id: "1",
+    icon_name: "Code",
     title: "Frontend Development",
     description: "Crafting pixel-perfect, responsive interfaces with React, Next.js & TypeScript that users love.",
     skills: ["React", "Next.js", "TypeScript", "Tailwind"],
     color: "#61DAFB",
     gradient: "from-cyan-500/20 to-blue-500/20",
+    display_order: 1,
   },
   {
-    icon: Database,
+    id: "2",
+    icon_name: "Database",
     title: "Backend Engineering",
     description: "Building robust APIs and scalable server architectures with Node.js, Python & PostgreSQL.",
     skills: ["Node.js", "PostgreSQL", "APIs", "GraphQL"],
     color: "#68D391",
     gradient: "from-green-500/20 to-emerald-500/20",
+    display_order: 2,
   },
   {
-    icon: Palette,
+    id: "3",
+    icon_name: "Palette",
     title: "UI/UX Design",
     description: "Creating intuitive user experiences with modern design principles and smooth animations.",
     skills: ["Figma", "Motion", "Design Systems", "Prototyping"],
     color: "#F687B3",
     gradient: "from-pink-500/20 to-rose-500/20",
+    display_order: 3,
   },
   {
-    icon: Cpu,
+    id: "4",
+    icon_name: "Cpu",
     title: "DevOps & Cloud",
     description: "Deploying and scaling applications with Docker, AWS, and CI/CD pipelines.",
     skills: ["Docker", "AWS", "CI/CD", "Kubernetes"],
     color: "#F6AD55",
     gradient: "from-orange-500/20 to-amber-500/20",
+    display_order: 4,
   },
 ]
 
@@ -51,7 +92,8 @@ const floatingIcons = [
   { icon: Globe, x: "90%", y: "75%", delay: 1.5 },
 ]
 
-export function ServicesSection() {
+export function ServicesSection({ services: servicesProp, siteSettings }: ServicesSectionProps) {
+  const services = servicesProp?.length ? servicesProp : defaultServices
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
@@ -315,22 +357,22 @@ export function ServicesSection() {
                     />
                     
                     <div className="relative flex items-center gap-4">
-                      <motion.div
-                        animate={{ 
-                          rotate: hoveredIndex === i ? [0, -10, 10, 0] : 0,
-                          scale: activeService === i ? 1.1 : 1
-                        }}
-                        transition={{ duration: 0.5 }}
-                        className="flex h-12 w-12 items-center justify-center rounded-xl"
-                        style={{ 
-                          backgroundColor: activeService === i ? `${service.color}20` : "#393E46",
-                        }}
-                      >
-                        <service.icon 
-                          className="h-6 w-6 transition-colors" 
-                          style={{ color: activeService === i ? service.color : "#00ADB5" }}
-                        />
-                      </motion.div>
+                        <motion.div
+                          animate={{ 
+                            rotate: hoveredIndex === i ? [0, -10, 10, 0] : 0,
+                            scale: activeService === i ? 1.1 : 1
+                          }}
+                          transition={{ duration: 0.5 }}
+                          className="flex h-12 w-12 items-center justify-center rounded-xl"
+                          style={{ 
+                            backgroundColor: activeService === i ? `${service.color}20` : "#393E46",
+                          }}
+                        >
+                          {(() => {
+                            const Icon = iconMap[service.icon_name] || Code
+                            return <Icon className="h-6 w-6 transition-colors" style={{ color: activeService === i ? service.color : "#00ADB5" }} />
+                          })()}
+                        </motion.div>
                       
                       <div className="flex-1">
                         <h3 
@@ -395,15 +437,15 @@ export function ServicesSection() {
                         transition={{ type: "spring", delay: 0.1 }}
                         className="relative"
                       >
-                        <div 
-                          className="flex h-20 w-20 items-center justify-center rounded-2xl"
-                          style={{ backgroundColor: `${services[activeService].color}20` }}
-                        >
-                          {(() => {
-                            const Icon = services[activeService].icon
-                            return <Icon className="h-10 w-10" style={{ color: services[activeService].color }} />
-                          })()}
-                        </div>
+                          <div 
+                            className="flex h-20 w-20 items-center justify-center rounded-2xl"
+                            style={{ backgroundColor: `${services[activeService].color}20` }}
+                          >
+                            {(() => {
+                              const Icon = iconMap[services[activeService].icon_name] || Code
+                              return <Icon className="h-10 w-10" style={{ color: services[activeService].color }} />
+                            })()}
+                          </div>
                         <motion.div
                           className="absolute -inset-2 rounded-2xl -z-10"
                           style={{ backgroundColor: services[activeService].color }}
@@ -537,17 +579,17 @@ export function ServicesSection() {
                 </motion.div>
               </AnimatePresence>
 
-              <motion.div
-                className="mt-6 grid grid-cols-3 gap-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.5 }}
-              >
-                {[
-                  { label: "Projects", value: "50+" },
-                  { label: "Experience", value: "5+ Yrs" },
-                  { label: "Satisfaction", value: "100%" },
-                ].map((stat, i) => (
+                <motion.div
+                  className="mt-6 grid grid-cols-3 gap-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.5 }}
+                >
+                  {[
+                    { label: "Projects", value: `${siteSettings?.projects_completed || 50}+` },
+                    { label: "Experience", value: `${siteSettings?.years_experience || 5}+ Yrs` },
+                    { label: "Satisfaction", value: "100%" },
+                  ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
                     whileHover={{ y: -4, scale: 1.02 }}

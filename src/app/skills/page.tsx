@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Explore my technical skills and expertise in various technologies.",
 }
 
+export const revalidate = 0
+
 export default async function SkillsPage() {
   const skills = await getSkills()
   return <SkillsContent skills={skills} />

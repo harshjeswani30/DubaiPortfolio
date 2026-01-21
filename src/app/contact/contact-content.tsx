@@ -16,7 +16,9 @@ import {
   User,
   AtSign,
   FileText,
-  Phone
+  Phone,
+  Globe,
+  LucideIcon
 } from "lucide-react"
 
 const contactSchema = z.object({
@@ -53,7 +55,33 @@ const FloatingParticle = ({ delay, duration, size, left, top }: {
   />
 )
 
-export function ContactContent() {
+interface ContactInfo {
+  id: string
+  type: string
+  label: string
+  value: string
+  icon_name: string
+  color_gradient: string
+  display_order: number
+}
+
+interface SiteSettings {
+  available_for_work: boolean
+}
+
+interface ContactContentProps {
+  contactInfo?: ContactInfo[]
+  siteSettings?: SiteSettings | null
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Mail,
+  MapPin,
+  Phone,
+  Globe,
+}
+
+export function ContactContent({ contactInfo, siteSettings }: ContactContentProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
@@ -90,26 +118,38 @@ export function ContactContent() {
     setIsSubmitting(false)
   }
 
-  const contactInfo = [
+  const defaultContactInfo = [
     {
-      icon: <Mail className="h-5 w-5" />,
+      id: "1",
+      icon_name: "Mail",
       label: "Email",
       value: "hello@portfolio.com",
-      color: "from-[#00ADB5] to-[#00CED6]",
+      color_gradient: "from-[#00ADB5] to-[#00CED6]",
+      type: "email",
+      display_order: 1,
     },
     {
-      icon: <MapPin className="h-5 w-5" />,
+      id: "2",
+      icon_name: "MapPin",
       label: "Location",
       value: "Dubai, UAE",
-      color: "from-purple-500 to-pink-500",
+      color_gradient: "from-purple-500 to-pink-500",
+      type: "location",
+      display_order: 2,
     },
     {
-      icon: <Phone className="h-5 w-5" />,
+      id: "3",
+      icon_name: "Phone",
       label: "Phone",
       value: "+971 50 123 4567",
-      color: "from-amber-500 to-orange-500",
+      color_gradient: "from-amber-500 to-orange-500",
+      type: "phone",
+      display_order: 3,
     },
   ]
+
+  const displayContactInfo = contactInfo?.length ? contactInfo : defaultContactInfo
+  const availableForWork = siteSettings?.available_for_work ?? true
 
   return (
       <div className="min-h-screen bg-[#222831] pt-32 overflow-hidden">
@@ -152,50 +192,55 @@ export function ContactContent() {
                   I&apos;m always excited to discuss new projects and creative collaborations.
                 </p>
 
-                <div className="space-y-4">
-                  {contactInfo.map((info, index) => (
-                    <motion.div
-                      key={info.label}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
-                      whileHover={{ x: 4, transition: { duration: 0.2 } }}
-                      className="group flex items-center gap-4 rounded-xl border border-[#393E46]/40 bg-[#393E46]/20 p-4 cursor-pointer transition-all hover:border-[#00ADB5]/30 hover:bg-[#393E46]/40"
-                    >
-                      <div className={`rounded-xl bg-gradient-to-br ${info.color} p-3 shadow-lg`}>
-                        <span className="text-white">{info.icon}</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-medium uppercase tracking-wider text-[#EEEEEE]/40">
-                          {info.label}
-                        </p>
-                        <p className="text-[#EEEEEE] font-medium group-hover:text-[#00ADB5] transition-colors">
-                          {info.value}
-                        </p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-[#EEEEEE]/20 group-hover:text-[#00ADB5] transition-all group-hover:translate-x-1" />
-                    </motion.div>
-                  ))}
+                  <div className="space-y-4">
+                    {displayContactInfo.map((info, index) => {
+                      const Icon = iconMap[info.icon_name] || Mail
+                      return (
+                        <motion.div
+                          key={info.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
+                          whileHover={{ x: 4, transition: { duration: 0.2 } }}
+                          className="group flex items-center gap-4 rounded-xl border border-[#393E46]/40 bg-[#393E46]/20 p-4 cursor-pointer transition-all hover:border-[#00ADB5]/30 hover:bg-[#393E46]/40"
+                        >
+                          <div className={`rounded-xl bg-gradient-to-br ${info.color_gradient} p-3 shadow-lg`}>
+                            <span className="text-white"><Icon className="h-5 w-5" /></span>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-medium uppercase tracking-wider text-[#EEEEEE]/40">
+                              {info.label}
+                            </p>
+                            <p className="text-[#EEEEEE] font-medium group-hover:text-[#00ADB5] transition-colors">
+                              {info.value}
+                            </p>
+                          </div>
+                          <ArrowRight className="h-4 w-4 text-[#EEEEEE]/20 group-hover:text-[#00ADB5] transition-all group-hover:translate-x-1" />
+                        </motion.div>
+                      )
+                    })}
                 </div>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9, duration: 0.5 }}
-                className="rounded-2xl border border-[#393E46]/60 bg-gradient-to-br from-[#00ADB5]/10 to-[#393E46]/30 p-6 backdrop-blur-xl"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
-                    <div className="absolute inset-0 h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+              {availableForWork && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.9, duration: 0.5 }}
+                  className="rounded-2xl border border-[#393E46]/60 bg-gradient-to-br from-[#00ADB5]/10 to-[#393E46]/30 p-6 backdrop-blur-xl"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
+                      <div className="absolute inset-0 h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#EEEEEE]">Available for new projects</p>
+                      <p className="text-sm text-[#EEEEEE]/50">Currently accepting freelance work</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-[#EEEEEE]">Available for new projects</p>
-                    <p className="text-sm text-[#EEEEEE]/50">Currently accepting freelance work</p>
-                  </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

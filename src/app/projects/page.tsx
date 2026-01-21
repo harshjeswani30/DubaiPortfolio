@@ -7,6 +7,8 @@ export const metadata: Metadata = {
   description: "Explore my portfolio of web development projects and applications.",
 }
 
+export const revalidate = 0
+
 export default async function ProjectsPage() {
   const projects = await getProjects()
   const categories = ["All", ...new Set(projects.map((p) => p.category).filter(Boolean))]
