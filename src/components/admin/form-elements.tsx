@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { forwardRef } from "react"
+import { forwardRef, useState } from "react"
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
@@ -255,16 +255,18 @@ interface TagInputProps {
 }
 
 export function AdminTagInput({ label, value, onChange, placeholder, hint }: TagInputProps) {
+  const [inputValue, setInputValue] = useState("")
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault()
-      const input = e.currentTarget
-      const text = input.value.trim()
+      e.stopPropagation()
+      const text = inputValue.trim()
       if (text && !value.includes(text)) {
         onChange([...value, text])
-        input.value = ""
+        setInputValue("")
       }
-    } else if (e.key === "Backspace" && !e.currentTarget.value && value.length > 0) {
+    } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
       onChange(value.slice(0, -1))
     }
   }
@@ -294,6 +296,8 @@ export function AdminTagInput({ label, value, onChange, placeholder, hint }: Tag
         ))}
         <input
           type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
           placeholder={value.length === 0 ? placeholder : "Add more..."}
           onKeyDown={handleKeyDown}
           className="min-w-[120px] flex-1 bg-transparent text-sm text-white placeholder-zinc-500 outline-none"
