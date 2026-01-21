@@ -3,16 +3,29 @@ export interface Project {
   title: string
   slug: string
   description: string
+  content?: string
   tech_stack: string[]
   category: string
   tagline?: string
   tagline_highlight?: string
   featured_image?: string
+  images?: string[]
   live_url?: string
   github_url?: string
   is_featured: boolean
   is_published: boolean
   display_order: number
+  duration?: string
+  client?: string
+  role?: string
+  challenges?: string[]
+  solutions?: string[]
+  results?: string[]
+  testimonial?: {
+    quote: string
+    author: string
+    position: string
+  }
 }
 
 export interface BlogPost {
@@ -35,64 +48,193 @@ export const projects: Project[] = [
     title: "Luxury Real Estate Portal",
     slug: "luxury-real-estate",
     description: "A premium property listing platform for high-end real estate in Dubai with immersive 3D views.",
+    content: "This project involved creating a sophisticated real estate platform tailored for Dubai's luxury property market. The platform features immersive 3D virtual tours, advanced property filtering, and a seamless user experience designed to showcase high-end properties.\n\nThe application leverages Three.js for stunning 3D visualizations, allowing potential buyers to explore properties virtually before scheduling in-person visits. The backend is built with PostgreSQL for robust data management and fast query performance.",
     tech_stack: ["Next.js", "PostgreSQL", "Three.js", "Tailwind CSS"],
     category: "Web Development",
     tagline: "Perfect for luxury",
     tagline_highlight: "living",
     featured_image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&h=800&fit=crop"
+    ],
     live_url: "https://example.com",
     github_url: "https://github.com",
     is_featured: true,
     is_published: true,
     display_order: 1,
+    duration: "4 months",
+    client: "Dubai Properties Group",
+    role: "Lead Developer",
+    challenges: [
+      "Implementing smooth 3D property tours that work across all devices",
+      "Handling large image galleries with optimal loading performance",
+      "Creating an intuitive filtering system for complex property attributes",
+      "Ensuring fast search results with millions of property listings"
+    ],
+    solutions: [
+      "Used Three.js with progressive loading and LOD (Level of Detail) techniques",
+      "Implemented lazy loading with blur placeholders and CDN optimization",
+      "Built a faceted search system with real-time filtering using PostgreSQL",
+      "Created database indexes and implemented Redis caching for search queries"
+    ],
+    results: [
+      "40% increase in user engagement compared to previous platform",
+      "Average session duration increased from 2 to 8 minutes",
+      "Property inquiries increased by 65%",
+      "Page load time reduced to under 2 seconds"
+    ],
+    testimonial: {
+      quote: "The new platform has transformed how we showcase our properties. The 3D tours have been a game-changer for our international clients.",
+      author: "Ahmed Al Maktoum",
+      position: "CEO, Dubai Properties Group"
+    }
   },
   {
     id: "2",
     title: "FinTech Investment Dashboard",
     slug: "fintech-dashboard",
     description: "Real-time portfolio tracking and investment analytics for modern traders and crypto enthusiasts.",
+    content: "A comprehensive investment dashboard that provides real-time portfolio tracking, market analytics, and trading insights. The platform supports both traditional stocks and cryptocurrency assets, offering unified portfolio management.\n\nThe dashboard features advanced charting with D3.js, real-time price updates via WebSocket connections, and AI-powered trading signals to help users make informed decisions.",
     tech_stack: ["React", "D3.js", "Node.js", "Redis"],
     category: "FinTech",
     tagline: "Built for modern",
     tagline_highlight: "traders",
     featured_image: "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1642790106117-e829e14a795f?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1621761191319-c6fb62004040?w=1200&h=800&fit=crop"
+    ],
     live_url: "https://example.com",
     github_url: "https://github.com",
     is_featured: true,
     is_published: true,
     display_order: 2,
+    duration: "6 months",
+    client: "CryptoVest Capital",
+    role: "Full Stack Developer",
+    challenges: [
+      "Processing and displaying real-time data from multiple exchanges",
+      "Building responsive charts that handle millions of data points",
+      "Implementing secure authentication for financial data",
+      "Managing complex state across multiple trading pairs"
+    ],
+    solutions: [
+      "Built a WebSocket aggregation layer with Redis pub/sub for real-time updates",
+      "Implemented D3.js with canvas rendering and data decimation for performance",
+      "Used JWT with refresh tokens and 2FA for enhanced security",
+      "Leveraged Redux Toolkit with normalized state for efficient updates"
+    ],
+    results: [
+      "Supporting 50,000+ concurrent users with real-time updates",
+      "Chart rendering performance improved by 300%",
+      "Zero security incidents since launch",
+      "User retention rate of 85%"
+    ],
+    testimonial: {
+      quote: "This dashboard gives us the edge we need in the fast-paced crypto market. The real-time analytics are incredibly accurate.",
+      author: "Sarah Chen",
+      position: "Head of Trading, CryptoVest Capital"
+    }
   },
   {
     id: "3",
     title: "Smart City IoT Platform",
     slug: "smart-city-iot",
     description: "Centralized monitoring and management for urban infrastructure and IoT sensors in smart cities.",
+    content: "An enterprise-grade IoT platform designed to manage thousands of sensors across urban infrastructure. The system monitors traffic flow, air quality, energy consumption, and public safety in real-time.\n\nBuilt with scalability in mind, the platform uses TimescaleDB for time-series data and MQTT for efficient device communication. The dashboard provides city administrators with actionable insights and automated alerting.",
     tech_stack: ["Python", "FastAPI", "MQTT", "TimescaleDB"],
     category: "IoT / AI",
     tagline: "Powering smart",
     tagline_highlight: "cities",
     featured_image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=1200&h=800&fit=crop"
+    ],
     live_url: "https://example.com",
     github_url: "https://github.com",
     is_featured: true,
     is_published: true,
     display_order: 3,
+    duration: "8 months",
+    client: "Dubai Municipality",
+    role: "Technical Lead",
+    challenges: [
+      "Managing data from 10,000+ IoT sensors simultaneously",
+      "Ensuring 99.99% uptime for critical city infrastructure",
+      "Processing and analyzing terabytes of time-series data",
+      "Building a user-friendly interface for non-technical city staff"
+    ],
+    solutions: [
+      "Implemented MQTT broker clustering with automatic failover",
+      "Deployed on Kubernetes with multi-region redundancy",
+      "Used TimescaleDB with automated data compression and retention policies",
+      "Created intuitive dashboards with drag-and-drop customization"
+    ],
+    results: [
+      "20% reduction in city energy consumption",
+      "Traffic congestion reduced by 35% through smart signal optimization",
+      "Emergency response times improved by 45%",
+      "Platform handling 1M+ data points per minute"
+    ],
+    testimonial: {
+      quote: "This platform has revolutionized how we manage our city's infrastructure. The insights we get are invaluable for planning and operations.",
+      author: "Dr. Mohammed Al Rashid",
+      position: "Director of Smart City Initiative"
+    }
   },
   {
     id: "4",
     title: "AI Healthcare Diagnostics",
     slug: "ai-healthcare",
     description: "Predictive diagnostic tools for medical professionals using advanced machine learning models.",
+    content: "A cutting-edge healthcare platform that leverages AI to assist medical professionals in diagnosing conditions faster and more accurately. The system analyzes medical images, patient history, and lab results to provide diagnostic recommendations.\n\nThe platform integrates with hospital systems via HL7 FHIR standards and provides explainable AI results, helping doctors understand the reasoning behind each recommendation.",
     tech_stack: ["Python", "PyTorch", "Next.js", "MongoDB"],
     category: "Healthcare",
     tagline: "Transforming patient",
     tagline_highlight: "care",
     featured_image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=800&fit=crop",
+    images: [
+      "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=1200&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=1200&h=800&fit=crop"
+    ],
     live_url: "https://example.com",
     github_url: "https://github.com",
     is_featured: false,
     is_published: true,
     display_order: 4,
+    duration: "12 months",
+    client: "Emirates Health Services",
+    role: "ML Engineer & Full Stack Developer",
+    challenges: [
+      "Training accurate models with limited labeled medical data",
+      "Meeting strict healthcare compliance requirements (HIPAA, DHA)",
+      "Integrating with legacy hospital information systems",
+      "Providing explainable AI results for medical professionals"
+    ],
+    solutions: [
+      "Used transfer learning and synthetic data augmentation techniques",
+      "Implemented end-to-end encryption and audit logging for compliance",
+      "Built a flexible adapter layer supporting multiple HL7 FHIR versions",
+      "Integrated SHAP and LIME for model interpretability"
+    ],
+    results: [
+      "Diagnostic accuracy of 94% for supported conditions",
+      "Average diagnosis time reduced by 60%",
+      "Successfully deployed in 15 hospitals across UAE",
+      "Processing 10,000+ diagnostic requests daily"
+    ],
+    testimonial: {
+      quote: "The AI diagnostic tool has become an essential part of our workflow. It helps us catch conditions we might have missed and confirms our diagnoses.",
+      author: "Dr. Fatima Hassan",
+      position: "Chief Medical Officer, Emirates Health Services"
+    }
   },
 ]
 

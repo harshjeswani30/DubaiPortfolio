@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react"
 import { motion, useScroll, useTransform, useSpring, useInView, useMotionValue, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, ExternalLink, Github, Layers, Code2, Trophy, Eye, ArrowUpRight, Calendar, Clock, Zap, Target, CheckCircle2, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, ExternalLink, Github, Layers, Code2, Trophy, Eye, ArrowUpRight, Calendar, Clock, Zap, Target, CheckCircle2, X, ChevronLeft, ChevronRight, Quote, Briefcase, User, AlertCircle, Lightbulb, TrendingUp } from "lucide-react"
 import { usePageTransition } from "@/components/providers/page-transition-provider"
 
 interface Project {
@@ -20,6 +20,17 @@ interface Project {
   live_url?: string
   github_url?: string
   created_at?: string
+  duration?: string
+  client?: string
+  role?: string
+  challenges?: string[]
+  solutions?: string[]
+  results?: string[]
+  testimonial?: {
+    quote: string
+    author: string
+    position: string
+  }
 }
 
 function ParallaxImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
@@ -487,95 +498,148 @@ return (
           </motion.div>
         </section>
 
-        <section ref={contentRef} className="relative bg-[#222831] py-24 lg:py-32">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -right-40 top-0 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-[#00ADB5]/5 to-transparent blur-[100px]" />
-            <div className="absolute -left-40 bottom-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-[#393E46]/10 to-transparent blur-[80px]" />
-            <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='%23393E46' fill-opacity='0.1'/%3E%3C/svg%3E\")" }} />
-          </div>
+          <section ref={contentRef} className="relative bg-[#222831] py-24 lg:py-32">
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute -right-40 top-0 h-[500px] w-[500px] rounded-full bg-gradient-to-br from-[#00ADB5]/5 to-transparent blur-[100px]" />
+              <div className="absolute -left-40 bottom-0 h-[400px] w-[400px] rounded-full bg-gradient-to-tr from-[#393E46]/10 to-transparent blur-[80px]" />
+              <div className="absolute inset-0 opacity-50" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='30' height='30' viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='%23393E46' fill-opacity='0.1'/%3E%3C/svg%3E\")" }} />
+            </div>
 
-          <div className="relative mx-auto max-w-6xl px-6 lg:px-12">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={isContentInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-24"
-            >
-              <div className="flex items-center gap-4 mb-8">
-                <motion.div 
-                  className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
-                  initial={{ scaleY: 0 }}
-                  animate={isContentInView ? { scaleY: 1 } : {}}
-                  transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                />
-                <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Technologies Used</h2>
-              </div>
-
-              <div className="flex flex-wrap gap-4">
-                {project.tech_stack.map((tech, i) => (
-                  <motion.div
-                    key={tech}
-                    initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                    animate={isContentInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-                    transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    <MagneticCard className="perspective-1000">
+            <div className="relative mx-auto max-w-6xl px-6 lg:px-12">
+              {(project.client || project.role || project.duration) && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-16"
+                >
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {project.client && (
                       <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#393E46]/10 px-6 py-4 backdrop-blur-sm transition-all hover:border-[#00ADB5]/40 hover:shadow-lg hover:shadow-[#00ADB5]/5"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.1 }}
+                        className="rounded-2xl border border-[#393E46]/40 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6"
                       >
-                        <span className="text-base font-medium text-[#EEEEEE]/90">{tech}</span>
+                        <div className="flex items-center gap-3 mb-2">
+                          <Briefcase className="h-5 w-5 text-[#00ADB5]" />
+                          <span className="text-xs font-semibold text-[#EEEEEE]/50 uppercase tracking-wider">Client</span>
+                        </div>
+                        <p className="text-lg font-semibold text-[#EEEEEE]">{project.client}</p>
                       </motion.div>
-                    </MagneticCard>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
-            {project.featured_image && (
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-24"
-              >
-                <MagneticCard className="perspective-1000">
-                  <div className="group relative overflow-hidden rounded-3xl border border-[#393E46]/40 bg-[#2a2f38]/50 p-2 shadow-2xl shadow-black/20">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/5 via-transparent to-[#393E46]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-[#00ADB5]/20 via-transparent to-[#393E46]/20 opacity-0 blur transition-opacity duration-500 group-hover:opacity-100" />
-                    <div className="relative aspect-video overflow-hidden rounded-2xl">
-                      <Image
-                        src={project.featured_image}
-                        alt={project.title}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    </div>
+                    )}
+                    {project.role && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.15 }}
+                        className="rounded-2xl border border-[#393E46]/40 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <User className="h-5 w-5 text-[#00ADB5]" />
+                          <span className="text-xs font-semibold text-[#EEEEEE]/50 uppercase tracking-wider">My Role</span>
+                        </div>
+                        <p className="text-lg font-semibold text-[#EEEEEE]">{project.role}</p>
+                      </motion.div>
+                    )}
+                    {project.duration && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.2 }}
+                        className="rounded-2xl border border-[#393E46]/40 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6"
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <Clock className="h-5 w-5 text-[#00ADB5]" />
+                          <span className="text-xs font-semibold text-[#EEEEEE]/50 uppercase tracking-wider">Duration</span>
+                        </div>
+                        <p className="text-lg font-semibold text-[#EEEEEE]">{project.duration}</p>
+                      </motion.div>
+                    )}
                   </div>
-                </MagneticCard>
-              </motion.div>
-            )}
+                </motion.div>
+              )}
 
-            {project.content && (
               <motion.div
-                ref={featuresRef}
                 initial={{ opacity: 0, y: 40 }}
-                animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.3, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 className="mb-24"
               >
                 <div className="flex items-center gap-4 mb-8">
                   <motion.div 
                     className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
                     initial={{ scaleY: 0 }}
-                    animate={isFeaturesInView ? { scaleY: 1 } : {}}
+                    animate={isContentInView ? { scaleY: 1 } : {}}
                     transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                   />
-                  <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">About This Project</h2>
+                  <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Technologies Used</h2>
                 </div>
 
-                <div className="grid gap-8 lg:grid-cols-2">
+                <div className="flex flex-wrap gap-4">
+                  {project.tech_stack.map((tech, i) => (
+                    <motion.div
+                      key={tech}
+                      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                      animate={isContentInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+                      transition={{ delay: 0.1 + i * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <MagneticCard className="perspective-1000">
+                        <motion.div
+                          whileHover={{ scale: 1.05 }}
+                          className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 to-[#393E46]/10 px-6 py-4 backdrop-blur-sm transition-all hover:border-[#00ADB5]/40 hover:shadow-lg hover:shadow-[#00ADB5]/5"
+                        >
+                          <span className="text-base font-medium text-[#EEEEEE]/90">{tech}</span>
+                        </motion.div>
+                      </MagneticCard>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+
+              {project.featured_image && (
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={isContentInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <MagneticCard className="perspective-1000">
+                    <div className="group relative overflow-hidden rounded-3xl border border-[#393E46]/40 bg-[#2a2f38]/50 p-2 shadow-2xl shadow-black/20">
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/5 via-transparent to-[#393E46]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-[#00ADB5]/20 via-transparent to-[#393E46]/20 opacity-0 blur transition-opacity duration-500 group-hover:opacity-100" />
+                      <div className="relative aspect-video overflow-hidden rounded-2xl">
+                        <Image
+                          src={project.featured_image}
+                          alt={project.title}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                      </div>
+                    </div>
+                  </MagneticCard>
+                </motion.div>
+              )}
+
+              {project.content && (
+                <motion.div
+                  ref={featuresRef}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.3, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <motion.div 
+                      className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                      initial={{ scaleY: 0 }}
+                      animate={isFeaturesInView ? { scaleY: 1 } : {}}
+                      transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                    <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">About This Project</h2>
+                  </div>
+
                   <div className="space-y-6">
                     {project.content.split('\n\n').map((paragraph, i) => (
                       <motion.p
@@ -583,124 +647,216 @@ return (
                         initial={{ opacity: 0, y: 20 }}
                         animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
                         transition={{ delay: 0.4 + i * 0.1, duration: 0.6 }}
-                        className="text-lg text-[#EEEEEE]/65 leading-relaxed"
+                        className="text-lg text-[#EEEEEE]/65 leading-relaxed max-w-4xl"
                       >
                         {paragraph}
                       </motion.p>
                     ))}
                   </div>
+                </motion.div>
+              )}
 
-                  <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={isFeaturesInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ delay: 0.5, duration: 0.7 }}
-                    className="space-y-4"
-                  >
-                    {[
-                      { label: "Category", value: project.category },
-                      { label: "Tech Stack", value: project.tech_stack.slice(0, 3).join(", ") },
-                      { label: "Status", value: "Completed" },
-                    ].map((item, i) => (
-                      <div key={item.label} className="flex items-center justify-between rounded-xl border border-[#393E46]/30 bg-[#393E46]/10 p-4">
-                        <span className="text-sm text-[#EEEEEE]/50">{item.label}</span>
-                        <span className="font-medium text-[#EEEEEE]">{item.value}</span>
-                      </div>
-                    ))}
+              {project.challenges && project.challenges.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <motion.div 
+                      className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                      initial={{ scaleY: 0 }}
+                      animate={isFeaturesInView ? { scaleY: 1 } : {}}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                    />
+                    <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Challenges & Solutions</h2>
+                  </div>
 
-                    <div className="mt-6 rounded-2xl border border-[#00ADB5]/20 bg-gradient-to-br from-[#00ADB5]/10 to-transparent p-6">
-                      <div className="flex items-center gap-3 mb-3">
-                          <Trophy className="h-5 w-5 text-[#00ADB5]" />
-                        <span className="font-semibold text-[#EEEEEE]">Key Highlights</span>
+                  <div className="grid gap-6 lg:grid-cols-2">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10">
+                          <AlertCircle className="h-5 w-5 text-red-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-[#EEEEEE]">Challenges</h3>
                       </div>
-                      <ul className="space-y-2">
-                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
-                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
-                          <span>Responsive Design</span>
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
-                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
-                          <span>Modern Architecture</span>
-                        </li>
-                        <li className="flex items-center gap-2 text-sm text-[#EEEEEE]/60">
-                          <CheckCircle2 className="h-4 w-4 text-[#00ADB5]" />
-                          <span>Performance Optimized</span>
-                        </li>
-                      </ul>
+                      {project.challenges.map((challenge, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={isFeaturesInView ? { opacity: 1, x: 0 } : {}}
+                          transition={{ delay: 0.5 + i * 0.1 }}
+                          className="flex gap-3 rounded-xl border border-[#393E46]/30 bg-[#393E46]/10 p-4"
+                        >
+                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500/20 text-xs font-bold text-red-400">
+                            {i + 1}
+                          </span>
+                          <p className="text-sm text-[#EEEEEE]/70">{challenge}</p>
+                        </motion.div>
+                      ))}
                     </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
 
-            {allImages.length > 0 && (
-              <motion.div
-                ref={galleryRef}
-                initial={{ opacity: 0, y: 40 }}
-                animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                className="mb-24"
-              >
-                <div className="flex items-center gap-4 mb-8">
-                  <motion.div 
-                    className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
-                    initial={{ scaleY: 0 }}
-                    animate={isGalleryInView ? { scaleY: 1 } : {}}
-                    transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  />
-                  <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Project Gallery</h2>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  {allImages.map((image, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
-                      transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
-                      whileHover={{ scale: 1.02, y: -5 }}
-                      onClick={() => setLightboxIndex(i)}
-                      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[#393E46]/40 bg-[#2a2f38]/50 shadow-lg transition-all hover:border-[#00ADB5]/30 hover:shadow-xl hover:shadow-[#00ADB5]/5"
-                    >
-                      <div className="aspect-video relative">
-                        <Image
-                          src={image}
-                          alt={`${project.title} screenshot ${i + 1}`}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00ADB5]/90 text-[#222831]">
-                            <Eye className="h-6 w-6" />
+                    {project.solutions && project.solutions.length > 0 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                            <Lightbulb className="h-5 w-5 text-[#00ADB5]" />
                           </div>
+                          <h3 className="text-lg font-semibold text-[#EEEEEE]">Solutions</h3>
+                        </div>
+                        {project.solutions.map((solution, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={isFeaturesInView ? { opacity: 1, x: 0 } : {}}
+                            transition={{ delay: 0.6 + i * 0.1 }}
+                            className="flex gap-3 rounded-xl border border-[#00ADB5]/20 bg-[#00ADB5]/5 p-4"
+                          >
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#00ADB5]/20 text-xs font-bold text-[#00ADB5]">
+                              {i + 1}
+                            </span>
+                            <p className="text-sm text-[#EEEEEE]/70">{solution}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              )}
+
+              {project.results && project.results.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.5, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <motion.div 
+                      className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                      initial={{ scaleY: 0 }}
+                      animate={isFeaturesInView ? { scaleY: 1 } : {}}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                    />
+                    <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Results & Impact</h2>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {project.results.map((result, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.6 + i * 0.1 }}
+                        className="flex items-start gap-4 rounded-2xl border border-[#393E46]/40 bg-gradient-to-br from-[#393E46]/20 to-transparent p-5"
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                          <TrendingUp className="h-5 w-5 text-[#00ADB5]" />
+                        </div>
+                        <p className="text-[#EEEEEE]/80 font-medium">{result}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              {project.testimonial && (
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isFeaturesInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <div className="relative rounded-3xl border border-[#00ADB5]/20 bg-gradient-to-br from-[#00ADB5]/10 via-[#00ADB5]/5 to-transparent p-8 md:p-12">
+                    <Quote className="absolute top-6 left-6 h-12 w-12 text-[#00ADB5]/20" />
+                    <div className="relative">
+                      <p className="text-xl md:text-2xl text-[#EEEEEE]/80 leading-relaxed italic mb-6">
+                        &ldquo;{project.testimonial.quote}&rdquo;
+                      </p>
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-[#00ADB5] to-[#00ADB5]/50 flex items-center justify-center text-[#222831] font-bold text-lg">
+                          {project.testimonial.author.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-[#EEEEEE]">{project.testimonial.author}</p>
+                          <p className="text-sm text-[#EEEEEE]/50">{project.testimonial.position}</p>
                         </div>
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={isGalleryInView || isContentInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex flex-col items-center gap-6"
-            >
-              <div className="h-px w-full max-w-xs bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
-              
-              <motion.button
-                onClick={handleBack}
-                whileHover={{ scale: 1.03, x: -5 }}
-                whileTap={{ scale: 0.98 }}
-                className="group inline-flex items-center gap-4 rounded-2xl border border-[#393E46]/60 bg-[#2a2f38]/50 px-8 py-4 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
+              {allImages.length > 0 && (
+                <motion.div
+                  ref={galleryRef}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="mb-24"
+                >
+                  <div className="flex items-center gap-4 mb-8">
+                    <motion.div 
+                      className="h-12 w-1 rounded-full bg-gradient-to-b from-[#00ADB5] to-[#00ADB5]/30"
+                      initial={{ scaleY: 0 }}
+                      animate={isGalleryInView ? { scaleY: 1 } : {}}
+                      transition={{ delay: 0.2, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    />
+                    <h2 className="text-sm font-semibold text-[#00ADB5] uppercase tracking-widest">Project Gallery</h2>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {allImages.map((image, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={isGalleryInView ? { opacity: 1, y: 0 } : {}}
+                        transition={{ delay: 0.5 + i * 0.1, duration: 0.5 }}
+                        whileHover={{ scale: 1.02, y: -5 }}
+                        onClick={() => setLightboxIndex(i)}
+                        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[#393E46]/40 bg-[#2a2f38]/50 shadow-lg transition-all hover:border-[#00ADB5]/30 hover:shadow-xl hover:shadow-[#00ADB5]/5"
+                      >
+                        <div className="aspect-video relative">
+                          <Image
+                            src={image}
+                            alt={`${project.title} screenshot ${i + 1}`}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#222831]/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#00ADB5]/90 text-[#222831]">
+                              <Eye className="h-6 w-6" />
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={isGalleryInView || isContentInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="flex flex-col items-center gap-6"
               >
-                <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
-                <span className="font-semibold">{backLabel}</span>
-              </motion.button>
-            </motion.div>
-          </div>
-        </section>
+                <div className="h-px w-full max-w-xs bg-gradient-to-r from-transparent via-[#393E46] to-transparent" />
+                
+                <motion.button
+                  onClick={handleBack}
+                  whileHover={{ scale: 1.03, x: -5 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group inline-flex items-center gap-4 rounded-2xl border border-[#393E46]/60 bg-[#2a2f38]/50 px-8 py-4 text-[#EEEEEE] backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/40"
+                >
+                  <ArrowLeft className="h-5 w-5 transition-transform group-hover:-translate-x-1" />
+                  <span className="font-semibold">{backLabel}</span>
+                </motion.button>
+              </motion.div>
+            </div>
+          </section>
       </motion.div>
     </div>
   )
