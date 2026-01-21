@@ -192,35 +192,36 @@ export function FloatingNav() {
                   animate={{ opacity: 1, scale: 1 }}
                   whileHover={{ scale: 1.02 }}
                   className="relative cursor-pointer flex items-center"
-                  style={{ height: '46px', width: '158px' }}
+                  style={{ height: '46px', width: '148px' }}
                 >
-                  <div 
-                    className="absolute rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
-                    style={{
-                      width: '158px',
-                      height: '46px',
-                      left: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingLeft: '52px',
-                    }}
+                  <svg 
+                    width="148" 
+                    height="46" 
+                    viewBox="0 0 226 70" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute inset-0"
+                    style={{ filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))' }}
                   >
-                    <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE]">PORTFOLIO</span>
-                  </div>
-                  <div 
-                    className="absolute rounded-full bg-[#222831] flex items-center justify-center"
-                    style={{
-                      width: '46px',
-                      height: '46px',
-                      left: 0,
-                      zIndex: 10,
-                      borderTop: '1px solid rgba(57, 62, 70, 0.5)',
-                      borderBottom: '1px solid rgba(57, 62, 70, 0.5)',
-                      borderLeft: '1px solid rgba(57, 62, 70, 0.5)',
-                      borderRight: 'none',
-                    }}
-                  >
-                    <Code2 className="h-6 w-6 text-[#00ADB5]" />
+                    <path 
+                      d="M216 0C221.523 9.34173e-07 226 4.47715 226 10V60C226 65.5228 221.523 70 216 70H77C71.4772 70 67 65.5228 67 60V49.1934C61.5552 61.4508 49.2769 70 35 70C15.67 70 0 54.33 0 35C0 15.67 15.67 0 35 0C49.2766 0 61.555 8.54863 67 20.8057V10C67 4.47715 71.4772 2.93942e-07 77 0H216Z" 
+                      fill="rgba(34, 40, 49, 0.9)"
+                      stroke="rgba(57, 62, 70, 0.5)"
+                      strokeWidth="1"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center" style={{ backdropFilter: 'blur(12px)' }}>
+                    <div 
+                      className="flex items-center justify-center"
+                      style={{
+                        width: '46px',
+                        height: '46px',
+                        marginLeft: '-2px',
+                      }}
+                    >
+                      <Code2 className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE] ml-1">PORTFOLIO</span>
                   </div>
                 </motion.div>
               </Link>
