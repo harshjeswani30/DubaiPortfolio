@@ -260,12 +260,19 @@ export function AboutContent() {
           width: 100vw;
         }
 
-          .content--inital {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0;
-            position: relative;
-          }
+            .content--inital {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 0;
+              position: relative;
+              height: 100vh;
+            }
+
+            .content--inital .one {
+              width: 100%;
+              height: 100%;
+              max-height: 100vh;
+            }
 
           .intro-content {
             position: absolute;
