@@ -132,41 +132,67 @@ export function AboutContent() {
         })
       }
 
-        const animateIntroContent = () => {
-          const introContent = document.querySelector(".intro-content")
-          if (introContent) {
-            gsap.fromTo(
-              introContent,
-              { opacity: 1, x: 0 },
-              {
-                opacity: 0,
-                x: 100,
-                ease: "power2.inOut",
-                scrollTrigger: {
-                  trigger: ".content--inital",
-                  start: "top top",
-                  end: "bottom top",
-                  scrub: 0.5,
-                },
-              }
-            )
-            gsap.fromTo(
-              ".intro-line",
-              { scaleX: 1 },
-              {
-                scaleX: 0,
-                ease: "power2.inOut",
-                stagger: 0.05,
-                scrollTrigger: {
-                  trigger: ".content--inital",
-                  start: "top top",
-                  end: "50% top",
-                  scrub: 0.5,
-                },
-              }
-            )
+          const animateIntroContent = () => {
+            const introContent = document.querySelector(".intro-content")
+            if (introContent) {
+              gsap.fromTo(
+                ".intro-eyebrow",
+                { opacity: 0, y: 30, filter: "blur(10px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power2.out", delay: 0.2 }
+              )
+              gsap.fromTo(
+                ".intro-title",
+                { opacity: 0, y: 40, filter: "blur(15px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 1, ease: "power2.out", delay: 0.4 }
+              )
+              gsap.fromTo(
+                ".intro-description",
+                { opacity: 0, y: 30, filter: "blur(10px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.8, ease: "power2.out", delay: 0.6 }
+              )
+              gsap.fromTo(
+                ".intro-stat",
+                { opacity: 0, y: 20, filter: "blur(8px)" },
+                { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.6, ease: "power2.out", stagger: 0.15, delay: 0.8 }
+              )
+              gsap.fromTo(
+                ".intro-decorative-circle",
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 1.2, ease: "power2.out", delay: 0.5 }
+              )
+
+              gsap.fromTo(
+                introContent,
+                { opacity: 1, x: 0 },
+                {
+                  opacity: 0,
+                  x: 100,
+                  ease: "power2.inOut",
+                  scrollTrigger: {
+                    trigger: ".content--inital",
+                    start: "top top",
+                    end: "bottom top",
+                    scrub: 0.5,
+                  },
+                }
+              )
+              gsap.fromTo(
+                ".intro-line",
+                { scaleX: 1 },
+                {
+                  scaleX: 0,
+                  ease: "power2.inOut",
+                  stagger: 0.05,
+                  scrollTrigger: {
+                    trigger: ".content--inital",
+                    start: "top top",
+                    end: "50% top",
+                    scrub: 0.5,
+                  },
+                }
+              )
+            }
           }
-        }
 
           preloadImages(".one, .content__img").then(() => {
             document.body.classList.remove("loading")
@@ -293,123 +319,153 @@ export function AboutContent() {
           }
 
           .intro-eyebrow {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-          }
+              display: flex;
+              align-items: center;
+              gap: 1rem;
+              margin-bottom: 1.5rem;
+              opacity: 0;
+            }
 
-          .intro-line {
-            height: 1px;
-            width: 60px;
-            background: var(--color-accent);
-            transform-origin: left;
-          }
+            .intro-line {
+              height: 1px;
+              width: 60px;
+              background: var(--color-accent);
+              transform-origin: left;
+            }
 
-          .intro-eyebrow-text {
-            font-size: 0.75rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            color: var(--color-accent);
-            font-weight: 500;
-          }
+            .intro-eyebrow-text {
+              font-size: 0.75rem;
+              letter-spacing: 0.3em;
+              text-transform: uppercase;
+              color: var(--color-accent);
+              font-weight: 500;
+            }
 
-          .intro-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 300;
-            line-height: 1.1;
-            margin-bottom: 2rem;
-            color: var(--color-title);
-          }
+            .intro-title {
+              font-size: clamp(2.5rem, 5vw, 4rem);
+              font-weight: 300;
+              line-height: 1.1;
+              margin-bottom: 2rem;
+              color: var(--color-title);
+              opacity: 0;
+            }
 
-          .intro-title-highlight {
-            display: block;
-            font-weight: 600;
-            background: linear-gradient(135deg, var(--color-accent) 0%, #00d4de 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-          }
+            .intro-title-highlight {
+              display: block;
+              font-weight: 600;
+              background: linear-gradient(135deg, var(--color-accent) 0%, #00d4de 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            }
 
-          .intro-description {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: rgba(238, 238, 238, 0.7);
-            margin-bottom: 2.5rem;
-            max-width: 400px;
-          }
+            .intro-description {
+              font-size: 1rem;
+              line-height: 1.8;
+              color: rgba(238, 238, 238, 0.7);
+              margin-bottom: 2.5rem;
+              max-width: 400px;
+              opacity: 0;
+            }
 
-          .intro-stats {
-            display: flex;
-            gap: 3rem;
-          }
+            .intro-stats {
+              display: flex;
+              gap: 3rem;
+            }
 
-          .intro-stat {
-            display: flex;
-            flex-direction: column;
-          }
+            .intro-stat {
+              display: flex;
+              flex-direction: column;
+              opacity: 0;
+            }
 
-          .intro-stat-number {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--color-accent);
-            line-height: 1;
-          }
+            .intro-stat-number {
+              font-size: 2.5rem;
+              font-weight: 600;
+              color: var(--color-accent);
+              line-height: 1;
+            }
 
-          .intro-stat-label {
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: rgba(238, 238, 238, 0.5);
-            margin-top: 0.5rem;
-          }
+            .intro-stat-label {
+              font-size: 0.75rem;
+              letter-spacing: 0.1em;
+              text-transform: uppercase;
+              color: rgba(238, 238, 238, 0.5);
+              margin-top: 0.5rem;
+            }
 
-          .intro-scroll-indicator {
-            position: absolute;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            color: rgba(238, 238, 238, 0.4);
-            font-size: 0.7rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-          }
+            .intro-scroll-indicator {
+              position: absolute;
+              bottom: 3rem;
+              left: 50%;
+              transform: translateX(-50%);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.5rem;
+              color: rgba(238, 238, 238, 0.4);
+              font-size: 0.7rem;
+              letter-spacing: 0.2em;
+              text-transform: uppercase;
+            }
 
-          .intro-scroll-line {
-            width: 1px;
-            height: 40px;
-            background: linear-gradient(to bottom, var(--color-accent), transparent);
-            animation: scrollPulse 2s ease-in-out infinite;
-          }
+            .intro-scroll-line {
+              width: 1px;
+              height: 40px;
+              background: linear-gradient(to bottom, var(--color-accent), transparent);
+              animation: scrollPulse 2s ease-in-out infinite;
+            }
 
-          @keyframes scrollPulse {
-            0%, 100% { transform: scaleY(1); opacity: 1; }
-            50% { transform: scaleY(0.5); opacity: 0.5; }
-          }
+            @keyframes scrollPulse {
+              0%, 100% { transform: scaleY(1); opacity: 1; }
+              50% { transform: scaleY(0.5); opacity: 0.5; }
+            }
 
-          .intro-decorative-circle {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 1px solid rgba(0, 173, 181, 0.1);
-            border-radius: 50%;
-            right: -100px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none;
-          }
+            .intro-decorative-circle {
+              position: absolute;
+              width: 300px;
+              height: 300px;
+              right: -100px;
+              top: 50%;
+              transform: translateY(-50%);
+              pointer-events: none;
+              opacity: 0;
+            }
 
-          .intro-decorative-circle::before {
-            content: '';
-            position: absolute;
-            inset: 30px;
-            border: 1px solid rgba(0, 173, 181, 0.15);
-            border-radius: 50%;
-          }
+            .intro-circle-svg {
+              width: 100%;
+              height: 100%;
+              animation: rotateCircle 25s linear infinite;
+            }
+
+            .circle-outer {
+              fill: none;
+              stroke: rgba(0, 173, 181, 0.15);
+              stroke-width: 1;
+            }
+
+            .circle-middle {
+              fill: none;
+              stroke: rgba(0, 173, 181, 0.2);
+              stroke-width: 1;
+              stroke-dasharray: 10 5;
+            }
+
+            .circle-inner {
+              fill: none;
+              stroke: rgba(0, 173, 181, 0.25);
+              stroke-width: 1;
+            }
+
+            .circle-dot {
+              fill: var(--color-accent);
+              opacity: 0.6;
+            }
+
+            @keyframes rotateCircle {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+            }
 
           @media screen and (max-width: 53em) {
             .intro-content {
@@ -678,7 +734,17 @@ export function AboutContent() {
                     <span className="intro-stat-label">Clients</span>
                   </div>
                 </div>
-                <div className="intro-decorative-circle" />
+                                <div className="intro-decorative-circle">
+                  <svg viewBox="0 0 300 300" className="intro-circle-svg">
+                    <circle cx="150" cy="150" r="145" className="circle-outer" />
+                    <circle cx="150" cy="150" r="115" className="circle-middle" />
+                    <circle cx="150" cy="150" r="85" className="circle-inner" />
+                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(140px, 0)' }} />
+                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(-140px, 0)' }} />
+                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(0, 140px)' }} />
+                    <circle cx="150" cy="150" r="4" className="circle-dot" style={{ transform: 'translate(0, -140px)' }} />
+                  </svg>
+                </div>
               </div>
               <div className="intro-scroll-indicator">
                 <span>Scroll</span>
