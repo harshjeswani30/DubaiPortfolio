@@ -129,14 +129,51 @@ export function AboutContent() {
         })
       }
 
-      preloadImages(".one, .content__img").then(() => {
-        document.body.classList.remove("loading")
-        createFlipOnScrollAnimation()
-        animateSpansOnScroll()
-        animateImagesOnScroll()
-        addParallaxToColumnImages()
-        window.addEventListener("resize", createFlipOnScrollAnimation)
-      })
+        const animateIntroContent = () => {
+          const introContent = document.querySelector(".intro-content")
+          if (introContent) {
+            gsap.fromTo(
+              introContent,
+              { opacity: 1, x: 0 },
+              {
+                opacity: 0,
+                x: 100,
+                ease: "power2.inOut",
+                scrollTrigger: {
+                  trigger: ".content--inital",
+                  start: "top top",
+                  end: "bottom top",
+                  scrub: 0.5,
+                },
+              }
+            )
+            gsap.fromTo(
+              ".intro-line",
+              { scaleX: 1 },
+              {
+                scaleX: 0,
+                ease: "power2.inOut",
+                stagger: 0.05,
+                scrollTrigger: {
+                  trigger: ".content--inital",
+                  start: "top top",
+                  end: "50% top",
+                  scrub: 0.5,
+                },
+              }
+            )
+          }
+        }
+
+        preloadImages(".one, .content__img").then(() => {
+          document.body.classList.remove("loading")
+          createFlipOnScrollAnimation()
+          animateSpansOnScroll()
+          animateImagesOnScroll()
+          addParallaxToColumnImages()
+          animateIntroContent()
+          window.addEventListener("resize", createFlipOnScrollAnimation)
+        })
 
       cleanup = () => {
         flipCtx && flipCtx.revert()
@@ -223,7 +260,164 @@ export function AboutContent() {
           width: 100vw;
         }
 
-        .content {
+          .content--inital {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            position: relative;
+          }
+
+          .intro-content {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 45%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            background: linear-gradient(90deg, transparent 0%, rgba(34, 40, 49, 0.95) 20%);
+            z-index: 20;
+          }
+
+          .intro-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+          }
+
+          .intro-line {
+            height: 1px;
+            width: 60px;
+            background: var(--color-accent);
+            transform-origin: left;
+          }
+
+          .intro-eyebrow-text {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--color-accent);
+            font-weight: 500;
+          }
+
+          .intro-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: var(--color-title);
+          }
+
+          .intro-title-highlight {
+            display: block;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--color-accent) 0%, #00d4de 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+          }
+
+          .intro-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(238, 238, 238, 0.7);
+            margin-bottom: 2.5rem;
+            max-width: 400px;
+          }
+
+          .intro-stats {
+            display: flex;
+            gap: 3rem;
+          }
+
+          .intro-stat {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .intro-stat-number {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            line-height: 1;
+          }
+
+          .intro-stat-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(238, 238, 238, 0.5);
+            margin-top: 0.5rem;
+          }
+
+          .intro-scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(238, 238, 238, 0.4);
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+          }
+
+          .intro-scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-accent), transparent);
+            animation: scrollPulse 2s ease-in-out infinite;
+          }
+
+          @keyframes scrollPulse {
+            0%, 100% { transform: scaleY(1); opacity: 1; }
+            50% { transform: scaleY(0.5); opacity: 0.5; }
+          }
+
+          .intro-decorative-circle {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(0, 173, 181, 0.1);
+            border-radius: 50%;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+          }
+
+          .intro-decorative-circle::before {
+            content: '';
+            position: absolute;
+            inset: 30px;
+            border: 1px solid rgba(0, 173, 181, 0.15);
+            border-radius: 50%;
+          }
+
+          @media screen and (max-width: 53em) {
+            .intro-content {
+              width: 100%;
+              background: linear-gradient(0deg, rgba(34, 40, 49, 0.98) 0%, rgba(34, 40, 49, 0.8) 100%);
+              padding: 2rem;
+            }
+            .intro-stats {
+              gap: 2rem;
+            }
+            .intro-stat-number {
+              font-size: 2rem;
+            }
+            .intro-decorative-circle {
+              display: none;
+            }
+          }
+
+          .content {
           display: grid;
           align-items: center;
           justify-content: center;
@@ -437,15 +631,49 @@ export function AboutContent() {
 
       <div className="about-page-wrapper">
         <main ref={mainRef} className="about-main">
-          <section className="content content--inital">
-            <div
-              className="one"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
-              }}
-            />
-          </section>
+            <section className="content content--inital">
+              <div
+                className="one"
+                style={{
+                  backgroundImage:
+                    "url(https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1200)",
+                }}
+              />
+              <div className="intro-content">
+                <div className="intro-eyebrow">
+                  <span className="intro-line" />
+                  <span className="intro-eyebrow-text">Welcome</span>
+                  <span className="intro-line" />
+                </div>
+                <h2 className="intro-title">
+                  Creating Digital
+                  <span className="intro-title-highlight">Experiences</span>
+                </h2>
+                <p className="intro-description">
+                  Passionate about transforming ideas into elegant, functional solutions. 
+                  I craft modern web experiences that blend aesthetics with performance.
+                </p>
+                <div className="intro-stats">
+                  <div className="intro-stat">
+                    <span className="intro-stat-number">5+</span>
+                    <span className="intro-stat-label">Years Exp</span>
+                  </div>
+                  <div className="intro-stat">
+                    <span className="intro-stat-number">50+</span>
+                    <span className="intro-stat-label">Projects</span>
+                  </div>
+                  <div className="intro-stat">
+                    <span className="intro-stat-number">30+</span>
+                    <span className="intro-stat-label">Clients</span>
+                  </div>
+                </div>
+                <div className="intro-decorative-circle" />
+              </div>
+              <div className="intro-scroll-indicator">
+                <span>Scroll</span>
+                <div className="intro-scroll-line" />
+              </div>
+            </section>
 
           <section className="content content--center content--blend">
             <div data-step className="content__img" />
