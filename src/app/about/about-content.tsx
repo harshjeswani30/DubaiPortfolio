@@ -10,6 +10,8 @@ export function AboutContent() {
     let cleanup: (() => void) | null = null
     let checkInterval: NodeJS.Timeout | null = null
 
+    window.scrollTo(0, 0)
+
     const initAnimation = () => {
       const gsap = (window as any).gsap
       const ScrollTrigger = (window as any).ScrollTrigger
@@ -21,8 +23,9 @@ export function AboutContent() {
         return false
       }
 
-      ScrollTrigger.getAll().forEach((t: any) => t.kill())
-      gsap.registerPlugin(ScrollTrigger, Flip)
+        ScrollTrigger.getAll().forEach((t: any) => t.kill())
+        ScrollTrigger.clearScrollMemory()
+        gsap.registerPlugin(ScrollTrigger, Flip)
 
       const lenis = new Lenis({ lerp: 0.1 })
       lenis.on("scroll", ScrollTrigger.update)
@@ -165,15 +168,16 @@ export function AboutContent() {
           }
         }
 
-        preloadImages(".one, .content__img").then(() => {
-          document.body.classList.remove("loading")
-          createFlipOnScrollAnimation()
-          animateSpansOnScroll()
-          animateImagesOnScroll()
-          addParallaxToColumnImages()
-          animateIntroContent()
-          window.addEventListener("resize", createFlipOnScrollAnimation)
-        })
+          preloadImages(".one, .content__img").then(() => {
+            document.body.classList.remove("loading")
+            createFlipOnScrollAnimation()
+            animateSpansOnScroll()
+            animateImagesOnScroll()
+            addParallaxToColumnImages()
+            animateIntroContent()
+            window.addEventListener("resize", createFlipOnScrollAnimation)
+            ScrollTrigger.refresh()
+          })
 
       cleanup = () => {
         flipCtx && flipCtx.revert()
