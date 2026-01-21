@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import { Github, Linkedin, Twitter, Mail, ArrowUp, Heart, Code2 } from "lucide-react"
 
@@ -19,6 +20,12 @@ const footerLinks = [
 ]
 
 export function Footer() {
+  const pathname = usePathname()
+  
+  if (pathname?.startsWith("/admin")) {
+    return null
+  }
+  
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }

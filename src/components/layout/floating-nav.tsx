@@ -143,6 +143,7 @@ export function FloatingNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
   const { scrollY } = useScroll()
+  const pathname = usePathname()
   
   const floatY = useTransform(scrollY, [0, 100], [0, 8])
 
@@ -175,6 +176,10 @@ export function FloatingNav() {
       document.body.style.width = ""
     }
   }, [isMenuOpen])
+  
+  if (pathname?.startsWith("/admin")) {
+    return null
+  }
 
   return (
     <>
