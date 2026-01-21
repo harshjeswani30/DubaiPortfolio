@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Github, ExternalLink, ArrowUpRight } from "lucide-react"
 
@@ -70,9 +71,15 @@ const mockProjects = [
 ]
 
 export function ProjectsContent({ projects }: ProjectsContentProps) {
+  const router = useRouter()
   const displayProjects = projects.length > 0 ? projects : mockProjects
   const slideCount = displayProjects.length
   const timelineScope = `--scroller, ${displayProjects.map((_, i) => `--slide-${i + 1}`).join(", ")}`
+
+  const handleProjectClick = (slug: string) => {
+    sessionStorage.setItem('projectSource', 'projects')
+    router.push(`/projects/${slug}`)
+  }
 
   return (
     <div
@@ -164,8 +171,8 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
                       animationRangeStart: "30cqw",
                     }}
                   >
-                    <Link href={`/projects/${project.slug}`}>
-                      <motion.button
+                    <Link href={`/projects/${project.slug}`} onClick={() => sessionStorage.setItem('projectSource', 'projects')}>
+                        <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                         className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"

@@ -210,16 +210,19 @@ export function ProjectDetailContent({ project }: { project: Project }) {
       setBackUrl('/#projects')
       setBackLabel('Back to Home')
       setFromHome(true)
+    } else if (source === 'projects') {
+      setBackUrl('/projects')
+      setBackLabel('Back to Projects')
     }
     completeTransition()
   }, [completeTransition])
 
   const handleBack = () => {
+    sessionStorage.removeItem('projectSource')
     if (fromHome) {
       startReverseTransition('/#projects')
     } else {
-      sessionStorage.removeItem('projectSource')
-      router.push(backUrl)
+      router.back()
     }
   }
 
