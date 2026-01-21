@@ -6,7 +6,7 @@ import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provi
 import { PageTransitionProvider } from "@/components/providers/page-transition-provider"
 
 import { Footer } from "@/components/layout/footer"
-import { FloatingNav } from "@/components/layout/floating-nav"
+import { LeftSidebar } from "@/components/layout/left-sidebar"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
 import { CircleTrailCursor } from "@/components/ui/circle-trail-cursor"
@@ -67,23 +67,23 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-          className={`${geistSans.variable} ${geistMono.variable} ${cardo.variable} bg-black antialiased`}
-        >
-        <FloatingNav />
-        <ThemeProvider>
-          <PageTransitionProvider>
-              <SmoothScrollProvider>
-                  <CircleTrailCursor fillColor="#00ADB5" />
-                <ScrollProgress />
-                <CommandPalette />
-                <main className="min-h-screen">{children}</main>
-                <Footer />
-              </SmoothScrollProvider>
-            </PageTransitionProvider>
-            </ThemeProvider>
-      </body>
-    </html>
+<html lang="en" suppressHydrationWarning>
+        <body
+            className={`${geistSans.variable} ${geistMono.variable} ${cardo.variable} bg-black antialiased`}
+          >
+          <LeftSidebar />
+          <ThemeProvider>
+            <PageTransitionProvider>
+                <SmoothScrollProvider>
+                    <CircleTrailCursor fillColor="#00ADB5" />
+                  <ScrollProgress />
+                  <CommandPalette />
+                  <main className="min-h-screen md:ml-20">{children}</main>
+                  <Footer />
+                </SmoothScrollProvider>
+              </PageTransitionProvider>
+              </ThemeProvider>
+        </body>
+      </html>
   )
 }

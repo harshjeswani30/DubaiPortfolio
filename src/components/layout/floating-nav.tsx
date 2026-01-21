@@ -4,27 +4,147 @@ import { useState, useEffect, useRef } from "react"
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { Code2, Command } from "lucide-react"
+import { Code2, Home, User, FolderKanban, Wrench, BookOpen, FileText, Mail } from "lucide-react"
+import { useOnClickOutside } from "usehooks-ts"
 import { cn } from "@/lib/utils"
 import { SideMenu, MenuButton } from "@/components/ui/side-menu"
 
-const navItems = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/projects", label: "Projects" },
-  { href: "/skills", label: "Skills" },
-  { href: "/blog", label: "Blog" },
-  { href: "/resume", label: "Resume" },
-  { href: "/contact", label: "Contact" },
+interface Tab {
+  title: string
+  icon: typeof Home
+  href: string
+  type?: never
+}
+
+interface Separator {
+  type: "separator"
+  title?: never
+  icon?: never
+  href?: never
+}
+
+type TabItem = Tab | Separator
+
+const tabs: TabItem[] = [
+  { title: "Home", icon: Home, href: "/" },
+  { title: "About", icon: User, href: "/about" },
+  { title: "Projects", icon: FolderKanban, href: "/projects" },
+  { type: "separator" },
+  { title: "Skills", icon: Wrench, href: "/skills" },
+  { title: "Blog", icon: BookOpen, href: "/blog" },
+  { type: "separator" },
+  { title: "Resume", icon: FileText, href: "/resume" },
+  { title: "Contact", icon: Mail, href: "/contact" },
 ]
 
 const hasMountedRef = { current: false }
 
-export function FloatingNav() {
+const buttonVariants = {
+  initial: {
+    gap: 0,
+    paddingLeft: ".5rem",
+    paddingRight: ".5rem",
+  },
+  animate: (isSelected: boolean) => ({
+    gap: isSelected ? ".5rem" : 0,
+    paddingLeft: isSelected ? "1rem" : ".5rem",
+    paddingRight: isSelected ? "1rem" : ".5rem",
+  }),
+}
+
+const spanVariants = {
+  initial: { width: 0, opacity: 0 },
+  animate: { width: "auto", opacity: 1 },
+  exit: { width: 0, opacity: 0 },
+}
+
+const transition = { delay: 0.1, type: "spring", bounce: 0, duration: 0.6 }
+
+function ExpandableTabs({ 
+  activeColor = "text-[#00ADB5]" 
+}: { 
+  activeColor?: string 
+}) {
+  const [hovered, setHovered] = useState<number | null>(null)
+  const outsideClickRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const router = useRouter()
+
+  useOnClickOutside(outsideClickRef as React.RefObject<HTMLElement>, () => {
+    setHovered(null)
+  })
+
+  const handleClick = (href: string) => {
+    router.push(href)
+  }
+
+  const Separator = () => (
+    <div className="mx-1 h-[24px] w-[1.2px] bg-[#393E46]" aria-hidden="true" />
+  )
+
+  return (
+    <div
+      ref={outsideClickRef}
+      className="flex flex-wrap items-center gap-2 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 p-1 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl"
+      onMouseLeave={() => setHovered(null)}
+    >
+      {tabs.map((tab, index) => {
+        if (tab.type === "separator") {
+          return <Separator key={`separator-${index}`} />
+        }
+
+        const Icon = tab.icon
+          const isActive = pathname === tab.href
+          const isHovered = hovered === index
+          const isExpanded = isActive || isHovered
+
+          return (
+            <motion.button
+              key={tab.title}
+              variants={buttonVariants}
+              initial={false}
+              animate="animate"
+              custom={isExpanded}
+              onClick={() => handleClick(tab.href)}
+              onMouseEnter={() => setHovered(index)}
+              transition={transition}
+              className={cn(
+                "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
+                isActive
+                  ? cn("bg-[#393E46]", activeColor)
+                  : isHovered
+                    ? "bg-[#393E46]/70 text-[#EEEEEE]"
+                    : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
+              )}
+            >
+              <Icon size={18} />
+              <AnimatePresence initial={false}>
+                {isExpanded && (
+                  <motion.span
+                    variants={spanVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={transition}
+                    className="overflow-hidden whitespace-nowrap"
+                  >
+                    {tab.title}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          )
+      })}
+    </div>
+  )
+}
+
+export function FloatingNav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
+  const { scrollY } = useScroll()
+  
+  const floatY = useTransform(scrollY, [0, 100], [0, 8])
 
   useEffect(() => {
     hasMountedRef.current = true
@@ -32,101 +152,104 @@ export function FloatingNav() {
   }, [])
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
+      const scrollY = window.scrollY
+      document.body.style.overflow = "hidden"
+      document.body.style.position = "fixed"
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.width = "100%"
     } else {
-      document.body.style.overflow = ''
+      const scrollY = document.body.style.top
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.top = ""
+      document.body.style.width = ""
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || "0") * -1)
+      }
     }
     return () => {
-      document.body.style.overflow = ''
+      document.body.style.overflow = ""
+      document.body.style.position = ""
+      document.body.style.top = ""
+      document.body.style.width = ""
     }
   }, [isMenuOpen])
 
   return (
     <>
-      <motion.header
-        initial={hasMounted ? false : { y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={cn(
-          "fixed left-0 right-0 top-0 z-[110] transition-all duration-300",
-          scrolled && "bg-[#222831]/80 backdrop-blur-xl"
-        )}
+      <motion.nav
+        initial={hasMounted ? false : { opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{ y: floatY }}
+        className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <Link href="/" className="relative z-50">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-3"
-            >
-              <motion.div
-                animate={{ rotate: [0, 5, -5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#393E46] glow-sm"
-              >
-                  <Code2 className="h-5 w-5 text-[#00ADB5]" />
-              </motion.div>
-              <span className="text-xl font-bold text-[#EEEEEE]" style={{ fontFamily: 'Bogard, sans-serif' }}>Portfolio</span>
-            </motion.div>
-          </Link>
-
-          <div className="hidden items-center gap-1 rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 px-2 py-2 backdrop-blur-xl md:flex">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+              <Link href="/" className="group relative z-[130]">
                 <motion.div
-                  className={cn(
-                    "relative rounded-xl px-4 py-2 text-sm font-medium transition-colors",
-                    pathname === item.href
-                      ? "text-[#EEEEEE]"
-                      : "text-[#00ADB5]/70 hover:text-[#EEEEEE]"
-                  )}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileHover={{ scale: 1.02 }}
+                  className="relative cursor-pointer flex items-center"
+                  style={{ height: '46px', width: '148px' }}
                 >
-                  {pathname === item.href && (
-                    <motion.div
-                      layoutId="floating-navbar-indicator"
-                      className="absolute inset-0 rounded-xl bg-[#393E46]"
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  <svg 
+                    width="148" 
+                    height="46" 
+                    viewBox="0 0 226 70" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute inset-0"
+                    style={{ filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))' }}
+                  >
+                    <path 
+                      d="M216 0C221.523 9.34173e-07 226 4.47715 226 10V60C226 65.5228 221.523 70 216 70H77C71.4772 70 67 65.5228 67 60V49.1934C61.5552 61.4508 49.2769 70 35 70C15.67 70 0 54.33 0 35C0 15.67 15.67 0 35 0C49.2766 0 61.555 8.54863 67 20.8057V10C67 4.47715 71.4772 2.93942e-07 77 0H216Z" 
+                      fill="rgba(34, 40, 49, 0.9)"
+                      stroke="rgba(57, 62, 70, 0.5)"
+                      strokeWidth="1"
                     />
-                  )}
-                  <span className="relative z-10">{item.label}</span>
+                  </svg>
+                  <div className="absolute inset-0 flex items-center" style={{ backdropFilter: 'blur(12px)' }}>
+                    <div 
+                      className="flex items-center justify-center"
+                      style={{
+                        width: '46px',
+                        height: '46px',
+                        marginLeft: '-2px',
+                      }}
+                    >
+                      <Code2 className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <span className="text-sm font-bold tracking-[0.15em] text-[#EEEEEE] ml-1">PORTFOLIO</span>
+                  </div>
                 </motion.div>
               </Link>
-            ))}
-          </div>
 
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                const event = new KeyboardEvent("keydown", { key: "k", metaKey: true })
-                document.dispatchEvent(event)
-              }}
-              className="hidden items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 px-3 py-2 text-sm text-[#00ADB5]/70 backdrop-blur-xl transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5] md:flex"
+            
+            <motion.div
+              initial={hasMounted ? false : { opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="hidden md:block"
             >
-              <Command className="h-3 w-3" />
-              <span>K</span>
-            </motion.button>
+              <ExpandableTabs />
+            </motion.div>
 
+          <motion.div
+            initial={hasMounted ? false : { opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+            className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-3 py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30"
+          >
             <MenuButton
               isOpen={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="relative z-[120]"
             />
-          </div>
-        </nav>
-      </motion.header>
+          </motion.div>
+        </div>
+      </motion.nav>
 
       <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </>

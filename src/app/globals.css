@@ -220,6 +220,10 @@ body {
   font-family: var(--font-cardo), Georgia, serif;
 }
 
+.font-bogard {
+  font-family: 'Bogard', sans-serif;
+}
+
 .scrollbar-hidden {
   -ms-overflow-style: none;
   scrollbar-width: none;
