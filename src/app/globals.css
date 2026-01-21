@@ -25,10 +25,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-* {
-  cursor: none;
-}
-
 @media (pointer: coarse) {
   * {
     cursor: auto;
