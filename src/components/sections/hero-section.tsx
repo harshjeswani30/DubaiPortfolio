@@ -22,6 +22,9 @@ interface SiteSettings {
   years_experience: number
   projects_completed: number
   happy_clients: number
+  profile_image?: string
+  hero_tags?: { icon: string; text: string; color: string }[]
+  location?: string
 }
 
 interface HeroSectionProps {
@@ -477,7 +480,12 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
               )}
             </AnimatePresence>
 
-            <CreativeImageCard onHoverChange={setIsCardHovered} />
+            <CreativeImageCard 
+              onHoverChange={setIsCardHovered} 
+              profileImage={siteSettings?.profile_image}
+              heroTags={siteSettings?.hero_tags}
+              location={siteSettings?.location}
+            />
           </motion.div>
         </motion.div>
 

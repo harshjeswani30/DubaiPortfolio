@@ -5,6 +5,28 @@ import { motion, useInView, useMotionValue, useSpring, useTransform } from "fram
 import Link from "next/link"
 import { ArrowRight, Clock, CheckCircle2, TrendingUp, Briefcase } from "lucide-react"
 
+interface CTAData {
+  title: string
+  title_highlight: string
+  description: string
+  primary_button_text: string
+  primary_button_link: string
+  secondary_button_text: string
+  secondary_button_link: string
+  availability_text: string
+  response_time: string
+}
+
+interface SiteSettings {
+  available_for_work: boolean
+  projects_completed: number
+}
+
+interface CTASectionProps {
+  ctaData?: CTAData | null
+  siteSettings?: SiteSettings | null
+}
+
 interface MagneticButtonProps {
   children: React.ReactNode
   href: string
@@ -108,10 +130,22 @@ function StatItem({ value, label, icon, delay, isInView }: StatItemProps) {
   )
 }
 
-export function CTASection() {
+export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
   const ref = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+
+  const title = ctaData?.title || "Let's Work"
+  const titleHighlight = ctaData?.title_highlight || "Together"
+  const description = ctaData?.description || "Have a project in mind? I'd love to hear about it. Let's discuss how we can bring your ideas to life."
+  const primaryButtonText = ctaData?.primary_button_text || "Get in Touch"
+  const primaryButtonLink = ctaData?.primary_button_link || "/contact"
+  const secondaryButtonText = ctaData?.secondary_button_text || "View My Work"
+  const secondaryButtonLink = ctaData?.secondary_button_link || "/projects"
+  const availabilityText = ctaData?.availability_text || "Available for work"
+  const responseTime = ctaData?.response_time || "< 24hrs"
+  const availableForWork = siteSettings?.available_for_work ?? true
+  const projectsCompleted = siteSettings?.projects_completed || 50
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -139,8 +173,8 @@ export function CTASection() {
   }, [mouseX, mouseY])
 
   const stats = [
-    { value: "< 24hrs", label: "Response Time", icon: <Clock className="h-5 w-5" /> },
-    { value: "50+", label: "Projects Done", icon: <TrendingUp className="h-5 w-5" /> },
+    { value: responseTime, label: "Response Time", icon: <Clock className="h-5 w-5" /> },
+    { value: `${projectsCompleted}+`, label: "Projects Done", icon: <TrendingUp className="h-5 w-5" /> },
     { value: "100%", label: "Client Satisfaction", icon: <CheckCircle2 className="h-5 w-5" /> },
   ]
 
@@ -199,20 +233,22 @@ export function CTASection() {
           />
           
           <div className="relative text-center" style={{ transform: "translateZ(20px)" }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
-            >
-              <motion.span
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="h-2 w-2 rounded-full bg-[#00ADB5]"
-              />
-              <span className="text-sm font-medium text-[#00ADB5]">Available for work</span>
-                <Briefcase className="h-3.5 w-3.5 text-[#00ADB5]/70" />
-            </motion.div>
+            {availableForWork && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
+              >
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="h-2 w-2 rounded-full bg-[#00ADB5]"
+                />
+                <span className="text-sm font-medium text-[#00ADB5]">{availabilityText}</span>
+                  <Briefcase className="h-3.5 w-3.5 text-[#00ADB5]/70" />
+              </motion.div>
+            )}
 
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -220,8 +256,8 @@ export function CTASection() {
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-4xl font-bold text-[#EEEEEE] md:text-5xl lg:text-6xl"
             >
-              Let&apos;s Work{" "}
-              <span className="gradient-text">Together</span>
+              {title}{" "}
+              <span className="gradient-text">{titleHighlight}</span>
             </motion.h2>
 
             <motion.p
@@ -230,7 +266,7 @@ export function CTASection() {
               transition={{ delay: 0.4, duration: 0.6 }}
               className="mx-auto mt-5 max-w-lg text-lg text-[#EEEEEE]/60"
             >
-              Have a project in mind? I&apos;d love to hear about it. Let&apos;s discuss how we can bring your ideas to life.
+              {description}
             </motion.p>
 
             <motion.div
@@ -239,11 +275,11 @@ export function CTASection() {
               transition={{ delay: 0.5, duration: 0.6 }}
               className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
-              <MagneticButton href="/contact" variant="primary">
-                Get in Touch
+              <MagneticButton href={primaryButtonLink} variant="primary">
+                {primaryButtonText}
               </MagneticButton>
-              <MagneticButton href="/projects" variant="secondary">
-                View My Work
+              <MagneticButton href={secondaryButtonLink} variant="secondary">
+                {secondaryButtonText}
               </MagneticButton>
             </motion.div>
 

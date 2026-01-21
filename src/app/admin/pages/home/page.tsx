@@ -13,7 +13,7 @@ import {
   AdminCardContent,
   AdminCardHeader,
 } from "@/components/admin/form-elements"
-import { Save, RefreshCw, Plus, X, Sparkles, Layers, BarChart3, Edit, Trash2 } from "lucide-react"
+import { Save, RefreshCw, Plus, Sparkles, Layers, BarChart3, Edit, Trash2, Megaphone, Image as ImageIcon } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -41,6 +41,21 @@ interface SiteSettings {
   years_experience: number
   projects_completed: number
   happy_clients: number
+  profile_image: string
+  hero_tags: { icon: string; text: string; color: string }[]
+}
+
+interface CTASection {
+  id?: string
+  title: string
+  title_highlight: string
+  description: string
+  primary_button_text: string
+  primary_button_link: string
+  secondary_button_text: string
+  secondary_button_link: string
+  availability_text: string
+  response_time: string
 }
 
 type ServiceRow = {
@@ -57,8 +72,9 @@ type ServiceRow = {
 
 const tabs = [
   { id: "hero", label: "Hero Section", icon: Sparkles },
-  { id: "services", label: "Services Section", icon: Layers },
-  { id: "stats", label: "Stats & Profile", icon: BarChart3 },
+  { id: "services", label: "Services", icon: Layers },
+  { id: "cta", label: "CTA Section", icon: Megaphone },
+  { id: "profile", label: "Profile & Stats", icon: BarChart3 },
 ]
 
 function HomePageContent() {
@@ -91,6 +107,20 @@ function HomePageContent() {
     years_experience: 5,
     projects_completed: 50,
     happy_clients: 30,
+    profile_image: "",
+    hero_tags: [],
+  })
+
+  const [cta, setCta] = useState<CTASection>({
+    title: "Let's Work",
+    title_highlight: "Together",
+    description: "",
+    primary_button_text: "Get in Touch",
+    primary_button_link: "/contact",
+    secondary_button_text: "View My Work",
+    secondary_button_link: "/projects",
+    availability_text: "Available for work",
+    response_time: "< 24hrs",
   })
 
   const [services, setServices] = useState<ServiceRow[]>([])
@@ -102,26 +132,31 @@ function HomePageContent() {
   const loadAllData = async () => {
     setLoading(true)
     try {
-      const [heroRes, settingsRes, servicesRes] = await Promise.all([
+      const [heroRes, settingsRes, servicesRes, ctaRes] = await Promise.all([
         fetch("/api/admin/settings/hero"),
         fetch("/api/admin/settings/site"),
         fetch("/api/admin/services"),
+        fetch("/api/admin/settings/cta"),
       ])
 
-      const [heroJson, settingsJson, servicesJson] = await Promise.all([
+      const [heroJson, settingsJson, servicesJson, ctaJson] = await Promise.all([
         heroRes.json(),
         settingsRes.json(),
         servicesRes.json(),
+        ctaRes.json(),
       ])
 
       if (heroJson.data) {
         setHero({ ...heroJson.data, rotating_texts: heroJson.data.rotating_texts || [] })
       }
       if (settingsJson.data) {
-        setSettings(settingsJson.data)
+        setSettings({ ...settingsJson.data, hero_tags: settingsJson.data.hero_tags || [] })
       }
       if (servicesJson.data) {
         setServices(servicesJson.data)
+      }
+      if (ctaJson.data) {
+        setCta(ctaJson.data)
       }
     } catch (error) {
       console.error("Failed to load data:", error)
@@ -139,11 +174,17 @@ function HomePageContent() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(hero),
         })
-      } else if (activeTab === "stats") {
+      } else if (activeTab === "profile") {
         await fetch("/api/admin/settings/site", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(settings),
+        })
+      } else if (activeTab === "cta") {
+        await fetch("/api/admin/settings/cta", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cta),
         })
       }
       router.refresh()
@@ -162,6 +203,10 @@ function HomePageContent() {
     setSettings((prev) => ({ ...prev, [field]: value }))
   }
 
+  const updateCtaField = (field: keyof CTASection, value: any) => {
+    setCta((prev) => ({ ...prev, [field]: value }))
+  }
+
   const deleteService = async (id: string) => {
     if (!confirm("Are you sure you want to delete this service?")) return
     try {
@@ -170,6 +215,27 @@ function HomePageContent() {
     } catch (error) {
       console.error("Failed to delete:", error)
     }
+  }
+
+  const addHeroTag = () => {
+    setSettings((prev) => ({
+      ...prev,
+      hero_tags: [...prev.hero_tags, { icon: "Code2", text: "New Tag", color: "#00ADB5" }],
+    }))
+  }
+
+  const updateHeroTag = (index: number, field: string, value: string) => {
+    setSettings((prev) => ({
+      ...prev,
+      hero_tags: prev.hero_tags.map((tag, i) => (i === index ? { ...tag, [field]: value } : tag)),
+    }))
+  }
+
+  const removeHeroTag = (index: number) => {
+    setSettings((prev) => ({
+      ...prev,
+      hero_tags: prev.hero_tags.filter((_, i) => i !== index),
+    }))
   }
 
   if (loading) {
@@ -195,7 +261,7 @@ function HomePageContent() {
         )
       }
     >
-      <div className="mb-6 flex gap-2 border-b border-white/10 pb-4">
+      <div className="mb-6 flex flex-wrap gap-2 border-b border-white/10 pb-4">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -359,12 +425,130 @@ function HomePageContent() {
         </div>
       )}
 
-      {activeTab === "stats" && (
+      {activeTab === "cta" && (
         <div className="space-y-6">
           <AdminCard>
             <AdminCardHeader>
-              <h3 className="text-lg font-semibold text-white">Site Profile & Stats</h3>
-              <p className="text-sm text-zinc-500">Your profile information and statistics shown on homepage</p>
+              <div className="flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-amber-400" />
+                <h3 className="text-lg font-semibold text-white">CTA Section</h3>
+              </div>
+              <p className="text-sm text-zinc-500">Call-to-action section at the bottom of homepage</p>
+            </AdminCardHeader>
+            <AdminCardContent className="space-y-5">
+              <div className="grid gap-5 sm:grid-cols-2">
+                <AdminInput
+                  label="Title"
+                  value={cta.title}
+                  onChange={(e) => updateCtaField("title", e.target.value)}
+                  placeholder="Let's Work"
+                />
+                <AdminInput
+                  label="Title Highlight"
+                  value={cta.title_highlight}
+                  onChange={(e) => updateCtaField("title_highlight", e.target.value)}
+                  placeholder="Together"
+                  hint="Word to highlight with gradient"
+                />
+              </div>
+              <AdminTextarea
+                label="Description"
+                value={cta.description}
+                onChange={(e) => updateCtaField("description", e.target.value)}
+                placeholder="Have a project in mind? I'd love to hear about it."
+              />
+              <div className="grid gap-5 sm:grid-cols-2">
+                <AdminInput
+                  label="Primary Button Text"
+                  value={cta.primary_button_text}
+                  onChange={(e) => updateCtaField("primary_button_text", e.target.value)}
+                  placeholder="Get in Touch"
+                />
+                <AdminInput
+                  label="Primary Button Link"
+                  value={cta.primary_button_link}
+                  onChange={(e) => updateCtaField("primary_button_link", e.target.value)}
+                  placeholder="/contact"
+                />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <AdminInput
+                  label="Secondary Button Text"
+                  value={cta.secondary_button_text}
+                  onChange={(e) => updateCtaField("secondary_button_text", e.target.value)}
+                  placeholder="View My Work"
+                />
+                <AdminInput
+                  label="Secondary Button Link"
+                  value={cta.secondary_button_link}
+                  onChange={(e) => updateCtaField("secondary_button_link", e.target.value)}
+                  placeholder="/projects"
+                />
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <AdminInput
+                  label="Availability Text"
+                  value={cta.availability_text}
+                  onChange={(e) => updateCtaField("availability_text", e.target.value)}
+                  placeholder="Available for work"
+                />
+                <AdminInput
+                  label="Response Time"
+                  value={cta.response_time}
+                  onChange={(e) => updateCtaField("response_time", e.target.value)}
+                  placeholder="< 24hrs"
+                />
+              </div>
+            </AdminCardContent>
+          </AdminCard>
+        </div>
+      )}
+
+      {activeTab === "profile" && (
+        <div className="space-y-6">
+          <AdminCard>
+            <AdminCardHeader>
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5 text-cyan-400" />
+                <h3 className="text-lg font-semibold text-white">Profile Image</h3>
+              </div>
+              <p className="text-sm text-zinc-500">Your photo displayed in the hero section</p>
+            </AdminCardHeader>
+            <AdminCardContent className="space-y-5">
+              <div className="flex items-start gap-6">
+                <div className="h-32 w-32 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-zinc-800">
+                  {settings.profile_image ? (
+                    <img
+                      src={settings.profile_image}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none"
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center">
+                      <ImageIcon className="h-8 w-8 text-zinc-600" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <AdminInput
+                    label="Profile Image URL"
+                    value={settings.profile_image}
+                    onChange={(e) => updateSettingsField("profile_image", e.target.value)}
+                    placeholder="https://images.unsplash.com/..."
+                    hint="Enter a direct URL to your profile photo"
+                  />
+                </div>
+              </div>
+            </AdminCardContent>
+          </AdminCard>
+
+          <AdminCard>
+            <AdminCardHeader>
+              <h3 className="text-lg font-semibold text-white">Profile Information</h3>
+              <p className="text-sm text-zinc-500">Your basic information shown across the site</p>
             </AdminCardHeader>
             <AdminCardContent className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-2">
@@ -389,6 +573,21 @@ function HomePageContent() {
                 onChange={(e) => updateSettingsField("bio", e.target.value)}
                 placeholder="A short description about yourself..."
               />
+              <AdminInput
+                label="Location"
+                value={settings.location}
+                onChange={(e) => updateSettingsField("location", e.target.value)}
+                placeholder="Dubai, UAE"
+              />
+            </AdminCardContent>
+          </AdminCard>
+
+          <AdminCard>
+            <AdminCardHeader>
+              <h3 className="text-lg font-semibold text-white">Statistics</h3>
+              <p className="text-sm text-zinc-500">Numbers displayed in hero and CTA sections</p>
+            </AdminCardHeader>
+            <AdminCardContent className="space-y-5">
               <div className="grid gap-5 sm:grid-cols-3">
                 <AdminInput
                   label="Years of Experience"
@@ -418,6 +617,56 @@ function HomePageContent() {
                 checked={settings.available_for_work}
                 onChange={(checked) => updateSettingsField("available_for_work", checked)}
               />
+            </AdminCardContent>
+          </AdminCard>
+
+          <AdminCard>
+            <AdminCardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-white">Hero Floating Tags</h3>
+                <p className="text-sm text-zinc-500">Skill tags that float around your profile image</p>
+              </div>
+              <AdminButton type="button" variant="secondary" size="sm" onClick={addHeroTag}>
+                <Plus className="h-4 w-4" />
+                Add Tag
+              </AdminButton>
+            </AdminCardHeader>
+            <AdminCardContent>
+              {settings.hero_tags.length === 0 ? (
+                <p className="py-8 text-center text-sm text-zinc-500">No tags added yet. Add tags like "React", "UI/UX", etc.</p>
+              ) : (
+                <div className="space-y-3">
+                  {settings.hero_tags.map((tag, index) => (
+                    <div key={index} className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 p-3">
+                      <AdminInput
+                        placeholder="Code2"
+                        value={tag.icon}
+                        onChange={(e) => updateHeroTag(index, "icon", e.target.value)}
+                        className="w-28"
+                      />
+                      <AdminInput
+                        placeholder="React"
+                        value={tag.text}
+                        onChange={(e) => updateHeroTag(index, "text", e.target.value)}
+                        className="flex-1"
+                      />
+                      <AdminInput
+                        type="color"
+                        value={tag.color}
+                        onChange={(e) => updateHeroTag(index, "color", e.target.value)}
+                        className="w-16"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeHeroTag(index)}
+                        className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-red-500/10 hover:text-red-400"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </AdminCardContent>
           </AdminCard>
         </div>

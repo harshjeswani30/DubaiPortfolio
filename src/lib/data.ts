@@ -88,6 +88,30 @@ export interface SiteSettings {
   years_experience: number
   projects_completed: number
   happy_clients: number
+  profile_image?: string
+  hero_tags?: { icon: string; text: string; color: string }[]
+}
+
+export interface CTASection {
+  id: string
+  title: string
+  title_highlight: string
+  description: string
+  primary_button_text: string
+  primary_button_link: string
+  secondary_button_text: string
+  secondary_button_link: string
+  availability_text: string
+  response_time: string
+}
+
+export interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  icon_name: string
+  display_order: number
+  is_active: boolean
 }
 
 export interface HeroSection {
@@ -286,6 +310,29 @@ export async function getSiteSettings(): Promise<SiteSettings | null> {
   const { data, error } = await supabase.from("site_settings").select("*").single()
 
   if (error || !data) return null
+  return {
+    ...data,
+    hero_tags: data.hero_tags || [],
+  }
+}
+
+export async function getCTASection(): Promise<CTASection | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from("cta_section").select("*").single()
+
+  if (error || !data) return null
+  return data
+}
+
+export async function getSocialLinks(): Promise<SocialLink[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("social_links")
+    .select("*")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true })
+
+  if (error || !data) return []
   return data
 }
 

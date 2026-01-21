@@ -4,7 +4,8 @@ import { useRef, useState } from "react"
 import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { Code2, Palette, Wand2, MessageCircle, ArrowRight } from "lucide-react"
+import { Code2, Palette, Wand2, MessageCircle, ArrowRight, LucideIcon } from "lucide-react"
+import * as LucideIcons from "lucide-react"
 
 interface FloatingTag {
   icon: React.ElementType
@@ -13,7 +14,7 @@ interface FloatingTag {
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "left" | "right"
 }
 
-const floatingTags: FloatingTag[] = [
+const defaultFloatingTags: FloatingTag[] = [
   { icon: Code2, text: "React", color: "#61DAFB", position: "top-left" },
   { icon: Palette, text: "UI/UX", color: "#FF6B6B", position: "right" },
   { icon: Wand2, text: "Creative", color: "#00ADB5", position: "bottom-left" },
@@ -99,11 +100,30 @@ function IdleSvgDecorations({ isVisible }: { isVisible: boolean }) {
 
 interface CreativeImageCardProps {
   onHoverChange?: (isHovered: boolean) => void
+  profileImage?: string
+  heroTags?: { icon: string; text: string; color: string }[]
+  location?: string
 }
 
-export function CreativeImageCard({ onHoverChange }: CreativeImageCardProps) {
+const positions: FloatingTag["position"][] = ["top-left", "right", "bottom-left"]
+
+export function CreativeImageCard({ onHoverChange, profileImage, heroTags, location }: CreativeImageCardProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
+
+  const floatingTags: FloatingTag[] = heroTags?.length 
+    ? heroTags.map((tag, i) => {
+        const IconComponent = (LucideIcons as any)[tag.icon] || Code2
+        return {
+          icon: IconComponent,
+          text: tag.text,
+          color: tag.color,
+          position: positions[i % positions.length],
+        }
+      })
+    : defaultFloatingTags
+
+  const displayLocation = location || "Dubai"
 
   const cardRotateX = useMotionValue(0)
   const cardRotateY = useMotionValue(0)
@@ -172,27 +192,27 @@ export function CreativeImageCard({ onHoverChange }: CreativeImageCardProps) {
           className="relative"
         >
           <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[420px] lg:w-[420px]">
-          <motion.div
-            className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
-            animate={{
-              borderColor: isHovered ? "rgba(0, 173, 181, 0.5)" : "rgba(57, 62, 70, 0.5)",
-              boxShadow: isHovered
-                ? "0 25px 80px -12px rgba(0, 173, 181, 0.4), 0 0 60px -15px rgba(74, 222, 128, 0.3)"
-                : "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-            }}
-            transition={{ duration: 0.4 }}
-          >
-            <Image
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=face"
-                alt="Developer Portrait"
-                fill
-                className="object-cover transition-all duration-700"
-                style={{
-                  transform: isHovered ? "scale(1.08)" : "scale(1)",
-                  filter: isHovered ? "brightness(1.1)" : "brightness(1)",
-                }}
-                priority
-              />
+            <motion.div
+              className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
+              animate={{
+                borderColor: isHovered ? "rgba(0, 173, 181, 0.5)" : "rgba(57, 62, 70, 0.5)",
+                boxShadow: isHovered
+                  ? "0 25px 80px -12px rgba(0, 173, 181, 0.4), 0 0 60px -15px rgba(74, 222, 128, 0.3)"
+                  : "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              }}
+              transition={{ duration: 0.4 }}
+            >
+              <Image
+                  src={profileImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=face"}
+                  alt="Developer Portrait"
+                  fill
+                  className="object-cover transition-all duration-700"
+                  style={{
+                    transform: isHovered ? "scale(1.08)" : "scale(1)",
+                    filter: isHovered ? "brightness(1.1)" : "brightness(1)",
+                  }}
+                  priority
+                />
 
             <motion.div
               className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent"
@@ -302,17 +322,17 @@ export function CreativeImageCard({ onHoverChange }: CreativeImageCardProps) {
               className="relative rounded-2xl border border-[#393E46]/60 bg-[#222831]/95 px-4 py-3 backdrop-blur-xl shadow-xl"
             >
               <div className="flex items-center gap-3">
-                <motion.div
-                  className="text-2xl"
-                  animate={{ rotate: isHovered ? [0, 10, -10, 0] : 0 }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  🇦🇪
-                </motion.div>
-                <div>
-                  <div className="text-[9px] uppercase tracking-widest text-[#00ADB5]/60">Based in</div>
-                  <div className="text-base font-bold text-[#EEEEEE]">Dubai</div>
-                </div>
+                  <motion.div
+                    className="text-2xl"
+                    animate={{ rotate: isHovered ? [0, 10, -10, 0] : 0 }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    🇦🇪
+                  </motion.div>
+                  <div>
+                    <div className="text-[9px] uppercase tracking-widest text-[#00ADB5]/60">Based in</div>
+                    <div className="text-base font-bold text-[#EEEEEE]">{displayLocation}</div>
+                  </div>
               </div>
             </motion.div>
           </motion.div>
