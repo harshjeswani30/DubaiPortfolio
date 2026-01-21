@@ -90,7 +90,7 @@ export const projects: Project[] = [
     featured_image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&h=800&fit=crop",
     live_url: "https://example.com",
     github_url: "https://github.com",
-    is_featured: true,
+    is_featured: false,
     is_published: true,
     display_order: 4,
   },
@@ -335,7 +335,7 @@ export async function getProjects() {
 }
 
 export async function getFeaturedProjects() {
-  return projects.filter(p => p.is_published && p.is_featured).sort((a, b) => a.display_order - b.display_order).slice(0, 4)
+  return projects.filter(p => p.is_published && p.is_featured).sort((a, b) => a.display_order - b.display_order).slice(0, 3)
 }
 
 export async function getProjectBySlug(slug: string) {
