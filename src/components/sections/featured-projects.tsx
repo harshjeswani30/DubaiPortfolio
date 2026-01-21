@@ -315,11 +315,14 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 </div>
 
                 <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
-                    <Link 
-                      href={`/projects/${project.slug}`}
-                      onClick={() => sessionStorage.setItem('projectSource', 'home')}
-                      className="flex-1"
-                    >
+                      <Link 
+                        href={`/projects/${project.slug}`}
+                        onClick={() => {
+                          sessionStorage.setItem('projectSource', 'home')
+                          sessionStorage.setItem('homeScrollPosition', window.scrollY.toString())
+                        }}
+                        className="flex-1"
+                      >
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
