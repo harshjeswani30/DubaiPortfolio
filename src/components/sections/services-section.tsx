@@ -118,7 +118,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
   const bgY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
   const orb1X = useTransform(smoothProgress, [0, 1], ["-10%", "10%"])
   const orb2Y = useTransform(smoothProgress, [0, 1], ["10%", "-10%"])
-  
+
   const titleY = useParallax(smoothProgress, -30)
   const leftColY = useParallax(smoothProgress, -20)
   const rightColY = useParallax(smoothProgress, 30)
@@ -141,16 +141,16 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
   const startAutoPlay = () => {
     if (intervalRef.current) clearInterval(intervalRef.current)
     if (progressRef.current) clearInterval(progressRef.current)
-    
+
     setProgress(0)
-    
+
     progressRef.current = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) return 0
         return prev + 2.5
       })
     }, 100)
-    
+
     intervalRef.current = setInterval(() => {
       setActiveService((prev) => (prev + 1) % services.length)
       setProgress(0)
@@ -200,43 +200,43 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#222831] py-32">
-      <motion.div 
+      <motion.div
         className="absolute inset-0 grid-background opacity-50"
         style={{ y: bgY }}
       />
-      
-      <motion.div 
+
+      <motion.div
         style={{ x: orb1X }}
-        className="absolute left-0 top-1/4 h-[600px] w-[600px] rounded-full bg-[#393E46]/15 blur-[150px]" 
+        className="absolute left-0 top-1/4 h-[600px] w-[600px] rounded-full bg-[#393E46]/15 blur-[150px]"
       />
-      <motion.div 
+      <motion.div
         style={{ y: orb2Y }}
-        className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#00ADB5]/10 blur-[120px]" 
+        className="absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-[#00ADB5]/10 blur-[120px]"
       />
 
-        {floatingIcons.map((item, i) => (
+      {floatingIcons.map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={isInView ? { opacity: 0.3, scale: 1 } : {}}
+          transition={{ delay: item.delay, duration: 0.5 }}
+          style={{
+            left: item.x,
+            top: item.y,
+            x: smoothMouseX,
+            y: i % 2 === 0 ? floatingParallax1 : floatingParallax2,
+          }}
+          className="absolute hidden lg:block"
+        >
           <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={isInView ? { opacity: 0.3, scale: 1 } : {}}
-            transition={{ delay: item.delay, duration: 0.5 }}
-            style={{ 
-              left: item.x, 
-              top: item.y,
-              x: smoothMouseX,
-              y: i % 2 === 0 ? floatingParallax1 : floatingParallax2,
-            }}
-            className="absolute hidden lg:block"
-          >
-          <motion.div
-            animate={{ 
+            animate={{
               y: [0, -15, 0],
               rotate: [0, 10, 0]
             }}
-            transition={{ 
-              duration: 4 + i, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              ease: "easeInOut"
             }}
           >
             <item.icon className="h-8 w-8 text-[#00ADB5]/30" />
@@ -244,14 +244,14 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
         </motion.div>
       ))}
 
-        <div className="relative mx-auto max-w-7xl px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            style={{ y: titleY }}
-            className="mb-20 flex flex-col items-center text-center"
-          >
+      <div className="relative mx-auto max-w-7xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          style={{ y: titleY }}
+          className="mb-20 flex flex-col items-center text-center"
+        >
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
             animate={isInView ? { scale: 1, rotate: 0 } : {}}
@@ -273,8 +273,8 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
               transition={{ duration: 2, repeat: Infinity }}
             />
           </motion.div>
-          
-          <motion.h2 
+
+          <motion.h2
             className="text-4xl font-bold text-[#EEEEEE] md:text-5xl lg:text-6xl"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -282,7 +282,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
           >
             My <span className="gradient-text">Services</span>
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="mx-auto mt-4 max-w-2xl text-[#00ADB5]/70"
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -291,57 +291,56 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
             Comprehensive solutions for your digital needs. From concept to deployment, I deliver quality at every step.
           </motion.p>
 
-          <motion.div 
+          <motion.div
             className="mt-8 flex items-center gap-2"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
             transition={{ delay: 0.5 }}
           >
             {services.map((_, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => handleServiceClick(i)}
-                  className="relative h-2 rounded-full overflow-hidden"
-                  animate={{ width: activeService === i ? 32 : 8 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="absolute inset-0 bg-[#393E46]" />
-                  {activeService === i && (
-                    <motion.div
-                      className="absolute inset-0 bg-[#00ADB5]"
-                      style={{ width: `${progress}%` }}
-                    />
-                  )}
-                </motion.button>
-              ))}
+              <motion.button
+                key={i}
+                onClick={() => handleServiceClick(i)}
+                className="relative h-2 rounded-full overflow-hidden"
+                animate={{ width: activeService === i ? 32 : 8 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="absolute inset-0 bg-[#393E46]" />
+                {activeService === i && (
+                  <motion.div
+                    className="absolute inset-0 bg-[#00ADB5]"
+                    style={{ width: `${progress}%` }}
+                  />
+                )}
+              </motion.button>
+            ))}
           </motion.div>
         </motion.div>
 
-          <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-            <motion.div className="lg:col-span-5" style={{ y: leftColY }}>
-              <div className="sticky top-32 space-y-4">
-{services.map((service, i) => (
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <motion.div className="lg:col-span-5" style={{ y: leftColY }}>
+            <div className="sticky top-32 space-y-4">
+              {services.map((service, i) => (
+                <motion.div
+                  key={service.title}
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={isInView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  onMouseEnter={() => handleServiceHover(i)}
+                  onMouseLeave={handleServiceLeave}
+                  onClick={() => handleServiceClick(i)}
+                  className="cursor-pointer"
+                >
                   <motion.div
-                    key={service.title}
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={isInView ? { opacity: 1, x: 0 } : {}}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    onMouseEnter={() => handleServiceHover(i)}
-                    onMouseLeave={handleServiceLeave}
-                    onClick={() => handleServiceClick(i)}
-                    className="cursor-pointer"
-                  >
-                  <motion.div
-                    animate={{ 
+                    animate={{
                       scale: activeService === i ? 1.02 : 1,
                       x: activeService === i ? 8 : 0
                     }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className={`group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${
-                      activeService === i 
-                        ? "border-[#00ADB5]/50 bg-[#393E46]/30" 
-                        : "border-[#393E46]/30 bg-[#393E46]/10 hover:border-[#393E46]/50"
-                    }`}
+                    className={`group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${activeService === i
+                      ? "border-[#00ADB5]/50 bg-[#393E46]/30"
+                      : "border-[#393E46]/30 bg-[#393E46]/10 hover:border-[#393E46]/50"
+                      }`}
                   >
                     <motion.div
                       className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 transition-opacity`}
@@ -355,27 +354,27 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                       animate={{ scaleY: activeService === i ? 1 : 0 }}
                       transition={{ duration: 0.3 }}
                     />
-                    
+
                     <div className="relative flex items-center gap-4">
-                        <motion.div
-                          animate={{ 
-                            rotate: hoveredIndex === i ? [0, -10, 10, 0] : 0,
-                            scale: activeService === i ? 1.1 : 1
-                          }}
-                          transition={{ duration: 0.5 }}
-                          className="flex h-12 w-12 items-center justify-center rounded-xl"
-                          style={{ 
-                            backgroundColor: activeService === i ? `${service.color}20` : "#393E46",
-                          }}
-                        >
-                          {(() => {
-                            const Icon = iconMap[service.icon_name] || Code
-                            return <Icon className="h-6 w-6 transition-colors" style={{ color: activeService === i ? service.color : "#00ADB5" }} />
-                          })()}
-                        </motion.div>
-                      
+                      <motion.div
+                        animate={{
+                          rotate: hoveredIndex === i ? [0, -10, 10, 0] : 0,
+                          scale: activeService === i ? 1.1 : 1
+                        }}
+                        transition={{ duration: 0.5 }}
+                        className="flex h-12 w-12 items-center justify-center rounded-xl"
+                        style={{
+                          backgroundColor: activeService === i ? `${service.color}20` : "#393E46",
+                        }}
+                      >
+                        {(() => {
+                          const Icon = iconMap[service.icon_name] || Code
+                          return <Icon className="h-6 w-6 transition-colors" style={{ color: activeService === i ? service.color : "#00ADB5" }} />
+                        })()}
+                      </motion.div>
+
                       <div className="flex-1">
-                        <h3 
+                        <h3
                           className="font-bold transition-colors"
                           style={{ color: activeService === i ? service.color : "#EEEEEE" }}
                         >
@@ -387,7 +386,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                       </div>
 
                       <motion.div
-                        animate={{ 
+                        animate={{
                           x: activeService === i ? 0 : -10,
                           opacity: activeService === i ? 1 : 0
                         }}
@@ -398,11 +397,11 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                   </motion.div>
                 </motion.div>
               ))}
-              </div>
-            </motion.div>
+            </div>
+          </motion.div>
 
-            <motion.div className="lg:col-span-7" style={{ y: rightColY }}>
-              <motion.div
+          <motion.div className="lg:col-span-7" style={{ y: rightColY }}>
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.3 }}
@@ -421,8 +420,8 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                   <motion.div
                     className={`absolute inset-0 bg-gradient-to-br ${services[activeService].gradient}`}
                   />
-                  
-                  <div 
+
+                  <div
                     className="absolute inset-0 opacity-30"
                     style={{
                       background: `radial-gradient(circle at ${mousePosition.x % 400}px ${mousePosition.y % 400}px, ${services[activeService].color}20, transparent 50%)`
@@ -437,19 +436,19 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                         transition={{ type: "spring", delay: 0.1 }}
                         className="relative"
                       >
-                          <div 
-                            className="flex h-20 w-20 items-center justify-center rounded-2xl"
-                            style={{ backgroundColor: `${services[activeService].color}20` }}
-                          >
-                            {(() => {
-                              const Icon = iconMap[services[activeService].icon_name] || Code
-                              return <Icon className="h-10 w-10" style={{ color: services[activeService].color }} />
-                            })()}
-                          </div>
+                        <div
+                          className="flex h-20 w-20 items-center justify-center rounded-2xl"
+                          style={{ backgroundColor: `${services[activeService].color}20` }}
+                        >
+                          {(() => {
+                            const Icon = iconMap[services[activeService].icon_name] || Code
+                            return <Icon className="h-10 w-10" style={{ color: services[activeService].color }} />
+                          })()}
+                        </div>
                         <motion.div
                           className="absolute -inset-2 rounded-2xl -z-10"
                           style={{ backgroundColor: services[activeService].color }}
-                          animate={{ 
+                          animate={{
                             scale: [1, 1.2, 1],
                             opacity: [0.2, 0.4, 0.2]
                           }}
@@ -464,7 +463,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
                       >
-                        <span 
+                        <span
                           className="text-sm font-semibold"
                           style={{ color: services[activeService].color }}
                         >
@@ -475,7 +474,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                       </motion.div>
                     </div>
 
-                    <motion.h3 
+                    <motion.h3
                       className="text-3xl font-bold text-[#EEEEEE] mb-4"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -483,8 +482,8 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                     >
                       {services[activeService].title}
                     </motion.h3>
-                    
-                    <motion.p 
+
+                    <motion.p
                       className="text-lg text-[#00ADB5]/80 mb-8 leading-relaxed"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -493,7 +492,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                       {services[activeService].description}
                     </motion.p>
 
-                    <motion.div 
+                    <motion.div
                       className="mb-8"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -509,7 +508,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                             transition={{ delay: 0.3 + i * 0.05 }}
                             whileHover={{ scale: 1.05, y: -2 }}
                             className="rounded-xl border px-4 py-2 text-sm font-medium transition-all cursor-default"
-                            style={{ 
+                            style={{
                               borderColor: `${services[activeService].color}40`,
                               backgroundColor: `${services[activeService].color}10`,
                               color: services[activeService].color
@@ -543,7 +542,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                           whileHover={{ scale: 1.02, y: -2 }}
                           whileTap={{ scale: 0.98 }}
                           className="rounded-xl border-2 px-6 py-3 font-semibold transition-all"
-                          style={{ 
+                          style={{
                             borderColor: `${services[activeService].color}50`,
                             color: services[activeService].color
                           }}
@@ -579,23 +578,23 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                 </motion.div>
               </AnimatePresence>
 
-                <motion.div
-                  className="mt-6 grid grid-cols-3 gap-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 0.5 }}
-                >
-                  {[
-                    { label: "Projects", value: `${siteSettings?.projects_completed || 50}+` },
-                    { label: "Experience", value: `${siteSettings?.years_experience || 5}+ Yrs` },
-                    { label: "Satisfaction", value: "100%" },
-                  ].map((stat, i) => (
+              <motion.div
+                className="mt-6 grid grid-cols-3 gap-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={isInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.5 }}
+              >
+                {[
+                  { label: "Projects", value: `${siteSettings?.projects_completed || 50}+` },
+                  { label: "Experience", value: `${siteSettings?.years_experience || 5}+ Yrs` },
+                  { label: "Satisfaction", value: "100%" },
+                ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
                     whileHover={{ y: -4, scale: 1.02 }}
                     className="rounded-2xl border border-[#393E46]/30 bg-[#393E46]/10 p-4 text-center backdrop-blur-sm"
                   >
-                    <div 
+                    <div
                       className="text-2xl font-bold"
                       style={{ color: services[activeService].color }}
                     >
@@ -604,19 +603,19 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                     <div className="text-xs text-[#00ADB5]/60">{stat.label}</div>
                   </motion.div>
                 ))}
-                </motion.div>
               </motion.div>
             </motion.div>
-          </div>
+          </motion.div>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.7, duration: 0.6 }}
-            style={{ y: statsY }}
-            className="mt-20 flex justify-center"
-          >
-          <Link href="/skills">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.7, duration: 0.6 }}
+          style={{ y: statsY }}
+          className="mt-20 flex justify-center"
+        >
+          <Link href="/skills#services">
             <motion.button
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
@@ -627,7 +626,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                 animate={{ x: ["-100%", "100%"] }}
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               />
-              <span className="relative">View All Skills</span>
+              <span className="relative">View All Services</span>
               <ArrowRight className="relative h-4 w-4 transition-transform group-hover:translate-x-1" />
             </motion.button>
           </Link>

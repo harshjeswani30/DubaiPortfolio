@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import {
   AdminInput,
@@ -25,6 +25,7 @@ type ServiceData = {
   gradient: string
   display_order: number
   is_active: boolean
+  is_featured: boolean
 }
 
 const defaultService: ServiceData = {
@@ -36,6 +37,7 @@ const defaultService: ServiceData = {
   gradient: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
   display_order: 0,
   is_active: true,
+  is_featured: false,
 }
 
 const iconOptions = [
@@ -62,6 +64,27 @@ export function ServiceForm({
     skills: initialData?.skills || [],
   })
 
+  const [featuredCount, setFeaturedCount] = useState(0)
+  const [loadingFeaturedCount, setLoadingFeaturedCount] = useState(false)
+
+  // Fetch featured count on mount and when featured status changes
+  useEffect(() => {
+    const fetchFeaturedCount = async () => {
+      setLoadingFeaturedCount(true)
+      try {
+        const res = await fetch("/api/admin/services")
+        const json = await res.json()
+        const count = json.data?.filter((s: any) => s.is_featured && s.is_active && s.id !== formData.id).length || 0
+        setFeaturedCount(count)
+      } catch (e) {
+        console.error("Failed to fetch featured count:", e)
+      } finally {
+        setLoadingFeaturedCount(false)
+      }
+    }
+    fetchFeaturedCount()
+  }, [formData.id])
+
   const updateField = <K extends keyof ServiceData>(key: K, value: ServiceData[K]) => {
     setFormData((prev) => ({ ...prev, [key]: value }))
   }
@@ -73,6 +96,17 @@ export function ServiceForm({
     setSuccess(false)
 
     try {
+      // Validate featured services limit
+      if (formData.is_featured && !initialData?.is_featured) {
+        const res = await fetch("/api/admin/services")
+        const json = await res.json()
+        const featuredCount = json.data?.filter((s: any) => s.is_featured && s.is_active && s.id !== formData.id).length || 0
+
+        if (featuredCount >= 4) {
+          throw new Error("Maximum 4 featured services allowed. Please unmark another service first.")
+        }
+      }
+
       const url = isEdit ? `/api/admin/services/${formData.id}` : "/api/admin/services"
       const method = isEdit ? "PUT" : "POST"
 
@@ -253,13 +287,36 @@ export function ServiceForm({
           <AdminCardHeader>
             <h3 className="text-lg font-semibold text-white">Status</h3>
           </AdminCardHeader>
-          <AdminCardContent>
+          <AdminCardContent className="space-y-5">
             <AdminSwitch
               label="Active"
               description="Show this service on your portfolio"
               checked={formData.is_active}
               onChange={(checked) => updateField("is_active", checked)}
             />
+            <div className="space-y-2">
+              <AdminSwitch
+                label="Featured"
+                description={
+                  featuredCount >= 4 && !formData.is_featured
+                    ? `Maximum 4 featured services reached (${featuredCount}/4). Unmark another service first.`
+                    : `Display on homepage (${featuredCount}/4 featured services)`
+                }
+                checked={formData.is_featured}
+                onChange={(checked) => {
+                  if (checked && featuredCount >= 4 && !initialData?.is_featured) {
+                    return // Prevent toggling on if limit reached
+                  }
+                  updateField("is_featured", checked)
+                }}
+                disabled={loadingFeaturedCount || (featuredCount >= 4 && !formData.is_featured)}
+              />
+              {featuredCount >= 4 && !formData.is_featured && (
+                <p className="text-xs text-amber-400">
+                  ⚠️ Featured services limit reached. Please unmark another service to feature this one.
+                </p>
+              )}
+            </div>
           </AdminCardContent>
         </AdminCard>
       </form>

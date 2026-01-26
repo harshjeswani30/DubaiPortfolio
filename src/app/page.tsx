@@ -1,4 +1,4 @@
-import { getFeaturedProjects, getHeroSection, getSiteSettings, getServices, getCTASection } from "@/lib/data"
+import { getFeaturedProjects, getHeroSection, getSiteSettings, getFeaturedServices, getCTASection } from "@/lib/data"
 import { HeroSection } from "@/components/sections/hero-section"
 import { FeaturedProjects } from "@/components/sections/featured-projects"
 import { ServicesSection } from "@/components/sections/services-section"
@@ -12,7 +12,7 @@ export default async function HomePage() {
     getFeaturedProjects(),
     getHeroSection(),
     getSiteSettings(),
-    getServices(),
+    getFeaturedServices(),
     getCTASection(),
   ])
 

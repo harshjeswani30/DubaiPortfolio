@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import {
   AdminInput,
@@ -72,6 +72,27 @@ export function BlogForm({
     tags: initialData?.tags || [],
   })
 
+  const [featuredCount, setFeaturedCount] = useState(0)
+  const [loadingFeaturedCount, setLoadingFeaturedCount] = useState(false)
+
+  // Fetch featured count on mount
+  useEffect(() => {
+    const fetchFeaturedCount = async () => {
+      setLoadingFeaturedCount(true)
+      try {
+        const res = await fetch("/api/admin/blog")
+        const json = await res.json()
+        const count = json.data?.filter((p: any) => p.is_featured && p.is_published && p.id !== formData.id).length || 0
+        setFeaturedCount(count)
+      } catch (e) {
+        console.error("Failed to fetch featured count:", e)
+      } finally {
+        setLoadingFeaturedCount(false)
+      }
+    }
+    fetchFeaturedCount()
+  }, [formData.id])
+
   const autoSlug = useMemo(() => (formData.title ? slugify(formData.title) : ""), [formData.title])
   const readingTime = useMemo(() => calculateReadingTime(formData.content), [formData.content])
 
@@ -86,6 +107,17 @@ export function BlogForm({
     setSuccess(false)
 
     try {
+      // Validate featured blogs limit
+      if (formData.is_featured && !initialData?.is_featured) {
+        const res = await fetch("/api/admin/blog")
+        const json = await res.json()
+        const featuredCount = json.data?.filter((p: any) => p.is_featured && p.is_published && p.id !== formData.id).length || 0
+
+        if (featuredCount >= 4) {
+          throw new Error("Maximum 4 featured blog posts allowed. Please unmark another post first.")
+        }
+      }
+
       const url = isEdit ? `/api/admin/blog/${formData.id}` : "/api/admin/blog"
       const method = isEdit ? "PUT" : "POST"
 
@@ -332,12 +364,29 @@ Your content here..."
                   checked={formData.is_published}
                   onChange={(checked) => updateField("is_published", checked)}
                 />
-                <AdminSwitch
-                  label="Featured"
-                  description="Highlight this post on the homepage"
-                  checked={formData.is_featured}
-                  onChange={(checked) => updateField("is_featured", checked)}
-                />
+                <div className="space-y-2">
+                  <AdminSwitch
+                    label="Featured"
+                    description={
+                      featuredCount >= 4 && !formData.is_featured
+                        ? `Maximum 4 featured posts reached (${featuredCount}/4). Unmark another post first.`
+                        : `Show in carousel on blog page (${featuredCount}/4 featured posts)`
+                    }
+                    checked={formData.is_featured}
+                    onChange={(checked) => {
+                      if (checked && featuredCount >= 4 && !initialData?.is_featured) {
+                        return // Prevent toggling on if limit reached
+                      }
+                      updateField("is_featured", checked)
+                    }}
+                    disabled={loadingFeaturedCount || (featuredCount >= 4 && !formData.is_featured)}
+                  />
+                  {featuredCount >= 4 && !formData.is_featured && (
+                    <p className="text-xs text-amber-400">
+                      ⚠️ Featured posts limit reached. Please unmark another post to feature this one.
+                    </p>
+                  )}
+                </div>
               </AdminCardContent>
             </AdminCard>
           </div>

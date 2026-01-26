@@ -21,15 +21,18 @@ interface BlogPost {
   tags: string[]
   reading_time: number
   published_at: string
+  is_featured: boolean
 }
 
-export function BlogContent({ posts }: { posts: BlogPost[] }) {
+export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featuredPosts: BlogPost[] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const heroRef = useRef<HTMLDivElement>(null)
   const cardsRef = useRef<HTMLDivElement>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isCarouselHovered, setIsCarouselHovered] = useState(false)
 
   const categories = useMemo(() => {
     const uniqueCategories = [...new Set(posts.map(post => post.category))]
@@ -38,17 +41,28 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
 
   const filteredPosts = useMemo(() => {
     return posts.filter(post => {
-      const matchesSearch = searchQuery === "" || 
+      const matchesSearch = searchQuery === "" ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      
+
       const matchesCategory = selectedCategory === "All" || post.category === selectedCategory
-      
+
       return matchesSearch && matchesCategory
     })
   }, [posts, searchQuery, selectedCategory])
-  
+
+  // Auto-slide carousel
+  useEffect(() => {
+    if (featuredPosts.length <= 1 || isCarouselHovered) return
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % featuredPosts.length)
+    }, 5000) // Change slide every 5 seconds
+
+    return () => clearInterval(interval)
+  }, [featuredPosts.length, isCarouselHovered])
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
@@ -122,8 +136,15 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
     return () => ctx.revert()
   }, [posts])
 
-  const featuredPost = filteredPosts[0]
-  const regularPosts = filteredPosts.slice(1)
+  const regularPosts = filteredPosts
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % featuredPosts.length)
+  }
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + featuredPosts.length) % featuredPosts.length)
+  }
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#222831] overflow-hidden">
@@ -165,82 +186,80 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
         </div>
       </motion.section>
 
-        <section className="relative z-10 pb-8">
-          <div className="mx-auto max-w-7xl px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div className="relative group">
-                <motion.div
-                  className={`flex items-center gap-2 rounded-full border bg-[#222831]/90 backdrop-blur-md transition-all duration-300 ${
-                    isSearchFocused 
-                      ? "border-[#00ADB5] w-72 shadow-lg shadow-[#00ADB5]/10" 
-                      : "border-[#393E46]/50 w-44 hover:border-[#393E46]"
-                  }`}
-                >
-                  <Search className={`ml-3 h-4 w-4 flex-shrink-0 transition-colors ${isSearchFocused ? "text-[#00ADB5]" : "text-[#EEEEEE]/40"}`} />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    onFocus={() => setIsSearchFocused(true)}
-                    onBlur={() => setIsSearchFocused(false)}
-                    placeholder={isSearchFocused ? "Search articles..." : "Search..."}
-                    className="w-full bg-transparent py-2.5 pr-3 text-sm text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 focus:outline-none"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery("")}
-                      className="mr-2 rounded-full p-1 text-[#EEEEEE]/40 hover:bg-[#393E46] hover:text-[#EEEEEE] transition-colors"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                </motion.div>
-              </div>
-
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
-                      selectedCategory === cat
-                        ? "bg-[#00ADB5] text-[#222831]"
-                        : "bg-[#393E46]/20 text-[#EEEEEE]/60 hover:bg-[#393E46]/40 hover:text-[#EEEEEE]"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-
-            {(searchQuery || selectedCategory !== "All") && (
+      <section className="relative z-10 pb-8">
+        <div className="mx-auto max-w-7xl px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="relative group">
               <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-3 flex items-center gap-2 text-xs text-[#EEEEEE]/50"
+                className={`flex items-center gap-2 rounded-full border bg-[#222831]/90 backdrop-blur-md transition-all duration-300 ${isSearchFocused
+                  ? "border-[#00ADB5] w-72 shadow-lg shadow-[#00ADB5]/10"
+                  : "border-[#393E46]/50 w-44 hover:border-[#393E46]"
+                  }`}
               >
-                <span>{filteredPosts.length} result{filteredPosts.length !== 1 ? "s" : ""}</span>
-                <span className="text-[#393E46]">•</span>
-                <button
-                  onClick={() => {
-                    setSearchQuery("")
-                    setSelectedCategory("All")
-                  }}
-                  className="text-[#00ADB5] hover:underline"
-                >
-                  Clear
-                </button>
+                <Search className={`ml-3 h-4 w-4 flex-shrink-0 transition-colors ${isSearchFocused ? "text-[#00ADB5]" : "text-[#EEEEEE]/40"}`} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  placeholder={isSearchFocused ? "Search articles..." : "Search..."}
+                  className="w-full bg-transparent py-2.5 pr-3 text-sm text-[#EEEEEE] placeholder:text-[#EEEEEE]/40 focus:outline-none"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="mr-2 rounded-full p-1 text-[#EEEEEE]/40 hover:bg-[#393E46] hover:text-[#EEEEEE] transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
               </motion.div>
-            )}
-          </div>
-        </section>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-all ${selectedCategory === cat
+                    ? "bg-[#00ADB5] text-[#222831]"
+                    : "bg-[#393E46]/20 text-[#EEEEEE]/60 hover:bg-[#393E46]/40 hover:text-[#EEEEEE]"
+                    }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {(searchQuery || selectedCategory !== "All") && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-3 flex items-center gap-2 text-xs text-[#EEEEEE]/50"
+            >
+              <span>{filteredPosts.length} result{filteredPosts.length !== 1 ? "s" : ""}</span>
+              <span className="text-[#393E46]">•</span>
+              <button
+                onClick={() => {
+                  setSearchQuery("")
+                  setSelectedCategory("All")
+                }}
+                className="text-[#00ADB5] hover:underline"
+              >
+                Clear
+              </button>
+            </motion.div>
+          )}
+        </div>
+      </section>
 
       <section className="relative z-10 cards-section py-12">
         <div ref={cardsRef} className="mx-auto max-w-7xl px-6">
@@ -267,7 +286,7 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
             </motion.div>
           ) : (
             <>
-              {featuredPost && (
+              {featuredPosts.length > 0 && (
                 <div className="mb-16">
                   <motion.div
                     initial={{ opacity: 0, y: 40 }}
@@ -277,83 +296,133 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
                     className="mb-8 flex items-center gap-3"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10">
-                        <Newspaper className="h-5 w-5 text-[#00ADB5]" />
+                      <Newspaper className="h-5 w-5 text-[#00ADB5]" />
                     </div>
-                    <h2 className="text-2xl font-bold text-[#EEEEEE]">Featured Article</h2>
+                    <h2 className="text-2xl font-bold text-[#EEEEEE]">Featured Articles</h2>
                     <div className="h-[2px] flex-1 bg-gradient-to-r from-[#00ADB5]/50 to-transparent" />
                   </motion.div>
 
-                  <Link href={`/blog/${featuredPost.slug}`}>
-                    <motion.article
-                      initial={{ opacity: 0, y: 60 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      whileHover={{ y: -8 }}
-                      className="magnetic-card floating-card group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 via-[#393E46]/10 to-transparent backdrop-blur-sm"
-                      style={{ perspective: "1000px" }}
+                  {/* Auto-sliding Carousel */}
+                  <div
+                    className="relative overflow-hidden"
+                    onMouseEnter={() => setIsCarouselHovered(true)}
+                    onMouseLeave={() => setIsCarouselHovered(false)}
+                  >
+                    <motion.div
+                      className="flex transition-transform duration-700 ease-out"
+                      style={{ transform: `translateX(-${currentSlide * 100}%)` }}
                     >
-                      <div className="grid md:grid-cols-2 gap-0">
-                        <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
-                          {featuredPost.featured_image ? (
-                            <Image
-                              src={featuredPost.featured_image}
-                              alt={featuredPost.title}
-                              fill
-                              className="object-cover transition-transform duration-700 group-hover:scale-110"
-                            />
-                          ) : (
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/20 to-[#393E46]/20 flex items-center justify-center">
-                              <BookOpen className="h-20 w-20 text-[#00ADB5]/30" />
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent md:bg-gradient-to-r" />
+                      {featuredPosts.map((post, index) => (
+                        <div key={post.id} className="w-full flex-shrink-0 px-2">
+                          <Link href={`/blog/${post.slug}`}>
+                            <motion.article
+                              initial={{ opacity: 0, y: 60 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                              whileHover={{ y: -8 }}
+                              className="magnetic-card floating-card group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 via-[#393E46]/10 to-transparent backdrop-blur-sm"
+                              style={{ perspective: "1000px" }}
+                            >
+                              <div className="grid md:grid-cols-2 gap-0">
+                                <div className="relative aspect-[4/3] md:aspect-auto overflow-hidden">
+                                  {post.featured_image ? (
+                                    <Image
+                                      src={post.featured_image}
+                                      alt={post.title}
+                                      fill
+                                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                  ) : (
+                                    <div className="absolute inset-0 bg-gradient-to-br from-[#00ADB5]/20 to-[#393E46]/20 flex items-center justify-center">
+                                      <BookOpen className="h-20 w-20 text-[#00ADB5]/30" />
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent md:bg-gradient-to-r" />
+                                </div>
+
+                                <div className="relative p-8 md:p-12 flex flex-col justify-center">
+                                  <div className="mb-4 flex flex-wrap items-center gap-3">
+                                    <span className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]">
+                                      {post.category}
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-sm text-[#EEEEEE]/50">
+                                      <Clock className="h-4 w-4" />
+                                      {post.reading_time} min read
+                                    </span>
+                                  </div>
+
+                                  <h3 className="mb-4 text-2xl font-bold text-[#EEEEEE] transition-colors group-hover:text-[#00ADB5] md:text-3xl lg:text-4xl">
+                                    {post.title}
+                                  </h3>
+
+                                  <p className="mb-6 text-[#EEEEEE]/60 line-clamp-3 md:text-lg">
+                                    {post.excerpt}
+                                  </p>
+
+                                  <div className="flex flex-wrap items-center justify-between gap-4">
+                                    <div className="flex flex-wrap gap-2">
+                                      {post.tags.slice(0, 3).map((tag) => (
+                                        <span
+                                          key={tag}
+                                          className="rounded-full border border-[#393E46] px-3 py-1 text-xs text-[#EEEEEE]/50"
+                                        >
+                                          {tag}
+                                        </span>
+                                      ))}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-[#00ADB5]">
+                                      <span>Read Article</span>
+                                      <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                                    </div>
+                                  </div>
+
+                                  <div className="mt-6 flex items-center gap-2 text-sm text-[#EEEEEE]/40">
+                                    <Calendar className="h-4 w-4" />
+                                    {formatDate(post.published_at)}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.article>
+                          </Link>
                         </div>
-                        
-                        <div className="relative p-8 md:p-12 flex flex-col justify-center">
-                          <div className="mb-4 flex flex-wrap items-center gap-3">
-                            <span className="rounded-full bg-[#00ADB5]/10 px-4 py-1.5 text-sm font-medium text-[#00ADB5]">
-                              {featuredPost.category}
-                            </span>
-                            <span className="flex items-center gap-1.5 text-sm text-[#EEEEEE]/50">
-                              <Clock className="h-4 w-4" />
-                              {featuredPost.reading_time} min read
-                            </span>
-                          </div>
+                      ))}
+                    </motion.div>
 
-                          <h3 className="mb-4 text-2xl font-bold text-[#EEEEEE] transition-colors group-hover:text-[#00ADB5] md:text-3xl lg:text-4xl">
-                            {featuredPost.title}
-                          </h3>
+                    {/* Navigation Arrows */}
+                    {featuredPosts.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevSlide}
+                          className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-[#222831]/90 p-3 text-[#EEEEEE] backdrop-blur-sm transition-all hover:bg-[#00ADB5] hover:scale-110"
+                        >
+                          <ChevronRight className="h-5 w-5 rotate-180" />
+                        </button>
+                        <button
+                          onClick={nextSlide}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-[#222831]/90 p-3 text-[#EEEEEE] backdrop-blur-sm transition-all hover:bg-[#00ADB5] hover:scale-110"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </>
+                    )}
 
-                          <p className="mb-6 text-[#EEEEEE]/60 line-clamp-3 md:text-lg">
-                            {featuredPost.excerpt}
-                          </p>
-
-                          <div className="flex flex-wrap items-center justify-between gap-4">
-                            <div className="flex flex-wrap gap-2">
-                              {featuredPost.tags.slice(0, 3).map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="rounded-full border border-[#393E46] px-3 py-1 text-xs text-[#EEEEEE]/50"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-[#00ADB5]">
-                              <span>Read Article</span>
-                              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                            </div>
-                          </div>
-
-                          <div className="mt-6 flex items-center gap-2 text-sm text-[#EEEEEE]/40">
-                            <Calendar className="h-4 w-4" />
-                            {formatDate(featuredPost.published_at)}
-                          </div>
-                        </div>
+                    {/* Dots Indicator */}
+                    {featuredPosts.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                        {featuredPosts.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentSlide(index)}
+                            className={`h-2 rounded-full transition-all ${index === currentSlide
+                              ? "w-8 bg-[#00ADB5]"
+                              : "w-2 bg-[#EEEEEE]/30 hover:bg-[#EEEEEE]/50"
+                              }`}
+                          />
+                        ))}
                       </div>
-                    </motion.article>
-                  </Link>
+                    )}
+                  </div>
                 </div>
               )}
 
@@ -474,7 +543,7 @@ export function BlogContent({ posts }: { posts: BlogPost[] }) {
             className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/5 via-[#393E46]/10 to-transparent p-8 md:p-12 text-center backdrop-blur-sm"
           >
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#00ADB5]/10">
-                <Mail className="h-8 w-8 text-[#00ADB5]" />
+              <Mail className="h-8 w-8 text-[#00ADB5]" />
             </div>
             <h2 className="mb-4 text-2xl font-bold text-[#EEEEEE] md:text-3xl">
               Stay Updated

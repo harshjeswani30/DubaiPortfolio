@@ -20,11 +20,11 @@ const defaultFloatingTags: FloatingTag[] = [
   { icon: Wand2, text: "Creative", color: "#00ADB5", position: "bottom-left" },
 ]
 
-function CornerCircleDecoration({ 
-  position, 
+function CornerCircleDecoration({
+  position,
   delay = 0,
-  gradientId 
-}: { 
+  gradientId
+}: {
   position: "top-left" | "top-right" | "bottom-left" | "bottom-right"
   delay?: number
   gradientId: string
@@ -111,24 +111,24 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
   const containerRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
 
-  const floatingTags: FloatingTag[] = heroTags?.length 
+  const floatingTags: FloatingTag[] = heroTags?.length
     ? heroTags.map((tag, i) => {
-        const IconComponent = (LucideIcons as any)[tag.icon] || Code2
-        return {
-          icon: IconComponent,
-          text: tag.text,
-          color: tag.color,
-          position: positions[i % positions.length],
-        }
-      })
+      const IconComponent = (LucideIcons as any)[tag.icon] || Code2
+      return {
+        icon: IconComponent,
+        text: tag.text,
+        color: tag.color,
+        position: positions[i % positions.length],
+      }
+    })
     : defaultFloatingTags
 
   const displayLocation = location || "Dubai"
 
   const cardRotateX = useMotionValue(0)
   const cardRotateY = useMotionValue(0)
-  const smoothRotateX = useSpring(cardRotateX, { stiffness: 100, damping: 20 })
-  const smoothRotateY = useSpring(cardRotateY, { stiffness: 100, damping: 20 })
+  const smoothRotateX = useSpring(cardRotateX, { stiffness: 150, damping: 25 })
+  const smoothRotateY = useSpring(cardRotateY, { stiffness: 150, damping: 25 })
 
   const handleMouseEnter = () => {
     setIsHovered(true)
@@ -142,8 +142,8 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
     const y = e.clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    cardRotateX.set((y - centerY) / 15)
-    cardRotateY.set((centerX - x) / 15)
+    cardRotateX.set((y - centerY) / 40)
+    cardRotateY.set((centerX - x) / 40)
   }
 
   const handleMouseLeave = () => {
@@ -182,37 +182,37 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
       onMouseLeave={handleMouseLeave}
     >
       <IdleSvgDecorations isVisible={!isHovered} />
-      
+
       <motion.div
-          style={{
-            rotateX: smoothRotateX,
-            rotateY: smoothRotateY,
-            transformStyle: "preserve-3d",
-          }}
-          className="relative"
-        >
-          <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[420px] lg:w-[420px]">
-            <motion.div
-              className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
-              animate={{
-                borderColor: isHovered ? "rgba(0, 173, 181, 0.5)" : "rgba(57, 62, 70, 0.5)",
-                boxShadow: isHovered
-                  ? "0 25px 80px -12px rgba(0, 173, 181, 0.4), 0 0 60px -15px rgba(74, 222, 128, 0.3)"
-                  : "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+        style={{
+          rotateX: smoothRotateX,
+          rotateY: smoothRotateY,
+          transformStyle: "preserve-3d",
+        }}
+        className="relative"
+      >
+        <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[420px] lg:w-[420px]">
+          <motion.div
+            className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
+            animate={{
+              borderColor: isHovered ? "rgba(0, 173, 181, 0.5)" : "rgba(57, 62, 70, 0.5)",
+              boxShadow: isHovered
+                ? "0 25px 80px -12px rgba(0, 173, 181, 0.4), 0 0 60px -15px rgba(74, 222, 128, 0.3)"
+                : "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+            }}
+            transition={{ duration: 0.4 }}
+          >
+            <Image
+              src={profileImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=face"}
+              alt="Developer Portrait"
+              fill
+              className="object-cover transition-all duration-700"
+              style={{
+                transform: isHovered ? "scale(1.08)" : "scale(1)",
+                filter: isHovered ? "brightness(1.1)" : "brightness(1)",
               }}
-              transition={{ duration: 0.4 }}
-            >
-              <Image
-                  src={profileImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=800&fit=crop&crop=face"}
-                  alt="Developer Portrait"
-                  fill
-                  className="object-cover transition-all duration-700"
-                  style={{
-                    transform: isHovered ? "scale(1.08)" : "scale(1)",
-                    filter: isHovered ? "brightness(1.1)" : "brightness(1)",
-                  }}
-                  priority
-                />
+              priority
+            />
 
             <motion.div
               className="absolute inset-0 bg-gradient-to-t from-[#222831] via-transparent to-transparent"
@@ -322,17 +322,17 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
               className="relative rounded-2xl border border-[#393E46]/60 bg-[#222831]/95 px-4 py-3 backdrop-blur-xl shadow-xl"
             >
               <div className="flex items-center gap-3">
-                  <motion.div
-                    className="text-2xl"
-                    animate={{ rotate: isHovered ? [0, 10, -10, 0] : 0 }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    🇦🇪
-                  </motion.div>
-                  <div>
-                    <div className="text-[9px] uppercase tracking-widest text-[#00ADB5]/60">Based in</div>
-                    <div className="text-base font-bold text-[#EEEEEE]">{displayLocation}</div>
-                  </div>
+                <motion.div
+                  className="text-2xl"
+                  animate={{ rotate: isHovered ? [0, 10, -10, 0] : 0 }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  🇦🇪
+                </motion.div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-widest text-[#00ADB5]/60">Based in</div>
+                  <div className="text-base font-bold text-[#EEEEEE]">{displayLocation}</div>
+                </div>
               </div>
             </motion.div>
           </motion.div>

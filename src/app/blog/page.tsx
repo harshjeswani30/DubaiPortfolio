@@ -1,5 +1,5 @@
 import { Metadata } from "next"
-import { getBlogPosts } from "@/lib/data"
+import { getBlogPosts, getFeaturedBlogPosts } from "@/lib/data"
 import { BlogContent } from "./blog-content"
 
 export const metadata: Metadata = {
@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 export const revalidate = 0
 
 export default async function BlogPage() {
-  const posts = await getBlogPosts()
-  return <BlogContent posts={posts} />
+  const [posts, featuredPosts] = await Promise.all([
+    getBlogPosts(),
+    getFeaturedBlogPosts(),
+  ])
+  return <BlogContent posts={posts} featuredPosts={featuredPosts} />
 }

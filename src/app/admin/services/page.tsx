@@ -16,6 +16,7 @@ type ServiceRow = {
   gradient: string
   display_order: number
   is_active: boolean
+  is_featured: boolean
 }
 
 export default function AdminServicesPage() {
@@ -80,6 +81,7 @@ export default function AdminServicesPage() {
   const stats = {
     total: items.length,
     active: items.filter((s) => s.is_active).length,
+    featured: items.filter((s) => s.is_featured && s.is_active).length,
     inactive: items.filter((s) => !s.is_active).length,
   }
 
@@ -98,7 +100,7 @@ export default function AdminServicesPage() {
       }
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-4">
             <p className="text-2xl font-bold text-white">{stats.total}</p>
             <p className="text-sm text-zinc-400">Total Services</p>
@@ -106,6 +108,10 @@ export default function AdminServicesPage() {
           <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-4">
             <p className="text-2xl font-bold text-green-400">{stats.active}</p>
             <p className="text-sm text-zinc-400">Active</p>
+          </div>
+          <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4">
+            <p className="text-2xl font-bold text-cyan-400">{stats.featured}</p>
+            <p className="text-sm text-zinc-400">Featured</p>
           </div>
           <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
             <p className="text-2xl font-bold text-amber-400">{stats.inactive}</p>
@@ -153,7 +159,7 @@ export default function AdminServicesPage() {
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 transition-all hover:border-white/20"
               >
                 <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-2xl" style={{ background: service.gradient || service.color || '#3b82f6' }} />
-                
+
                 <div className="relative">
                   <div className="mb-4 flex items-start justify-between">
                     <div
@@ -162,16 +168,23 @@ export default function AdminServicesPage() {
                     >
                       <Palette className="h-6 w-6" style={{ color: service.color || '#3b82f6' }} />
                     </div>
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-xs font-medium",
-                        service.is_active
-                          ? "bg-green-500/20 text-green-300"
-                          : "bg-amber-500/20 text-amber-300"
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-xs font-medium",
+                          service.is_active
+                            ? "bg-green-500/20 text-green-300"
+                            : "bg-amber-500/20 text-amber-300"
+                        )}
+                      >
+                        {service.is_active ? "Active" : "Inactive"}
+                      </span>
+                      {service.is_featured && service.is_active && (
+                        <span className="rounded-full bg-cyan-500/20 px-2 py-0.5 text-xs font-medium text-cyan-300">
+                          Featured
+                        </span>
                       )}
-                    >
-                      {service.is_active ? "Active" : "Inactive"}
-                    </span>
+                    </div>
                   </div>
 
                   <h3 className="mb-2 text-lg font-semibold text-white">{service.title || "(Untitled)"}</h3>

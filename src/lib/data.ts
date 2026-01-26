@@ -42,6 +42,7 @@ export interface BlogPost {
   reading_time: number
   published_at: string
   is_published: boolean
+  is_featured: boolean
 }
 
 export interface Skill {
@@ -74,6 +75,8 @@ export interface Service {
   color: string
   gradient: string
   display_order: number
+  is_featured: boolean
+  is_active: boolean
 }
 
 export interface SiteSettings {
@@ -209,10 +212,10 @@ export async function getProjects(): Promise<Project[]> {
     results: p.results || [],
     testimonial: p.testimonial_quote
       ? {
-          quote: p.testimonial_quote,
-          author: p.testimonial_author,
-          position: p.testimonial_position,
-        }
+        quote: p.testimonial_quote,
+        author: p.testimonial_author,
+        position: p.testimonial_position,
+      }
       : undefined,
   }))
 }
@@ -238,10 +241,10 @@ export async function getFeaturedProjects(): Promise<Project[]> {
     results: p.results || [],
     testimonial: p.testimonial_quote
       ? {
-          quote: p.testimonial_quote,
-          author: p.testimonial_author,
-          position: p.testimonial_position,
-        }
+        quote: p.testimonial_quote,
+        author: p.testimonial_author,
+        position: p.testimonial_position,
+      }
       : undefined,
   }))
 }
@@ -266,10 +269,10 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
     results: data.results || [],
     testimonial: data.testimonial_quote
       ? {
-          quote: data.testimonial_quote,
-          author: data.testimonial_author,
-          position: data.testimonial_position,
-        }
+        quote: data.testimonial_quote,
+        author: data.testimonial_author,
+        position: data.testimonial_position,
+      }
       : undefined,
   }
 }
@@ -307,6 +310,24 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
   }
 }
 
+export async function getFeaturedBlogPosts(): Promise<BlogPost[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select("*")
+    .eq("is_published", true)
+    .eq("is_featured", true)
+    .order("published_at", { ascending: false })
+    .limit(4)
+
+  if (error || !data) return []
+
+  return data.map((p) => ({
+    ...p,
+    tags: p.tags || [],
+  }))
+}
+
 export async function getSkills(): Promise<Skill[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -338,6 +359,24 @@ export async function getServices(): Promise<Service[]> {
     .select("*")
     .eq("is_active", true)
     .order("display_order", { ascending: true })
+
+  if (error || !data) return []
+
+  return data.map((s) => ({
+    ...s,
+    skills: s.skills || [],
+  }))
+}
+
+export async function getFeaturedServices(): Promise<Service[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("services")
+    .select("*")
+    .eq("is_active", true)
+    .eq("is_featured", true)
+    .order("display_order", { ascending: true })
+    .limit(4)
 
   if (error || !data) return []
 
@@ -475,19 +514,19 @@ export async function getAboutData() {
   return {
     about: settings
       ? {
-          name: settings.name,
-          role: settings.role,
-          bio: settings.bio,
-          email: settings.email,
-          location: settings.location,
-        }
+        name: settings.name,
+        role: settings.role,
+        bio: settings.bio,
+        email: settings.email,
+        location: settings.location,
+      }
       : {
-          name: "Dubai Developer",
-          role: "Full Stack Developer",
-          bio: "",
-          email: "",
-          location: "Dubai, UAE",
-        },
+        name: "Dubai Developer",
+        role: "Full Stack Developer",
+        bio: "",
+        email: "",
+        location: "Dubai, UAE",
+      },
     experiences,
     skills,
   }
@@ -508,13 +547,13 @@ export async function getResumeData() {
   return {
     about: settings
       ? {
-          name: settings.name,
-          role: settings.role,
-          bio: settings.bio,
-          email: settings.email,
-          phone: settings.phone,
-          location: settings.location,
-        }
+        name: settings.name,
+        role: settings.role,
+        bio: settings.bio,
+        email: settings.email,
+        phone: settings.phone,
+        location: settings.location,
+      }
       : null,
     experiences,
     skills,

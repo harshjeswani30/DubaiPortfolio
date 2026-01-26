@@ -36,7 +36,7 @@ interface MagneticButtonProps {
 function MagneticButton({ children, href, variant = "primary" }: MagneticButtonProps) {
   const buttonRef = useRef<HTMLDivElement>(null)
   const [isHovered, setIsHovered] = useState(false)
-  
+
   const x = useMotionValue(0)
   const y = useMotionValue(0)
   const springX = useSpring(x, { stiffness: 150, damping: 15 })
@@ -69,17 +69,16 @@ function MagneticButton({ children, href, variant = "primary" }: MagneticButtonP
         className="relative"
       >
         <motion.div
-          className={`relative flex items-center gap-3 rounded-full px-8 py-4 font-semibold transition-all duration-300 ${
-            variant === "primary"
-              ? "bg-gradient-to-r from-[#00ADB5] to-[#00CED6] text-[#222831]"
-              : "border border-[#393E46] bg-transparent text-[#EEEEEE] hover:border-[#00ADB5]/50"
-          }`}
+          className={`relative flex items-center gap-3 rounded-full px-8 py-4 font-semibold transition-all duration-300 ${variant === "primary"
+            ? "bg-gradient-to-r from-[#00ADB5] to-[#00CED6] text-[#222831]"
+            : "border border-[#393E46] bg-transparent text-[#EEEEEE] hover:border-[#00ADB5]/50"
+            }`}
           animate={{
             boxShadow: isHovered && variant === "primary"
               ? "0 20px 40px -12px rgba(0, 173, 181, 0.5)"
               : variant === "primary"
-              ? "0 8px 24px -8px rgba(0, 173, 181, 0.3)"
-              : "none",
+                ? "0 8px 24px -8px rgba(0, 173, 181, 0.3)"
+                : "none",
           }}
         >
           <span>{children}</span>
@@ -181,7 +180,7 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
   return (
     <section ref={ref} className="relative overflow-hidden bg-[#222831] py-24 lg:py-32">
       <div className="absolute inset-0 grid-background opacity-20" />
-      
+
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           animate={{ opacity: [0.15, 0.25, 0.15], scale: [1, 1.1, 1] }}
@@ -218,9 +217,9 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
               background: `radial-gradient(600px circle at ${glowX}% ${glowY}%, rgba(0, 173, 181, 0.15), transparent 40%)`,
             }}
           />
-          
+
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(0,173,181,0.05),transparent_50%)]" />
-          
+
           <motion.div
             className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-[#00ADB5]/5 blur-3xl"
             animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -231,7 +230,7 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
             animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
           />
-          
+
           <div className="relative text-center" style={{ transform: "translateZ(20px)" }}>
             {availableForWork && (
               <motion.div
@@ -246,7 +245,7 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
                   className="h-2 w-2 rounded-full bg-[#00ADB5]"
                 />
                 <span className="text-sm font-medium text-[#00ADB5]">{availabilityText}</span>
-                  <Briefcase className="h-3.5 w-3.5 text-[#00ADB5]/70" />
+                <Briefcase className="h-3.5 w-3.5 text-[#00ADB5]/70" />
               </motion.div>
             )}
 

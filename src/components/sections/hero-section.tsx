@@ -54,7 +54,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
   const [isHovering, setIsHovering] = useState(false)
   const [isCardHovered, setIsCardHovered] = useState(false)
   const [cardPosition, setCardPosition] = useState<"left" | "center" | "right">("center")
-  
+
   const tagline = heroData?.tagline || "Crafting Digital Experiences"
   const highlightText = heroData?.highlight_text || "Digital"
   const description = heroData?.description || "Full-stack developer based in Dubai, turning complex problems into elegant solutions. Let's build something extraordinary together."
@@ -71,7 +71,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
   ]
 
   const taglineParts = tagline.split(highlightText)
-  
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -83,14 +83,14 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
   const imageY = useTransform(smoothProgress, [0, 1], ["0%", "-30%"])
   const opacity = useTransform(smoothProgress, [0, 0.4, 0.6], [1, 0.8, 0])
   const blur = useTransform(smoothProgress, [0, 0.5], [0, 10])
-  
+
   const bgY = useTransform(smoothProgress, [0, 1], ["0%", "30%"])
   const circleScale = useTransform(smoothProgress, [0, 1], [1, 1.5])
   const circleOpacity = useTransform(smoothProgress, [0, 0.5], [0.2, 0])
-  
+
   const floatingY1 = useParallax(smoothProgress, 100)
   const floatingY2 = useParallax(smoothProgress, 150)
-  
+
   const statsY = useTransform(smoothProgress, [0, 1], ["0%", "80%"])
   const statsScale = useTransform(smoothProgress, [0, 0.5], [1, 0.9])
 
@@ -120,7 +120,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
     const rect = cardContainerRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const screenWidth = window.innerWidth
-    
+
     if (centerX < screenWidth * 0.33) {
       setCardPosition("left")
     } else if (centerX > screenWidth * 0.66) {
@@ -141,7 +141,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
       ambientGlowOpacity.set(1)
       ambientGlowScale.set(1.2)
       noiseOpacity.set(0.06)
-      
+
       const angleOffset = cardPosition === "left" ? -15 : cardPosition === "right" ? 15 : 0
       gradientAngle.set(hoverGradient.angle + angleOffset)
     } else {
@@ -157,11 +157,11 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
       ref={containerRef}
       className="relative h-[120vh] overflow-hidden bg-[#222831]"
     >
-      <motion.div 
+      <motion.div
         className="absolute inset-0 dot-background"
         style={{ y: bgY }}
       />
-      
+
       <motion.div
         className="absolute inset-0 pointer-events-none"
         style={{ opacity: noiseOpacity }}
@@ -194,8 +194,8 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ 
-              duration: 0.6, 
+            transition={{
+              duration: 0.6,
               ease: [0.16, 1, 0.3, 1],
               exit: { duration: 1, ease: [0.16, 1, 0.3, 1] }
             }}
@@ -239,7 +239,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
       <motion.div
         className="absolute inset-0 pointer-events-none"
         animate={{
-          background: isCardHovered 
+          background: isCardHovered
             ? "radial-gradient(ellipse at 70% 50%, rgba(0, 173, 181, 0.08) 0%, transparent 50%)"
             : "radial-gradient(ellipse at 70% 50%, rgba(0, 173, 181, 0) 0%, transparent 50%)",
         }}
@@ -257,7 +257,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
           <div className="absolute inset-[100px] rounded-full border border-[#00ADB5]/10" />
           <div className="absolute inset-[200px] rounded-full border border-[#EEEEEE]/5" />
         </motion.div>
-        
+
         <motion.div
           style={{ x: smoothX, y: smoothY }}
           className="absolute left-1/4 top-1/3 h-[400px] w-[400px] rounded-full bg-[#393E46]/20 blur-[100px]"
@@ -290,14 +290,14 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
       </div>
 
       <div className="sticky top-0 h-screen">
-        <motion.div 
-          style={{ 
+        <motion.div
+          style={{
             opacity,
             filter: useTransform(blur, (v) => `blur(${v}px)`)
-          }} 
+          }}
           className="relative z-10 mx-auto flex h-full max-w-7xl flex-col lg:flex-row lg:items-center lg:justify-between px-6 pt-24 pb-8 gap-6"
         >
-          <motion.div 
+          <motion.div
             style={{ y: textY }}
             className="flex flex-col justify-center lg:max-w-lg flex-shrink-0"
           >
@@ -448,8 +448,8 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ 
-                    duration: 0.5, 
+                  transition={{
+                    duration: 0.5,
                     ease: [0.16, 1, 0.3, 1],
                     exit: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
                   }}
@@ -480,8 +480,8 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
               )}
             </AnimatePresence>
 
-            <CreativeImageCard 
-              onHoverChange={setIsCardHovered} 
+            <CreativeImageCard
+              onHoverChange={setIsCardHovered}
               profileImage={siteSettings?.profile_image}
               heroTags={siteSettings?.hero_tags}
               location={siteSettings?.location}

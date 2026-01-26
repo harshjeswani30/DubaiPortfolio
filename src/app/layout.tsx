@@ -75,7 +75,7 @@ export default function RootLayout({
         <ThemeProvider>
           <PageTransitionProvider>
               <SmoothScrollProvider>
-                  <CircleTrailCursor fillColor="#00ADB5" />
+                  {/* <CircleTrailCursor fillColor="#00ADB5" /> */}
                 <ScrollProgress />
                 <CommandPalette />
                 <main className="min-h-screen">{children}</main>

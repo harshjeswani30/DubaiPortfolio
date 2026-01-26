@@ -32,7 +32,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const [isHovered, setIsHovered] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const { startTransition } = usePageTransition()
-  
+
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
   const smoothRotateX = useSpring(rotateX, { stiffness: 200, damping: 25 })
@@ -46,7 +46,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     const y = e.clientY - rect.top
     const centerX = rect.width / 2
     const centerY = rect.height / 2
-    
+
     rotateX.set((y - centerY) / 15)
     rotateY.set((centerX - x) / 15)
     setMousePosition({ x, y })
@@ -56,7 +56,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     setIsHovered(true)
     glowOpacity.set(1)
     if (videoRef.current && project.preview_video) {
-      videoRef.current.play().catch(() => {})
+      videoRef.current.play().catch(() => { })
     }
   }
 
@@ -71,25 +71,25 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     }
   }
 
-    const handleProjectClick = (e: React.MouseEvent) => {
-      e.preventDefault()
-      e.stopPropagation()
-      if (!cardRef.current) return
-      
-      sessionStorage.setItem('projectSource', 'home')
-      
-      const rect = cardRef.current.getBoundingClientRect()
-      startTransition(
-        {
-          originRect: rect,
-          targetSlug: project.slug,
-          projectTitle: project.title,
-          projectCategory: project.category,
-          projectImage: project.featured_image,
-        },
-        `/projects/${project.slug}`
-      )
-    }
+  const handleProjectClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!cardRef.current) return
+
+    sessionStorage.setItem('projectSource', 'home')
+
+    const rect = cardRef.current.getBoundingClientRect()
+    startTransition(
+      {
+        originRect: rect,
+        targetSlug: project.slug,
+        projectTitle: project.title,
+        projectCategory: project.category,
+        projectImage: project.featured_image,
+      },
+      `/projects/${project.slug}`
+    )
+  }
 
   return (
     <motion.div
@@ -97,8 +97,8 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       data-project-slug={project.slug}
       initial={{ opacity: 0, y: 60, scale: 0.95 }}
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-      transition={{ 
-        duration: 0.7, 
+      transition={{
+        duration: 0.7,
         delay: index * 0.12,
         ease: [0.16, 1, 0.3, 1]
       }}
@@ -107,9 +107,9 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       onMouseLeave={handleMouseLeave}
       className="relative"
       style={{ perspective: 1200 }}
-      >
-        <div className="cursor-pointer">
-          <motion.div
+    >
+      <div className="cursor-pointer">
+        <motion.div
           style={{
             rotateX: smoothRotateX,
             rotateY: smoothRotateY,
@@ -141,124 +141,124 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
             </div>
 
             <div className="relative aspect-[16/10] overflow-hidden">
-                {project.preview_video ? (
-                  <motion.div
-                    className="h-full w-full"
-                    animate={{ scale: isHovered ? 1.05 : 1 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  >
-                    {project.featured_image && (
-                      <Image
-                        src={project.featured_image}
-                        alt={project.title}
-                        fill
-                        className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    )}
-                    <video
-                      ref={videoRef}
-                      src={project.preview_video}
-                      muted
-                      loop
-                      playsInline
-                      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
-                    />
-                  </motion.div>
-                ) : project.featured_image ? (
-                  <motion.div
-                    className="h-full w-full"
-                    animate={{ scale: isHovered ? 1.1 : 1 }}
-                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  >
+              {project.preview_video ? (
+                <motion.div
+                  className="h-full w-full"
+                  animate={{ scale: isHovered ? 1.05 : 1 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {project.featured_image && (
                     <Image
                       src={project.featured_image}
                       alt={project.title}
                       fill
-                      className="object-cover"
+                      className={`object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
-                  </motion.div>
-                ) : (
-                  <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
-                    <div className="absolute inset-0">
-                      <motion.div
-                        className="absolute inset-0"
-                        animate={{ 
-                          backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
-                        style={{
-                          backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
-                          backgroundSize: '200% 200%'
-                        }}
-                      />
-                    </div>
-                    
-                    <motion.div
-                      animate={{ 
-                        scale: isHovered ? 1.15 : 1,
-                        rotate: isHovered ? 5 : 0
-                      }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                      className="relative z-10"
-                    >
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-                        className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
-                      />
-                      <motion.div
-                        animate={{ rotate: -360 }}
-                        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                        className="absolute -inset-8 rounded-full border border-[#393E46]/30"
-                      />
-                      <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
-                        {project.title.charAt(0)}
-                      </span>
-                    </motion.div>
-                  </div>
-                )}
-
-<motion.div 
-                    className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-transparent"
-                    animate={{ opacity: isHovered ? 0.85 : 0.75 }}
-                    transition={{ duration: 0.3 }}
-                  />
-
-<div className="absolute left-4 top-4 flex flex-col items-start gap-3 max-w-[85%]">
-                  <motion.div
-                    initial={{ x: -15, opacity: 0 }}
-                    animate={isInView ? { x: 0, opacity: 1 } : {}}
-                    transition={{ delay: 0.3 + index * 0.08, duration: 0.4 }}
-                    className="flex items-center gap-2 rounded-lg bg-[#222831]/85 px-2.5 py-1.5 backdrop-blur-md border border-[#393E46]/40"
-                  >
-                    <motion.span 
-                      className="flex h-2 w-2 rounded-full bg-[#00ADB5]"
-                      animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                    <span className="text-[10px] font-semibold text-[#EEEEEE]/80 uppercase tracking-wider">{project.category}</span>
-                  </motion.div>
-
-                  {project.tagline && (
-                    <motion.div
-                      initial={{ y: 30, opacity: 0, skewY: 6 }}
-                      animate={isInView ? { y: 0, opacity: 1, skewY: 0 } : {}}
-                      transition={{ delay: 0.5 + index * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-                      className="overflow-hidden"
-                    >
-                      <p className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-medium leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5)' }}>
-                        {project.tagline}{" "}
-                        {project.tagline_highlight && (
-                          <em className="text-[#00ADB5] italic">{project.tagline_highlight}</em>
-                        )}
-                      </p>
-                    </motion.div>
                   )}
-                </div>
+                  <video
+                    ref={videoRef}
+                    src={project.preview_video}
+                    muted
+                    loop
+                    playsInline
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                  />
+                </motion.div>
+              ) : project.featured_image ? (
+                <motion.div
+                  className="h-full w-full"
+                  animate={{ scale: isHovered ? 1.1 : 1 }}
+                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Image
+                    src={project.featured_image}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </motion.div>
+              ) : (
+                <div className="relative flex h-full items-center justify-center bg-gradient-to-br from-[#393E46]/20 via-[#2a2f38] to-[#222831] overflow-hidden">
+                  <div className="absolute inset-0">
+                    <motion.div
+                      className="absolute inset-0"
+                      animate={{
+                        backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%'
+                      }}
+                      transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }}
+                      style={{
+                        backgroundImage: 'linear-gradient(45deg, transparent 30%, rgba(0, 173, 181, 0.03) 50%, transparent 70%)',
+                        backgroundSize: '200% 200%'
+                      }}
+                    />
+                  </div>
 
-              <motion.div 
+                  <motion.div
+                    animate={{
+                      scale: isHovered ? 1.15 : 1,
+                      rotate: isHovered ? 5 : 0
+                    }}
+                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative z-10"
+                  >
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                      className="absolute -inset-12 rounded-full border border-dashed border-[#00ADB5]/15"
+                    />
+                    <motion.div
+                      animate={{ rotate: -360 }}
+                      transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                      className="absolute -inset-8 rounded-full border border-[#393E46]/30"
+                    />
+                    <span className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-[#00ADB5]/50 to-[#EEEEEE]/30">
+                      {project.title.charAt(0)}
+                    </span>
+                  </motion.div>
+                </div>
+              )}
+
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-t from-[#222831] via-[#222831]/50 to-transparent"
+                animate={{ opacity: isHovered ? 0.85 : 0.75 }}
+                transition={{ duration: 0.3 }}
+              />
+
+              <div className="absolute left-4 top-4 flex flex-col items-start gap-3 max-w-[85%]">
+                <motion.div
+                  initial={{ x: -15, opacity: 0 }}
+                  animate={isInView ? { x: 0, opacity: 1 } : {}}
+                  transition={{ delay: 0.3 + index * 0.08, duration: 0.4 }}
+                  className="flex items-center gap-2 rounded-lg bg-[#222831]/85 px-2.5 py-1.5 backdrop-blur-md border border-[#393E46]/40"
+                >
+                  <motion.span
+                    className="flex h-2 w-2 rounded-full bg-[#00ADB5]"
+                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                  <span className="text-[10px] font-semibold text-[#EEEEEE]/80 uppercase tracking-wider">{project.category}</span>
+                </motion.div>
+
+                {project.tagline && (
+                  <motion.div
+                    initial={{ y: 30, opacity: 0, skewY: 6 }}
+                    animate={isInView ? { y: 0, opacity: 1, skewY: 0 } : {}}
+                    transition={{ delay: 0.5 + index * 0.1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <p className="font-serif text-2xl sm:text-3xl md:text-4xl text-white font-medium leading-tight" style={{ textShadow: '0 2px 10px rgba(0,0,0,0.8), 0 4px 20px rgba(0,0,0,0.5)' }}>
+                      {project.tagline}{" "}
+                      {project.tagline_highlight && (
+                        <em className="text-[#00ADB5] italic">{project.tagline_highlight}</em>
+                      )}
+                    </p>
+                  </motion.div>
+                )}
+              </div>
+
+              <motion.div
                 className="absolute right-3 top-3"
                 initial={{ x: 15, opacity: 0 }}
                 animate={isInView ? { x: 0, opacity: 1 } : {}}
@@ -270,112 +270,112 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               </motion.div>
             </div>
 
-<div className="relative p-5">
-                <div className="mb-3 flex items-start justify-between gap-3">
-                  <motion.h3 
-                    className="text-lg font-bold text-[#EEEEEE] transition-colors duration-300 group-hover:text-[#00ADB5] line-clamp-1"
-                    style={{ transform: 'translateZ(15px)' }}
-                  >
-                    {project.title}
-                  </motion.h3>
-                  <motion.div
-                    animate={{ 
-                      x: isHovered ? 3 : 0,
-                      y: isHovered ? -3 : 0,
-                    }}
-                    transition={{ duration: 0.25 }}
-                    className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#393E46]/40 text-[#00ADB5] transition-all group-hover:bg-[#00ADB5] group-hover:text-[#222831]"
-                  >
-                    <ArrowUpRight className="h-3.5 w-3.5" />
-                  </motion.div>
-                </div>
-
-                <p className="mb-4 line-clamp-2 text-sm text-[#EEEEEE]/55 leading-relaxed">
-                  {project.description}
-                </p>
-
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {project.tech_stack.slice(0, 3).map((tech, techIndex) => (
-                    <motion.span
-                      key={tech}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                      transition={{ delay: 0.4 + index * 0.08 + techIndex * 0.04, duration: 0.25 }}
-                      whileHover={{ scale: 1.05, y: -1 }}
-                      className="rounded-md bg-[#393E46]/35 px-2.5 py-1 text-[11px] font-medium text-[#00ADB5] transition-all hover:bg-[#00ADB5]/15 border border-transparent hover:border-[#00ADB5]/25"
-                    >
-                      {tech}
-                    </motion.span>
-                  ))}
-                  {project.tech_stack.length > 3 && (
-                    <span className="rounded-md bg-[#393E46]/20 px-2.5 py-1 text-[11px] font-medium text-[#EEEEEE]/35">
-                      +{project.tech_stack.length - 3}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
-                      <Link 
-                        href={`/projects/${project.slug}`}
-                        onClick={() => {
-                          sessionStorage.setItem('projectSource', 'home')
-                          sessionStorage.setItem('homeScrollPosition', window.scrollY.toString())
-                        }}
-                        className="flex-1"
-                      >
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
-                      >
-                        <span>View Details</span>
-                        <ArrowUpRight className="h-3 w-3" />
-                      </motion.button>
-                    </Link>
-                  
-                  {project.github_url && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(project.github_url, '_blank')
-                      }}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
-                    >
-                      <Github className="h-3.5 w-3.5" />
-                    </motion.button>
-                  )}
-                  
-                  {project.live_url && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        window.open(project.live_url, '_blank')
-                      }}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </motion.button>
-                  )}
-                </div>
-
+            <div className="relative p-5">
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <motion.h3
+                  className="text-lg font-bold text-[#EEEEEE] transition-colors duration-300 group-hover:text-[#00ADB5] line-clamp-1"
+                  style={{ transform: 'translateZ(15px)' }}
+                >
+                  {project.title}
+                </motion.h3>
                 <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00ADB5] via-[#00ADB5]/60 to-transparent"
-                  initial={{ scaleX: 0, originX: 0 }}
-                  animate={isInView ? { scaleX: 1 } : {}}
-                  transition={{ duration: 1, delay: 0.5 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
-                />
-
-                <motion.div
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00ADB5] via-[#00c4cc] to-[#EEEEEE]"
-                  initial={{ scaleX: 0, originX: 0 }}
-                  animate={{ scaleX: isHovered ? 1 : 0 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                />
+                  animate={{
+                    x: isHovered ? 3 : 0,
+                    y: isHovered ? -3 : 0,
+                  }}
+                  transition={{ duration: 0.25 }}
+                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#393E46]/40 text-[#00ADB5] transition-all group-hover:bg-[#00ADB5] group-hover:text-[#222831]"
+                >
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </motion.div>
               </div>
+
+              <p className="mb-4 line-clamp-2 text-sm text-[#EEEEEE]/55 leading-relaxed">
+                {project.description}
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 mb-4">
+                {project.tech_stack.slice(0, 3).map((tech, techIndex) => (
+                  <motion.span
+                    key={tech}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 0.4 + index * 0.08 + techIndex * 0.04, duration: 0.25 }}
+                    whileHover={{ scale: 1.05, y: -1 }}
+                    className="rounded-md bg-[#393E46]/35 px-2.5 py-1 text-[11px] font-medium text-[#00ADB5] transition-all hover:bg-[#00ADB5]/15 border border-transparent hover:border-[#00ADB5]/25"
+                  >
+                    {tech}
+                  </motion.span>
+                ))}
+                {project.tech_stack.length > 3 && (
+                  <span className="rounded-md bg-[#393E46]/20 px-2.5 py-1 text-[11px] font-medium text-[#EEEEEE]/35">
+                    +{project.tech_stack.length - 3}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
+                <Link
+                  href={`/projects/${project.slug}`}
+                  onClick={() => {
+                    sessionStorage.setItem('projectSource', 'home')
+                    sessionStorage.setItem('homeScrollPosition', window.scrollY.toString())
+                  }}
+                  className="flex-1"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
+                  >
+                    <span>View Details</span>
+                    <ArrowUpRight className="h-3 w-3" />
+                  </motion.button>
+                </Link>
+
+                {project.github_url && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      window.open(project.github_url, '_blank')
+                    }}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
+                  >
+                    <Github className="h-3.5 w-3.5" />
+                  </motion.button>
+                )}
+
+                {project.live_url && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      window.open(project.live_url, '_blank')
+                    }}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#393E46] bg-[#393E46]/30 text-[#EEEEEE]/70 transition-all hover:border-[#00ADB5]/50 hover:text-[#00ADB5]"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </motion.button>
+                )}
+              </div>
+
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00ADB5] via-[#00ADB5]/60 to-transparent"
+                initial={{ scaleX: 0, originX: 0 }}
+                animate={isInView ? { scaleX: 1 } : {}}
+                transition={{ duration: 1, delay: 0.5 + index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              />
+
+              <motion.div
+                className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#00ADB5] via-[#00c4cc] to-[#EEEEEE]"
+                initial={{ scaleX: 0, originX: 0 }}
+                animate={{ scaleX: isHovered ? 1 : 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              />
+            </div>
           </div>
         </motion.div>
       </div>
@@ -400,21 +400,21 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   const orb2Y = useTransform(smoothProgress, [0, 1], ["5%", "-10%"])
 
   const categories = [...new Set(projects.map(p => p.category))]
-  const filteredProjects = activeFilter 
+  const filteredProjects = activeFilter
     ? projects.filter(p => p.category === activeFilter)
     : projects
 
   return (
     <section id="featured-projects" ref={ref} className="relative overflow-hidden bg-[#222831] py-28 lg:py-36">
       <motion.div className="absolute inset-0 dot-background opacity-25" style={{ y: bgY }} />
-      
-      <motion.div 
+
+      <motion.div
         style={{ y: orbY }}
-        className="absolute -right-40 top-1/4 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-[#00ADB5]/8 to-transparent blur-[140px]" 
+        className="absolute -right-40 top-1/4 h-[600px] w-[600px] rounded-full bg-gradient-to-br from-[#00ADB5]/8 to-transparent blur-[140px]"
       />
-      <motion.div 
+      <motion.div
         style={{ y: orb2Y }}
-        className="absolute -left-40 bottom-1/4 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-[#393E46]/15 to-transparent blur-[100px]" 
+        className="absolute -left-40 bottom-1/4 h-[450px] w-[450px] rounded-full bg-gradient-to-tr from-[#393E46]/15 to-transparent blur-[100px]"
       />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -437,7 +437,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
           animate={{ y: [0, 10, 0], scale: [1, 1.08, 1] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         >
-            <Star className="h-5 w-5 text-[#00ADB5]/12" />
+          <Star className="h-5 w-5 text-[#00ADB5]/12" />
         </motion.div>
         <motion.div
           className="absolute top-1/2 right-[8%]"
@@ -502,7 +502,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                 </span>
               </h2>
 
-              <motion.p 
+              <motion.p
                 className="mt-4 text-base text-[#EEEEEE]/45 leading-relaxed"
                 initial={{ opacity: 0, y: 15 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -524,11 +524,10 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     onClick={() => setActiveFilter(null)}
-                    className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
-                      activeFilter === null 
-                        ? 'bg-[#00ADB5] text-[#222831]' 
-                        : 'border border-[#393E46] bg-[#393E46]/25 text-[#EEEEEE]/65 hover:border-[#00ADB5]/40'
-                    }`}
+                    className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${activeFilter === null
+                      ? 'bg-[#00ADB5] text-[#222831]'
+                      : 'border border-[#393E46] bg-[#393E46]/25 text-[#EEEEEE]/65 hover:border-[#00ADB5]/40'
+                      }`}
                   >
                     All
                   </motion.button>
@@ -538,11 +537,10 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.97 }}
                       onClick={() => setActiveFilter(cat)}
-                      className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${
-                        activeFilter === cat 
-                          ? 'bg-[#00ADB5] text-[#222831]' 
-                          : 'border border-[#393E46] bg-[#393E46]/25 text-[#EEEEEE]/65 hover:border-[#00ADB5]/40'
-                      }`}
+                      className={`rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all ${activeFilter === cat
+                        ? 'bg-[#00ADB5] text-[#222831]'
+                        : 'border border-[#393E46] bg-[#393E46]/25 text-[#EEEEEE]/65 hover:border-[#00ADB5]/40'
+                        }`}
                     >
                       {cat}
                     </motion.button>
@@ -572,10 +570,10 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
         <div className="relative">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredProjects.map((project, i) => (
-              <ProjectCard 
+              <ProjectCard
                 key={project.id}
-                project={project} 
-                index={i} 
+                project={project}
+                index={i}
                 isInView={isInView}
                 totalProjects={filteredProjects.length}
               />
@@ -589,7 +587,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             className="flex flex-col items-center justify-center py-20 text-center"
           >
-            <motion.div 
+            <motion.div
               className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[#393E46]/35 to-[#222831] border border-[#393E46]/50"
               animate={{ rotate: [0, 4, -4, 0] }}
               transition={{ duration: 5, repeat: Infinity }}
