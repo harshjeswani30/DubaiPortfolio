@@ -197,7 +197,6 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             transition={{
               duration: 0.6,
               ease: [0.16, 1, 0.3, 1],
-              exit: { duration: 1, ease: [0.16, 1, 0.3, 1] }
             }}
             className="absolute pointer-events-none"
             style={{
@@ -451,7 +450,6 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                   transition={{
                     duration: 0.5,
                     ease: [0.16, 1, 0.3, 1],
-                    exit: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
                   }}
                   className="absolute inset-0 -z-10"
                   style={{

@@ -4,25 +4,14 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Github, ExternalLink, ArrowUpRight } from "lucide-react"
-
-interface Project {
-  id: string
-  title: string
-  slug: string
-  description: string
-  tech_stack: string[]
-  category: string
-  featured_image?: string
-  live_url?: string
-  github_url?: string
-}
+import type { Project } from "@/lib/data"
 
 interface ProjectsContentProps {
   projects: Project[]
   categories: string[]
 }
 
-const mockProjects = [
+const mockProjects: Project[] = [
   {
     id: "1",
     title: "Luxury Real Estate Portal",
@@ -31,6 +20,9 @@ const mockProjects = [
     tech_stack: ["Next.js", "PostgreSQL", "Three.js", "Tailwind CSS"],
     category: "Web Development",
     featured_image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1200&h=800&fit=crop",
+    is_featured: false,
+    is_published: true,
+    display_order: 1,
   },
   {
     id: "2",
@@ -40,6 +32,9 @@ const mockProjects = [
     tech_stack: ["React", "D3.js", "Node.js", "Redis"],
     category: "FinTech",
     featured_image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&h=800&fit=crop",
+    is_featured: false,
+    is_published: true,
+    display_order: 2,
   },
   {
     id: "3",
@@ -49,6 +44,9 @@ const mockProjects = [
     tech_stack: ["Python", "FastAPI", "MQTT", "TimescaleDB"],
     category: "IoT / AI",
     featured_image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?w=1200&h=800&fit=crop",
+    is_featured: false,
+    is_published: true,
+    display_order: 3,
   },
   {
     id: "4",
@@ -58,6 +56,9 @@ const mockProjects = [
     tech_stack: ["Python", "PyTorch", "Next.js", "MongoDB"],
     category: "Healthcare",
     featured_image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1200&h=800&fit=crop",
+    is_featured: false,
+    is_published: true,
+    display_order: 4,
   },
   {
     id: "5",
@@ -67,12 +68,15 @@ const mockProjects = [
     tech_stack: ["Next.js", "Shopify", "TypeScript", "Prisma"],
     category: "E-commerce",
     featured_image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1200&h=800&fit=crop",
+    is_featured: false,
+    is_published: true,
+    display_order: 5,
   },
 ]
 
 export function ProjectsContent({ projects }: ProjectsContentProps) {
   const router = useRouter()
-  const displayProjects = projects.length > 0 ? projects : mockProjects
+  const displayProjects: Project[] = projects.length > 0 ? projects : mockProjects
   const slideCount = displayProjects.length
   const timelineScope = `--scroller, ${displayProjects.map((_, i) => `--slide-${i + 1}`).join(", ")}`
 
@@ -89,9 +93,9 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ["--slides" as any]: slideCount,
       } as React.CSSProperties}
-      >
+    >
 
-        {displayProjects.map((project, index) => (
+      {displayProjects.map((project, index) => (
         <img
           key={project.id}
           className="absolute hidden supports-sda:block -z-20 inset-0 h-full w-full object-cover animate-grow"
@@ -120,124 +124,124 @@ export function ProjectsContent({ projects }: ProjectsContentProps) {
 
 
 
-          <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-start pt-8">
-            <div className="overlap w-full max-w-xl">
-              {displayProjects.map((project, index) => (
-                <div
-                  key={project.id}
-                  className="flex flex-col gap-2 animate-text translate-y-[30%]"
-                  style={{
-                    animationTimeline: `--slide-${index + 1}`,
-                    animationRangeStart: "30cqw",
-                  }}
-                >
+      <div className="flex-1 px-7 relative hidden supports-sda:flex flex-col justify-start pt-8">
+        <div className="overlap w-full max-w-xl">
+          {displayProjects.map((project, index) => (
+            <div
+              key={project.id}
+              className="flex flex-col gap-2 animate-text translate-y-[30%]"
+              style={{
+                animationTimeline: `--slide-${index + 1}`,
+                animationRangeStart: "30cqw",
+              }}
+            >
+              <span
+                className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+              >
+                {project.category}
+              </span>
+
+              <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
+                {project.title.split(" ").slice(0, -1).join(" ")}{" "}
+                <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
+              </h2>
+
+              <p className="text-white/70 text-base leading-relaxed max-w-md mt-2">
+                {project.description}
+              </p>
+
+              <div className="flex flex-wrap gap-2 mt-4">
+                {project.tech_stack.map((tech) => (
                   <span
-                    className="uppercase text-xs font-semibold tracking-[0.3em] text-[#00ADB5]"
+                    key={tech}
+                    className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
                   >
-                    {project.category}
+                    {tech}
                   </span>
-
-                  <h2 className="font-serif text-5xl lg:text-6xl leading-tight">
-                    {project.title.split(" ").slice(0, -1).join(" ")}{" "}
-                    <em className="text-white/80">{project.title.split(" ").slice(-1)[0]}</em>
-                  </h2>
-
-                  <p className="text-white/70 text-base leading-relaxed max-w-md mt-2">
-                    {project.description}
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {project.tech_stack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-full bg-white/10 border border-white/20 px-3 py-1 text-[10px] font-medium text-white/80 uppercase tracking-wider"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-auto mb-16 flex flex-col gap-6">
-            <div className="overlap">
-              {displayProjects.map((project, index) => (
-                <div
-                  key={project.id}
-                  className="flex items-center gap-3 pointer-events-none animate-text animate-buttons"
-                  style={{
-                    animationTimeline: `--slide-${index + 1}`,
-                    animationRangeStart: "30cqw",
-                  }}
-                >
-                  <Link href={`/projects/${project.slug}`} onClick={() => sessionStorage.setItem('projectSource', 'projects')} className="pointer-events-auto">
-                      <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
-                    >
-                      <span>View Details</span>
-                      <ArrowUpRight className="h-4 w-4" />
-                    </motion.button>
-                  </Link>
-                  
-                  {project.github_url && (
-                    <motion.a
-                      href={project.github_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 pointer-events-auto"
-                      title="View on GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </motion.a>
-                  )}
-                  
-                  {project.live_url && (
-                    <motion.a
-                      href={project.live_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 pointer-events-auto"
-                      title="View Live Site"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </motion.a>
-                  )}
-                </div>
-              ))}
-            </div>
-
-              <div className="w-60">
-                <nav className="flex font-medium text-sm gap-5">
-                  {displayProjects.map((_, index) => (
-                    <a
-                      key={index}
-                      href={`#slide-${index + 1}`}
-                      className="animate-page !text-white pointer-events-auto"
-                      style={{
-                        animationTimeline: `--slide-${index + 1}`,
-                        animationRangeStart: "30cqw",
-                      }}
-                    >
-                      {String(index + 1).padStart(2, "0")}
-                    </a>
-                  ))}
-                </nav>
-                <div className="bg-white/30 mt-2">
-                  <div
-                    className="bg-white h-0.5 animate-progress origin-left"
-                    style={{ animationTimeline: "--scroller" }}
-                  />
-                </div>
+                ))}
               </div>
             </div>
+          ))}
+        </div>
+
+        <div className="mt-auto mb-16 flex flex-col gap-6">
+          <div className="overlap">
+            {displayProjects.map((project, index) => (
+              <div
+                key={project.id}
+                className="flex items-center gap-3 pointer-events-none animate-text animate-buttons"
+                style={{
+                  animationTimeline: `--slide-${index + 1}`,
+                  animationRangeStart: "30cqw",
+                }}
+              >
+                <Link href={`/projects/${project.slug}`} onClick={() => sessionStorage.setItem('projectSource', 'projects')} className="pointer-events-auto">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-sm font-semibold text-black transition-all hover:bg-white/90"
+                  >
+                    <span>View Details</span>
+                    <ArrowUpRight className="h-4 w-4" />
+                  </motion.button>
+                </Link>
+
+                {project.github_url && (
+                  <motion.a
+                    href={project.github_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 pointer-events-auto"
+                    title="View on GitHub"
+                  >
+                    <Github className="h-4 w-4" />
+                  </motion.a>
+                )}
+
+                {project.live_url && (
+                  <motion.a
+                    href={project.live_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50 pointer-events-auto"
+                    title="View Live Site"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </motion.a>
+                )}
+              </div>
+            ))}
           </div>
+
+          <div className="w-60">
+            <nav className="flex font-medium text-sm gap-5">
+              {displayProjects.map((_, index) => (
+                <a
+                  key={index}
+                  href={`#slide-${index + 1}`}
+                  className="animate-page !text-white pointer-events-auto"
+                  style={{
+                    animationTimeline: `--slide-${index + 1}`,
+                    animationRangeStart: "30cqw",
+                  }}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </a>
+              ))}
+            </nav>
+            <div className="bg-white/30 mt-2">
+              <div
+                className="bg-white h-0.5 animate-progress origin-left"
+                style={{ animationTimeline: "--scroller" }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="supports-sda:hidden px-7 pb-7">
         Your browser does not support scroll-driven animations. See{" "}

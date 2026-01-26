@@ -58,12 +58,12 @@ const spanVariants = {
   exit: { width: 0, opacity: 0 },
 }
 
-const transition = { delay: 0.1, type: "spring", bounce: 0, duration: 0.6 }
+const transition = { delay: 0.1, type: "spring" as const, bounce: 0, duration: 0.6 }
 
-function ExpandableTabs({ 
-  activeColor = "text-[#00ADB5]" 
-}: { 
-  activeColor?: string 
+function ExpandableTabs({
+  activeColor = "text-[#00ADB5]"
+}: {
+  activeColor?: string
 }) {
   const [hovered, setHovered] = useState<number | null>(null)
   const outsideClickRef = useRef<HTMLDivElement>(null)
@@ -94,46 +94,46 @@ function ExpandableTabs({
         }
 
         const Icon = tab.icon
-          const isActive = pathname === tab.href
-          const isHovered = hovered === index
-          const isExpanded = isActive || isHovered
+        const isActive = pathname === tab.href
+        const isHovered = hovered === index
+        const isExpanded = isActive || isHovered
 
-          return (
-            <motion.button
-              key={tab.title}
-              variants={buttonVariants}
-              initial={false}
-              animate="animate"
-              custom={isExpanded}
-              onClick={() => handleClick(tab.href)}
-              onMouseEnter={() => setHovered(index)}
-              transition={transition}
-              className={cn(
-                "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
-                isActive
-                  ? cn("bg-[#393E46]", activeColor)
-                  : isHovered
-                    ? "bg-[#393E46]/70 text-[#EEEEEE]"
-                    : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
+        return (
+          <motion.button
+            key={tab.title}
+            variants={buttonVariants}
+            initial={false}
+            animate="animate"
+            custom={isExpanded}
+            onClick={() => handleClick(tab.href)}
+            onMouseEnter={() => setHovered(index)}
+            transition={transition}
+            className={cn(
+              "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
+              isActive
+                ? cn("bg-[#393E46]", activeColor)
+                : isHovered
+                  ? "bg-[#393E46]/70 text-[#EEEEEE]"
+                  : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
+            )}
+          >
+            <Icon size={18} />
+            <AnimatePresence initial={false}>
+              {isExpanded && (
+                <motion.span
+                  variants={spanVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={transition}
+                  className="overflow-hidden whitespace-nowrap"
+                >
+                  {tab.title}
+                </motion.span>
               )}
-            >
-              <Icon size={18} />
-              <AnimatePresence initial={false}>
-                {isExpanded && (
-                  <motion.span
-                    variants={spanVariants}
-                    initial="initial"
-                    animate="animate"
-                    exit="exit"
-                    transition={transition}
-                    className="overflow-hidden whitespace-nowrap"
-                  >
-                    {tab.title}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          )
+            </AnimatePresence>
+          </motion.button>
+        )
       })}
     </div>
   )
@@ -144,7 +144,7 @@ export function FloatingNav() {
   const [hasMounted, setHasMounted] = useState(hasMountedRef.current)
   const { scrollY } = useScroll()
   const pathname = usePathname()
-  
+
   const floatY = useTransform(scrollY, [0, 100], [0, 8])
 
   useEffect(() => {
@@ -176,7 +176,7 @@ export function FloatingNav() {
       document.body.style.width = ""
     }
   }, [isMenuOpen])
-  
+
   if (pathname?.startsWith("/admin")) {
     return null
   }
@@ -190,53 +190,53 @@ export function FloatingNav() {
         style={{ y: floatY }}
         className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
-            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-              <Link href="/" className="group relative z-[130]">
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative cursor-pointer flex items-center gap-3 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-4 py-2.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30"
-                  >
-                    <motion.div
-                      className="relative flex h-9 w-9 items-center justify-center"
-                    >
-                      <motion.div
-                        className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#00ADB5] to-[#00ADB5]/50"
-                        animate={{ 
-                          rotate: [0, 360],
-                        }}
-                        transition={{ 
-                          duration: 20, 
-                          repeat: Infinity, 
-                          ease: "linear" 
-                        }}
-                        style={{ borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }}
-                      />
-                      <motion.div
-                        className="absolute inset-[2px] rounded-md bg-[#222831] flex items-center justify-center"
-                        style={{ borderRadius: '28% 72% 72% 28% / 28% 28% 72% 72%' }}
-                      >
-                        <Code2 className="h-4 w-4 text-[#00ADB5]" />
-                      </motion.div>
-                    </motion.div>
-                    <div className="flex flex-col">
-                      <span className="text-xs font-bold tracking-[0.2em] text-[#00ADB5]">DEV</span>
-                      <span className="text-[10px] font-medium tracking-wider text-[#EEEEEE]/60 -mt-0.5">PORTFOLIO</span>
-                    </div>
-                  </motion.div>
-                </Link>
-
-            
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <Link href="/" className="group relative z-[130]">
             <motion.div
-              initial={hasMounted ? false : { opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="hidden md:block"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative cursor-pointer flex items-center gap-3 rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-4 py-2.5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30"
             >
-              <ExpandableTabs />
+              <motion.div
+                className="relative flex h-9 w-9 items-center justify-center"
+              >
+                <motion.div
+                  className="absolute inset-0 rounded-lg bg-gradient-to-br from-[#00ADB5] to-[#00ADB5]/50"
+                  animate={{
+                    rotate: [0, 360],
+                  }}
+                  transition={{
+                    duration: 20,
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                  style={{ borderRadius: '30% 70% 70% 30% / 30% 30% 70% 70%' }}
+                />
+                <motion.div
+                  className="absolute inset-[2px] rounded-md bg-[#222831] flex items-center justify-center"
+                  style={{ borderRadius: '28% 72% 72% 28% / 28% 28% 72% 72%' }}
+                >
+                  <Code2 className="h-4 w-4 text-[#00ADB5]" />
+                </motion.div>
+              </motion.div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold tracking-[0.2em] text-[#00ADB5]">DEV</span>
+                <span className="text-[10px] font-medium tracking-wider text-[#EEEEEE]/60 -mt-0.5">PORTFOLIO</span>
+              </div>
             </motion.div>
+          </Link>
+
+
+          <motion.div
+            initial={hasMounted ? false : { opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="hidden md:block"
+          >
+            <ExpandableTabs />
+          </motion.div>
 
           <motion.div
             initial={hasMounted ? false : { opacity: 0, x: 20 }}
