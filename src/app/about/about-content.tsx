@@ -14,8 +14,8 @@ if (typeof window !== "undefined") {
 interface AboutSection {
   id: string
   type: "hero" | "center" | "column" | "lines" | "sides" | "center-tall" | "grid"
-  title?: string
-  text?: string
+  title?: string | null
+  text?: string | null
   images?: string[]
   order: number
 }
@@ -44,7 +44,6 @@ export function AboutContent({ heroImage, mainTitle, sections }: AboutContentPro
     const lenis = new Lenis({ 
       lerp: 0.1,
       smoothWheel: true,
-      smoothTouch: false, // Disable smooth scroll on touch devices for better performance
       touchMultiplier: 2,
     })
     

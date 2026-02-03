@@ -3,11 +3,11 @@ import { createAdminClient } from "@/lib/supabase/server"
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await createAdminClient()
   const body = await request.json()
-  const { id } = params
+  const { id } = await params
 
   const { data, error } = await supabase
     .from("navigation_menu")
@@ -30,10 +30,10 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const supabase = await createAdminClient()
-  const { id } = params
+  const { id } = await params
 
   const { error } = await supabase
     .from("navigation_menu")
