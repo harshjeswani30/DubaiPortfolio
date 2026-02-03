@@ -139,29 +139,25 @@ export interface ContactInfo {
   display_order: number
 }
 
+export interface AboutSection {
+  id: string
+  about_page_id: string
+  type: "hero" | "center" | "column" | "lines" | "sides" | "center-tall" | "grid"
+  title: string | null
+  text: string | null
+  images: string[]
+  order: number
+  created_at?: string
+}
+
 export interface AboutPage {
   id: string
-  intro_eyebrow: string
-  intro_title: string
-  intro_title_highlight: string
-  intro_description: string
+  hero_image: string
   main_title: string
-  footer_text: string
-  images: string[]
-  stats: { value: string; label: string }[]
-  story_title: string
-  story_content: string
-  story_image: string
-  values_title: string
-  values: { title: string; description: string; icon: string }[]
-  interests_title: string
-  interests: { title: string; description: string; icon: string }[]
-  achievements_title: string
-  achievements: { title: string; year: string; description: string }[]
-  show_experience: boolean
-  show_skills: boolean
-  show_education: boolean
-  show_services: boolean
+  is_active: boolean
+  created_at?: string
+  updated_at?: string
+  sections?: AboutSection[]
 }
 
 export interface Education {
@@ -442,26 +438,22 @@ export async function getContactInfo(): Promise<ContactInfo[]> {
 
 export async function getAboutPage(): Promise<AboutPage | null> {
   const supabase = await createClient()
-  const { data, error } = await supabase.from("about_page").select("*").single()
+  const { data, error } = await supabase
+    .from("about_page")
+    .select(`
+      *,
+      sections:about_sections(*)
+    `)
+    .eq("is_active", true)
+    .single()
 
   if (error || !data) return null
   return {
     ...data,
-    images: data.images || [],
-    stats: data.stats || [],
-    story_title: data.story_title || "My Story",
-    story_content: data.story_content || "",
-    story_image: data.story_image || "",
-    values_title: data.values_title || "My Values",
-    values: data.values || [],
-    interests_title: data.interests_title || "Beyond Code",
-    interests: data.interests || [],
-    achievements_title: data.achievements_title || "Achievements",
-    achievements: data.achievements || [],
-    show_experience: data.show_experience ?? true,
-    show_skills: data.show_skills ?? true,
-    show_education: data.show_education ?? true,
-    show_services: data.show_services ?? true,
+    sections: (data.sections || []).map((s: any) => ({
+      ...s,
+      images: s.images || [],
+    })),
   }
 }
 
@@ -561,28 +553,6 @@ export async function getResumeData() {
     certifications,
     languages,
     projects,
-    socialLinks,
-  }
-}
-
-export async function getFullAboutData() {
-  const [aboutPage, siteSettings, experiences, skills, education, services, socialLinks] = await Promise.all([
-    getAboutPage(),
-    getSiteSettings(),
-    getExperience(),
-    getSkills(),
-    getEducation(),
-    getServices(),
-    getSocialLinks(),
-  ])
-
-  return {
-    aboutPage,
-    siteSettings,
-    experiences,
-    skills,
-    education,
-    services,
     socialLinks,
   }
 }

@@ -52,7 +52,7 @@ export function Footer() {
               Building digital experiences that matter. Full-stack developer passionate about
               creating beautiful, performant applications.
             </p>
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
@@ -66,46 +66,47 @@ export function Footer() {
                   <social.icon className="h-5 w-5" />
                 </motion.a>
               ))}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <span className="inline-flex items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 px-4 py-2 text-sm">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ADB5] opacity-75" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ADB5]" />
+                  </span>
+                  <span className="text-[#00ADB5]">Available for work</span>
+                </span>
+              </motion.div>
             </div>
           </div>
 
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#EEEEEE]">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-[#00ADB5]/70 transition-colors hover:text-[#00ADB5]"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <div className="grid grid-cols-2 gap-8 md:col-span-2 md:grid-cols-2">
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#EEEEEE]">
+                Quick Links
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-[#00ADB5]/70 transition-colors hover:text-[#00ADB5]"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#EEEEEE]">
-              Get in Touch
-            </h3>
-            <p className="text-[#00ADB5]/70">hello@portfolio.com</p>
-            <p className="mt-2 text-[#00ADB5]/70">Dubai, UAE</p>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4"
-            >
-              <span className="inline-flex items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 px-4 py-2 text-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ADB5] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00ADB5]" />
-                </span>
-                <span className="text-[#00ADB5]">Available for work</span>
-              </span>
-            </motion.div>
+            <div>
+              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#EEEEEE]">
+                Get in Touch
+              </h3>
+              <p className="text-[#00ADB5]/70">hello@portfolio.com</p>
+              <p className="mt-2 text-[#00ADB5]/70">Dubai, UAE</p>
+            </div>
           </div>
         </div>
 

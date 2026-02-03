@@ -53,6 +53,13 @@ export default function HeroSettingsPage() {
       if (json.data) {
         setHero({
           ...json.data,
+          tagline: json.data.tagline || "",
+          highlight_text: json.data.highlight_text || "",
+          description: json.data.description || "",
+          primary_button_text: json.data.primary_button_text || "View My Work",
+          primary_button_link: json.data.primary_button_link || "/projects",
+          secondary_button_text: json.data.secondary_button_text || "Get in Touch",
+          secondary_button_link: json.data.secondary_button_link || "/contact",
           rotating_texts: json.data.rotating_texts || [],
         })
       }

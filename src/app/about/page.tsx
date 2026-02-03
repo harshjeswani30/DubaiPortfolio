@@ -1,15 +1,26 @@
 import { Metadata } from "next"
-import { getFullAboutData } from "@/lib/data"
 import { AboutContent } from "./about-content"
+import { getAboutPage } from "@/lib/data"
+import { defaultAboutData } from "@/lib/default-about-data"
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Learn more about my journey, skills, and experience.",
+  description: "Learn more about me.",
 }
 
 export const revalidate = 0
 
 export default async function AboutPage() {
-  const data = await getFullAboutData()
-  return <AboutContent {...data} />
+  const aboutData = await getAboutPage()
+  
+  // Use default sample data if no configuration exists
+  const displayData = aboutData || defaultAboutData
+  
+  return (
+    <AboutContent 
+      heroImage={displayData.hero_image}
+      mainTitle={displayData.main_title}
+      sections={displayData.sections || []}
+    />
+  )
 }

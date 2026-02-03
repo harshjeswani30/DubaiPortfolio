@@ -21,6 +21,7 @@ import {
   Home,
   MessageSquare,
   FileUser,
+  Share2,
 } from "lucide-react"
 
 const navItems = [
@@ -33,7 +34,8 @@ const navItems = [
   { href: "/admin/pages/contact", label: "Contact Page", icon: Phone },
   { href: "/admin/pages/resume", label: "Resume Page", icon: FileUser },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/navigation", label: "Social Links", icon: Share2 },
+  { href: "/admin/security", label: "Security", icon: Settings },
 ]
 
 export function AdminShell({
