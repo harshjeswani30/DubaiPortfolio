@@ -35,9 +35,11 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
 
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
-  const smoothRotateX = useSpring(rotateX, { stiffness: 200, damping: 25 })
-  const smoothRotateY = useSpring(rotateY, { stiffness: 200, damping: 25 })
-  const glowOpacity = useSpring(0, { stiffness: 300, damping: 30 })
+  const scale = useMotionValue(1)
+  const smoothRotateX = useSpring(rotateX, { stiffness: 150, damping: 15, mass: 0.1 })
+  const smoothRotateY = useSpring(rotateY, { stiffness: 150, damping: 15, mass: 0.1 })
+  const smoothScale = useSpring(scale, { stiffness: 200, damping: 20, mass: 0.2 })
+  const glowOpacity = useSpring(0, { stiffness: 200, damping: 25, mass: 0.3 })
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
@@ -47,13 +49,21 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     const centerX = rect.width / 2
     const centerY = rect.height / 2
 
-    rotateX.set((y - centerY) / 15)
-    rotateY.set((centerX - x) / 15)
+    // Calculate normalized position (-1 to 1)
+    const normalizedX = (x - centerX) / centerX
+    const normalizedY = (y - centerY) / centerY
+
+    // Apply rotation with realistic limits (max 12 degrees)
+    const maxRotation = 12
+    rotateX.set(-normalizedY * maxRotation)
+    rotateY.set(normalizedX * maxRotation)
+    
     setMousePosition({ x, y })
   }
 
   const handleMouseEnter = () => {
     setIsHovered(true)
+    scale.set(1.02)
     glowOpacity.set(1)
     if (videoRef.current && project.preview_video) {
       videoRef.current.play().catch(() => { })
@@ -63,6 +73,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const handleMouseLeave = () => {
     rotateX.set(0)
     rotateY.set(0)
+    scale.set(1)
     setIsHovered(false)
     glowOpacity.set(0)
     if (videoRef.current && project.preview_video) {
@@ -77,6 +88,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     if (!cardRef.current) return
 
     sessionStorage.setItem('projectSource', 'home')
+    sessionStorage.setItem('lastScrollPosition', window.scrollY.toString())
 
     const rect = cardRef.current.getBoundingClientRect()
     startTransition(
@@ -98,43 +110,49 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       initial={{ opacity: 0, y: 60, scale: 0.95 }}
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{
-        duration: 0.7,
-        delay: index * 0.12,
+        duration: 0.5,
+        delay: index * 0.08,
         ease: [0.16, 1, 0.3, 1]
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="relative"
-      style={{ perspective: 1200 }}
+      style={{ perspective: 1500 }}
     >
       <div className="cursor-pointer">
         <motion.div
           style={{
             rotateX: smoothRotateX,
             rotateY: smoothRotateY,
+            scale: smoothScale,
             transformStyle: "preserve-3d",
           }}
-          className="group relative h-full"
+          className="group relative h-full transition-shadow duration-500"
         >
           <motion.div
-            className="absolute -inset-[2px] rounded-2xl opacity-0 blur-xl transition-opacity duration-700"
+            className="absolute -inset-[3px] rounded-2xl opacity-0 blur-2xl transition-opacity duration-500"
             style={{
               opacity: glowOpacity,
-              background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.4), transparent 40%)`,
+              background: `radial-gradient(500px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.5), rgba(0, 173, 181, 0.2) 30%, transparent 60%)`,
+              transform: 'translateZ(-20px)',
             }}
           />
 
           <motion.div
-            className="absolute -inset-px rounded-2xl"
+            className="absolute -inset-[1px] rounded-2xl transition-all duration-500"
             style={{
               background: isHovered
-                ? `radial-gradient(400px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.2), transparent 40%)`
+                ? `radial-gradient(350px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(0, 173, 181, 0.3), rgba(0, 173, 181, 0.1) 40%, transparent 70%)`
                 : 'none',
+              opacity: isHovered ? 1 : 0,
             }}
           />
 
-          <div className="relative h-full overflow-hidden rounded-2xl border border-[#393E46]/60 bg-gradient-to-br from-[#2a2f38]/90 via-[#222831] to-[#1a1e24] backdrop-blur-sm transition-all duration-500 group-hover:border-[#00ADB5]/50 group-hover:shadow-2xl group-hover:shadow-[#00ADB5]/10">
+          <div 
+            className="relative h-full overflow-hidden rounded-2xl border border-[#393E46]/60 bg-gradient-to-br from-[#2a2f38]/90 via-[#222831] to-[#1a1e24] backdrop-blur-sm transition-all duration-500 group-hover:border-[#00ADB5]/50 group-hover:shadow-2xl group-hover:shadow-[#00ADB5]/10"
+            style={{ transform: 'translateZ(20px)' }}
+          >
             <div className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,173,181,0.12),transparent_60%)]" />
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(238,238,238,0.04),transparent_60%)]" />
@@ -145,7 +163,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 <motion.div
                   className="h-full w-full"
                   animate={{ scale: isHovered ? 1.05 : 1 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                 >
                   {project.featured_image && (
                     <Image
@@ -168,8 +186,13 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               ) : project.featured_image ? (
                 <motion.div
                   className="h-full w-full"
-                  animate={{ scale: isHovered ? 1.1 : 1 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  animate={{ 
+                    scale: isHovered ? 1.08 : 1,
+                  }}
+                  transition={{ 
+                    duration: 0.7, 
+                    ease: [0.34, 1.56, 0.64, 1]
+                  }}
                 >
                   <Image
                     src={project.featured_image}
@@ -270,7 +293,10 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               </motion.div>
             </div>
 
-            <div className="relative p-5">
+            <motion.div 
+              className="relative p-5"
+              style={{ transform: 'translateZ(30px)' }}
+            >
               <div className="mb-3 flex items-start justify-between gap-3">
                 <motion.h3
                   className="text-lg font-bold text-[#EEEEEE] transition-colors duration-300 group-hover:text-[#00ADB5] line-clamp-1"
@@ -278,16 +304,36 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 >
                   {project.title}
                 </motion.h3>
-                <motion.div
+                <motion.button
+                  onClick={handleProjectClick}
                   animate={{
-                    x: isHovered ? 3 : 0,
-                    y: isHovered ? -3 : 0,
+                    x: isHovered ? 5 : 0,
+                    y: isHovered ? -5 : 0,
+                    scale: isHovered ? 1.1 : 1,
+                    rotate: isHovered ? 5 : 0,
                   }}
-                  transition={{ duration: 0.25 }}
-                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#393E46]/40 text-[#00ADB5] transition-all group-hover:bg-[#00ADB5] group-hover:text-[#222831]"
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ 
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    mass: 0.5
+                  }}
+                  className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#393E46]/40 text-[#00ADB5] transition-colors duration-300 hover:bg-[#00ADB5] hover:text-[#222831] will-change-transform cursor-pointer"
                 >
-                  <ArrowUpRight className="h-3.5 w-3.5" />
-                </motion.div>
+                  <motion.div
+                    animate={{
+                      scale: isHovered ? [1, 1.2, 1] : 1,
+                    }}
+                    transition={{
+                      duration: 0.4,
+                      ease: "easeOut"
+                    }}
+                  >
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </motion.div>
+                </motion.button>
               </div>
 
               <p className="mb-4 line-clamp-2 text-sm text-[#EEEEEE]/55 leading-relaxed">
@@ -315,23 +361,15 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               </div>
 
               <div className="flex items-center gap-2 pt-3 border-t border-[#393E46]/40">
-                <Link
-                  href={`/projects/${project.slug}`}
-                  onClick={() => {
-                    sessionStorage.setItem('projectSource', 'home')
-                    sessionStorage.setItem('homeScrollPosition', window.scrollY.toString())
-                  }}
-                  className="flex-1"
+                <motion.button
+                  onClick={handleProjectClick}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex-1 w-full flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
                 >
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full flex items-center justify-center gap-2 rounded-lg bg-[#00ADB5] px-3 py-2 text-xs font-semibold text-[#222831] transition-all hover:bg-[#00ADB5]/90"
-                  >
-                    <span>View Details</span>
-                    <ArrowUpRight className="h-3 w-3" />
-                  </motion.button>
-                </Link>
+                  <span>View Details</span>
+                  <ArrowUpRight className="h-3 w-3" />
+                </motion.button>
 
                 {project.github_url && (
                   <motion.button
@@ -375,7 +413,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                 animate={{ scaleX: isHovered ? 1 : 0 }}
                 transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               />
-            </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
@@ -393,7 +431,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     offset: ["start end", "end start"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 150, damping: 25, mass: 0.5 })
   const bgY = useTransform(smoothProgress, [0, 1], ["0%", "12%"])
   const titleY = useTransform(smoothProgress, [0, 1], [30, -15])
   const orbY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])

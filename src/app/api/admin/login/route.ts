@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createSession } from "@/lib/auth"
-
-const FIXED_ADMIN_EMAIL = "harshjeswani30@gmail.com"
-const FIXED_ADMIN_PASSWORD = "Harsh0000.."
+import { createClient } from "@/lib/supabase/server"
+import bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +13,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 })
     }
 
-    if (email.toLowerCase() !== FIXED_ADMIN_EMAIL.toLowerCase() || password !== FIXED_ADMIN_PASSWORD) {
+    const supabase = await createClient()
+    
+    // Get admin credentials from database
+    const { data: credentials, error } = await supabase
+      .from("admin_credentials")
+      .select("*")
+      .single()
+
+    if (error || !credentials) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+    }
+
+    // Check email and password
+    if (email.toLowerCase() !== credentials.email.toLowerCase()) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
+    }
+
+    const passwordMatch = await bcrypt.compare(password, credentials.password_hash)
+    if (!passwordMatch) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 })
     }
 

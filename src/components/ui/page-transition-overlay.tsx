@@ -26,14 +26,14 @@ export function PageTransitionOverlay() {
           className="fixed inset-0 z-[9999] overflow-hidden"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
         >
           <motion.div
             className="absolute inset-0 bg-[#222831]"
             initial={{ clipPath: `circle(0% at ${originPoint.x}% ${originPoint.y}%)` }}
             animate={{ clipPath: `circle(150% at ${originPoint.x}% ${originPoint.y}%)` }}
             transition={{
-              duration: 1.2,
+              duration: 0.6,
               ease: [0.76, 0, 0.24, 1],
             }}
           >
@@ -53,13 +53,13 @@ export function PageTransitionOverlay() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ delay: 0.2, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
                 >
                   <motion.span
                     className="h-2 w-2 rounded-full bg-[#00ADB5]"
                     animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                    transition={{ duration: 1.2, repeat: Infinity }}
+                    transition={{ duration: 0.8, repeat: Infinity }}
                   />
                   <span className="text-sm font-medium text-[#00ADB5] uppercase tracking-wider">
                     {transitionData?.projectCategory || "Loading"}
@@ -72,8 +72,8 @@ export function PageTransitionOverlay() {
                     initial={{ y: 120, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{
-                      duration: 0.9,
-                      delay: 0.5,
+                      duration: 0.5,
+                      delay: 0.25,
                       ease: [0.16, 1, 0.3, 1],
                     }}
                   >
@@ -84,8 +84,8 @@ export function PageTransitionOverlay() {
                         initial={{ y: 100, opacity: 0, scale: 1.1 }}
                         animate={{ y: 0, opacity: 1, scale: 1 }}
                         transition={{
-                          duration: 0.8,
-                          delay: 0.5 + i * 0.08,
+                          duration: 0.4,
+                          delay: 0.25 + i * 0.05,
                           ease: [0.16, 1, 0.3, 1],
                         }}
                       >

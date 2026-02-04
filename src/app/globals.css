@@ -59,6 +59,39 @@ body {
   overflow-x: hidden;
 }
 
+/* Performance optimizations */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hardware acceleration for animations */
+[class*="motion"],
+[class*="animate"],
+.will-change-transform {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Optimize images */
+img {
+  content-visibility: auto;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 ::selection {
   background: rgba(0, 173, 181, 0.4);
   color: #EEEEEE;
@@ -108,24 +141,18 @@ body {
 }
 
 @keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
   }
-
   50% {
-    transform: translateY(-20px);
+    transform: translate3d(0, -20px, 0);
   }
 }
 
 @keyframes pulse-glow {
-
-  0%,
-  100% {
+  0%, 100% {
     opacity: 0.5;
   }
-
   50% {
     opacity: 1;
   }
@@ -133,11 +160,10 @@ body {
 
 @keyframes shimmer {
   0% {
-    transform: translateX(-100%);
+    transform: translate3d(-100%, 0, 0);
   }
-
   100% {
-    transform: translateX(100%);
+    transform: translate3d(100%, 0, 0);
   }
 }
 
@@ -145,30 +171,29 @@ body {
   0% {
     transform: rotate(0deg) translateX(100px) rotate(0deg);
   }
-
   100% {
     transform: rotate(360deg) translateX(100px) rotate(-360deg);
   }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+  animation: pulse-glow 1.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
 .animate-shimmer {
-  animation: shimmer 2s infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite;
+  animation: shimmer 1.5s infinite;
+  will-change: transform;
 }
 
 .animate-orbit {
-  animation: orbit 20s linear infinite;
+  animation: orbit 15s linear infinite;
+  will-change: transform;
 }
 
 .grid-background {

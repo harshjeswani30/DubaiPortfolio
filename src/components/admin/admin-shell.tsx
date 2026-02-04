@@ -34,7 +34,7 @@ const navItems = [
   { href: "/admin/pages/contact", label: "Contact Page", icon: Phone },
   { href: "/admin/pages/resume", label: "Resume Page", icon: FileUser },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
-  { href: "/admin/navigation", label: "Social Links", icon: Share2 },
+  { href: "/admin/social-links", label: "Social Links", icon: Share2 },
   { href: "/admin/security", label: "Security", icon: Settings },
 ]
 

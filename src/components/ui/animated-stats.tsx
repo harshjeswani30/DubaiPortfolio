@@ -18,7 +18,7 @@ function Counter({ end, label, suffix = "" }: CounterProps) {
     if (!isInView) return
 
     let startTime: number
-    const duration = 2000
+    const duration = 1500
 
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime
@@ -39,7 +39,7 @@ function Counter({ end, label, suffix = "" }: CounterProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4 }}
         className="text-5xl font-bold text-white md:text-6xl"
       >
         {count}
@@ -48,7 +48,7 @@ function Counter({ end, label, suffix = "" }: CounterProps) {
       <motion.p
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : {}}
-        transition={{ delay: 0.3, duration: 0.6 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
         className="mt-2 text-zinc-400"
       >
         {label}

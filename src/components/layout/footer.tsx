@@ -1,16 +1,28 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
-import { Github, Linkedin, Twitter, Mail, ArrowUp, Heart, Code2 } from "lucide-react"
+import { Github, Linkedin, Twitter, Mail, ArrowUp, Heart, Code2, Instagram, Facebook, Youtube, Globe } from "lucide-react"
 
-const socialLinks = [
-  { href: "https://github.com", icon: Github, label: "GitHub" },
-  { href: "https://linkedin.com", icon: Linkedin, label: "LinkedIn" },
-  { href: "https://twitter.com", icon: Twitter, label: "Twitter" },
-  { href: "mailto:hello@portfolio.com", icon: Mail, label: "Email" },
-]
+interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  display_order: number
+}
+
+const iconMap: Record<string, any> = {
+  GitHub: Github,
+  LinkedIn: Linkedin,
+  Twitter: Twitter,
+  Instagram: Instagram,
+  Facebook: Facebook,
+  Youtube: Youtube,
+  Email: Mail,
+  Website: Globe,
+}
 
 const footerLinks = [
   { href: "/about", label: "About" },
@@ -21,6 +33,23 @@ const footerLinks = [
 
 export function Footer() {
   const pathname = usePathname()
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+
+  useEffect(() => {
+    fetchSocialLinks()
+  }, [])
+
+  const fetchSocialLinks = async () => {
+    try {
+      const res = await fetch('/api/admin/social-links')
+      const json = await res.json()
+      if (json.data) {
+        setSocialLinks(json.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch social links:', error)
+    }
+  }
   
   if (pathname?.startsWith("/admin")) {
     return null
@@ -53,19 +82,23 @@ export function Footer() {
               creating beautiful, performant applications.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 text-[#00ADB5]/70 transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/30 hover:text-[#00ADB5]"
-                >
-                  <social.icon className="h-5 w-5" />
-                </motion.a>
-              ))}
+              {socialLinks.map((social) => {
+                const IconComponent = iconMap[social.platform] || Globe
+                return (
+                  <motion.a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 text-[#00ADB5]/70 transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/30 hover:text-[#00ADB5]"
+                    title={social.platform}
+                  >
+                    <IconComponent className="h-5 w-5" />
+                  </motion.a>
+                )
+              })}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

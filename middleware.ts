@@ -30,6 +30,7 @@ export async function middleware(request: NextRequest) {
   const isAdminApi = pathname.startsWith("/api/admin")
 
   const allowList =
+    pathname === "/admin" ||
     pathname === "/admin/login" ||
     pathname === "/api/admin/login" ||
     pathname === "/api/admin/logout"
@@ -42,8 +43,8 @@ export async function middleware(request: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
       }
       const url = request.nextUrl.clone()
-      url.pathname = "/admin/login"
-      url.searchParams.set("next", pathname)
+      url.pathname = "/admin"
+      url.searchParams.set("redirect", pathname)
       return NextResponse.redirect(url)
     }
   }

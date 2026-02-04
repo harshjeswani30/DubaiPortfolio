@@ -77,7 +77,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
     offset: ["start start", "end start"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 150, damping: 25, mass: 0.5 })
 
   const textY = useTransform(smoothProgress, [0, 1], ["0%", "50%"])
   const imageY = useTransform(smoothProgress, [0, 1], ["0%", "-30%"])
@@ -96,13 +96,13 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 })
-  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 })
+  const smoothX = useSpring(mouseX, { stiffness: 80, damping: 15, mass: 0.3 })
+  const smoothY = useSpring(mouseY, { stiffness: 80, damping: 15, mass: 0.3 })
 
-  const ambientGlowOpacity = useSpring(0, { stiffness: 30, damping: 25 })
-  const ambientGlowScale = useSpring(0.8, { stiffness: 25, damping: 20 })
-  const noiseOpacity = useSpring(0.03, { stiffness: 20, damping: 25 })
-  const gradientAngle = useSpring(defaultGradient.angle, { stiffness: 20, damping: 30 })
+  const ambientGlowOpacity = useSpring(0, { stiffness: 60, damping: 20, mass: 0.5 })
+  const ambientGlowScale = useSpring(0.8, { stiffness: 50, damping: 15, mass: 0.5 })
+  const noiseOpacity = useSpring(0.03, { stiffness: 40, damping: 20, mass: 0.5 })
+  const gradientAngle = useSpring(defaultGradient.angle, { stiffness: 40, damping: 25, mass: 0.5 })
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -303,14 +303,14 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.3 }}
               className="mb-4"
             >
               <div className="group relative inline-flex items-center gap-3 rounded-full border border-[#393E46] bg-[#393E46]/20 px-5 py-2.5 overflow-hidden cursor-pointer hover:border-[#00ADB5]/50 transition-colors">
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-[#00ADB5]/0 via-[#00ADB5]/10 to-[#00ADB5]/0"
                   animate={{ x: ["-100%", "100%"] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                 />
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00ADB5] opacity-75" />
@@ -324,9 +324,9 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "-120%" }}
-                    staggerDuration={0.025}
+                    staggerDuration={0.02}
                     splitLevelClassName="overflow-hidden pb-0.5"
-                    transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                    transition={{ type: "spring", damping: 25, stiffness: 500, mass: 0.5 }}
                     rotationInterval={2000}
                   />
                 </div>
@@ -336,7 +336,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
               className="text-3xl font-bold leading-[1.1] tracking-tight text-[#EEEEEE] sm:text-4xl md:text-5xl lg:text-6xl"
             >
               {taglineParts[0]}
@@ -345,7 +345,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                   <span className="gradient-text">{highlightText}</span>
                   <motion.span
                     animate={{ width: ["0%", "100%", "100%", "0%"] }}
-                    transition={{ duration: 3, repeat: Infinity, repeatDelay: 1 }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
                     className="absolute -bottom-1 left-0 h-1 rounded-full bg-gradient-to-r from-[#00ADB5] to-[#EEEEEE]"
                   />
                 </span>
@@ -361,7 +361,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
               className="mt-4 max-w-md text-sm text-[#00ADB5]/80 md:text-base leading-relaxed"
             >
               {description}
@@ -370,7 +370,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              transition={{ duration: 0.3, delay: 0.3 }}
               className="mt-6 flex flex-wrap items-center gap-3"
             >
               <Link href={primaryButtonLink}>
@@ -404,7 +404,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
               style={{ y: statsY, scale: statsScale }}
               className="mt-8 flex items-center gap-3"
             >
@@ -413,7 +413,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                   key={stat.label}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 + i * 0.1 }}
+                  transition={{ delay: 0.5 + i * 0.05 }}
                   className="group relative flex-1"
                 >
                   <motion.div
@@ -437,7 +437,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
             ref={cardContainerRef}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             style={{ y: imageY }}
             className="relative flex items-center justify-center flex-shrink-0 lg:mr-8"
           >
@@ -448,7 +448,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{
-                    duration: 0.5,
+                    duration: 0.3,
                     ease: [0.16, 1, 0.3, 1],
                   }}
                   className="absolute inset-0 -z-10"
@@ -469,7 +469,7 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
                       scale: [1, 1.05, 1],
                     }}
                     transition={{
-                      duration: 2.5,
+                      duration: 2,
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
@@ -490,13 +490,13 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
+          transition={{ delay: 0.8 }}
           style={{ opacity: useTransform(smoothProgress, [0, 0.3], [1, 0]) }}
           className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2"
         >
           <motion.div
             animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={{ duration: 1.5, repeat: Infinity }}
             className="flex flex-col items-center gap-1"
           >
             <span className="text-[10px] text-[#00ADB5]/60">Scroll</span>

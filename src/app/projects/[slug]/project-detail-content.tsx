@@ -229,9 +229,11 @@ export function ProjectDetailContent({ project }: { project: Project }) {
   }, [completeTransition])
 
   const handleBack = () => {
+    const source = sessionStorage.getItem('projectSource')
     sessionStorage.removeItem('projectSource')
-    if (fromHome) {
-      startReverseTransition('/#projects')
+    
+    if (fromHome || source === 'home') {
+      startReverseTransition('/')
     } else {
       router.back()
     }

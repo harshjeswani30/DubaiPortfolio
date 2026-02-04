@@ -16,12 +16,12 @@ const menuLinks = [
   { href: '/contact', label: 'Contact', number: '07' },
 ]
 
-const socialLinks = [
-  { href: '#', label: 'LinkedIn' },
-  { href: '#', label: 'GitHub' },
-  { href: '#', label: 'Twitter' },
-  { href: '#', label: 'Dribbble' },
-]
+interface SocialLink {
+  id: string
+  platform: string
+  url: string
+  display_order: number
+}
 
 interface SideMenuProps {
   isOpen: boolean
@@ -37,6 +37,23 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
   const menuLinksRef = useRef<HTMLAnchorElement[]>([])
   const fadeTargetsRef = useRef<HTMLElement[]>([])
   const tlRef = useRef<gsap.core.Timeline | null>(null)
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+
+  useEffect(() => {
+    fetchSocialLinks()
+  }, [])
+
+  const fetchSocialLinks = async () => {
+    try {
+      const res = await fetch('/api/admin/social-links')
+      const json = await res.json()
+      if (json.data) {
+        setSocialLinks(json.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch social links:', error)
+    }
+  }
 
   useEffect(() => {
     tlRef.current = gsap.timeline({ paused: true })
@@ -172,12 +189,14 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
             <div className="flex flex-row gap-6">
               {socialLinks.map((link, index) => (
                 <a
-                  key={link.label}
+                  key={link.id}
                   ref={(el) => { if (el) fadeTargetsRef.current[index + 1] = el }}
-                  href={link.href}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="relative text-lg text-[#EEEEEE] no-underline after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-[#00ADB5] after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
                 >
-                  {link.label}
+                  {link.platform}
                 </a>
               ))}
             </div>

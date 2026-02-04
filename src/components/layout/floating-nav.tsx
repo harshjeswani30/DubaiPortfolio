@@ -58,7 +58,7 @@ const spanVariants = {
   exit: { width: 0, opacity: 0 },
 }
 
-const transition = { delay: 0.1, type: "spring" as const, bounce: 0, duration: 0.6 }
+const transition = { delay: 0.05, type: "spring" as const, bounce: 0, duration: 0.4 }
 
 function ExpandableTabs({
   activeColor = "text-[#00ADB5]"
@@ -186,7 +186,7 @@ export function FloatingNav() {
       <motion.nav
         initial={hasMounted ? false : { opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
         style={{ y: floatY }}
         className="floating-nav fixed top-6 left-0 right-0 z-[110] px-4 md:px-8"
       >
@@ -208,7 +208,7 @@ export function FloatingNav() {
                     rotate: [0, 360],
                   }}
                   transition={{
-                    duration: 20,
+                    duration: 15,
                     repeat: Infinity,
                     ease: "linear"
                   }}
@@ -232,7 +232,7 @@ export function FloatingNav() {
           <motion.div
             initial={hasMounted ? false : { opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
             className="hidden md:block"
           >
             <ExpandableTabs />
@@ -241,7 +241,7 @@ export function FloatingNav() {
           <motion.div
             initial={hasMounted ? false : { opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
+            transition={{ duration: 0.3, delay: 0.25 }}
             className="rounded-2xl border border-[#393E46]/50 bg-[#222831]/90 px-3 py-3 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] backdrop-blur-xl transition-all hover:border-[#00ADB5]/30"
           >
             <MenuButton

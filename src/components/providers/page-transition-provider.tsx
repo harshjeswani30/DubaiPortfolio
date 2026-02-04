@@ -55,16 +55,10 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     const scrollPosition = sessionStorage.getItem('lastScrollPosition')
     
     sessionStorage.removeItem('lastProjectSlug')
-    sessionStorage.removeItem('lastScrollPosition')
     
-    if (scrollPosition) {
-      router.push(href)
-      setTimeout(() => {
-        window.scrollTo(0, parseInt(scrollPosition))
-      }, 100)
-    } else {
-      router.push(href)
-    }
+    router.push(href)
+    
+    // Don't remove lastScrollPosition here - let ScrollRestore component handle it
   }, [router])
 
   const completeTransition = useCallback(() => {

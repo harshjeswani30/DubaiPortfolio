@@ -1,14 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClient } from '@/lib/supabase/client';
 import { AdminShell } from '@/components/admin/admin-shell';
 import { AdminCard, AdminCardHeader, AdminCardContent, AdminButton, AdminInput } from '@/components/admin/form-elements';
 import { User, Mail, Lock, Shield, Eye, EyeOff, CheckCircle2, AlertTriangle, Info, Key, Sparkles, Zap, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SecuritySettingsPage() {
-  const [user, setUser] = useState<any>(null);
+  const [currentEmail, setCurrentEmail] = useState('');
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState<'email' | 'password'>('email');
   
@@ -29,18 +28,19 @@ export default function SecuritySettingsPage() {
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const supabase = createClient();
-
   useEffect(() => {
-    fetchUser();
+    fetchCurrentEmail();
   }, []);
 
-  const fetchUser = async () => {
+  const fetchCurrentEmail = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      const res = await fetch('/api/admin/security');
+      const json = await res.json();
+      if (json.data?.email) {
+        setCurrentEmail(json.data.email);
+      }
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.error('Error fetching email:', error);
     } finally {
       setLoading(false);
     }
@@ -52,18 +52,43 @@ export default function SecuritySettingsPage() {
     setEmailError('');
     setEmailSuccess('');
 
+    if (!currentPassword) {
+      setEmailError('Please enter your current password');
+      setEmailLoading(false);
+      return;
+    }
+
+    if (!newEmail || newEmail === currentEmail) {
+      setEmailError('Please enter a new email address');
+      setEmailLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail
+      const res = await fetch('/api/admin/security', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          email: newEmail,
+          currentPassword 
+        }),
       });
 
-      if (error) throw error;
+      const json = await res.json();
 
-      setEmailSuccess('Confirmation email sent! Please check your inbox and confirm your new email address.');
-      setNewEmail('');
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to update email');
+      }
+
+      setEmailSuccess('Email updated successfully! Logging out...');
+      
+      // Logout and redirect after 1.5 seconds
+      setTimeout(async () => {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        window.location.href = '/admin';
+      }, 1500);
     } catch (error: any) {
       setEmailError(error.message || 'Failed to update email');
-    } finally {
       setEmailLoading(false);
     }
   };
@@ -88,19 +113,30 @@ export default function SecuritySettingsPage() {
     }
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
+      const res = await fetch('/api/admin/security', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          currentPassword,
+          newPassword 
+        }),
       });
 
-      if (error) throw error;
+      const json = await res.json();
 
-      setPasswordSuccess('Password updated successfully!');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      if (!res.ok) {
+        throw new Error(json.error || 'Failed to update password');
+      }
+
+      setPasswordSuccess('Password updated successfully! Logging out...');
+      
+      // Logout and redirect after 1.5 seconds
+      setTimeout(async () => {
+        await fetch('/api/admin/logout', { method: 'POST' });
+        window.location.href = '/admin';
+      }, 1500);
     } catch (error: any) {
       setPasswordError(error.message || 'Failed to update password');
-    } finally {
       setPasswordLoading(false);
     }
   };
@@ -200,7 +236,7 @@ export default function SecuritySettingsPage() {
                   <Mail className="w-4 h-4 text-[#00ADB5]" />
                   <span className="text-sm text-[#EEEEEE]/60">Email Address</span>
                 </div>
-                <p className="text-[#EEEEEE] font-medium">{user?.email || 'Not available'}</p>
+                <p className="text-[#EEEEEE] font-medium">{currentEmail || 'Not available'}</p>
               </div>
               
               <div className="p-4 bg-[#222831]/50 rounded-lg border border-[#00ADB5]/10">
@@ -208,9 +244,7 @@ export default function SecuritySettingsPage() {
                   <Key className="w-4 h-4 text-[#00ADB5]" />
                   <span className="text-sm text-[#EEEEEE]/60">Last Sign In</span>
                 </div>
-                <p className="text-[#EEEEEE] font-medium">
-                  {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleString() : 'N/A'}
-                </p>
+                <p className="text-[#EEEEEE] font-medium">N/A</p>
               </div>
             </div>
           </AdminCardContent>
@@ -272,6 +306,21 @@ export default function SecuritySettingsPage() {
                 <AdminCardContent>
                   <form onSubmit={handleEmailChange} className="space-y-6">
                     <div>
+                      <label className="block text-sm font-medium text-[#EEEEEE] mb-2">
+                        Current Email
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#00ADB5]/50" />
+                        <AdminInput
+                          type="email"
+                          value={currentEmail}
+                          disabled
+                          className="pl-12 bg-[#393E46]/30"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
                       <label htmlFor="newEmail" className="block text-sm font-medium text-[#EEEEEE] mb-2">
                         New Email Address
                       </label>
@@ -287,9 +336,27 @@ export default function SecuritySettingsPage() {
                           placeholder="your.new.email@example.com"
                         />
                       </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="currentPasswordEmail" className="block text-sm font-medium text-[#EEEEEE] mb-2">
+                        Current Password (required)
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#00ADB5]" />
+                        <AdminInput
+                          type="password"
+                          id="currentPasswordEmail"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          required
+                          className="pl-12"
+                          placeholder="Enter your current password"
+                        />
+                      </div>
                       <p className="mt-2 text-xs text-[#EEEEEE]/50 flex items-center gap-1">
                         <Info className="w-3 h-3" />
-                        You'll receive a confirmation link at both old and new addresses
+                        Changes will take effect on next login
                       </p>
                     </div>
 
@@ -374,6 +441,35 @@ export default function SecuritySettingsPage() {
                 </AdminCardHeader>
                 <AdminCardContent>
                   <form onSubmit={handlePasswordChange} className="space-y-6">
+                    <div>
+                      <label htmlFor="currentPasswordChange" className="block text-sm font-medium text-[#EEEEEE] mb-2">
+                        Current Password
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#00ADB5] z-10" />
+                        <AdminInput
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          id="currentPasswordChange"
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          required
+                          className="pl-12 pr-12"
+                          placeholder="Enter your current password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#EEEEEE]/60 hover:text-[#00ADB5] transition-colors z-10"
+                        >
+                          {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                      <p className="mt-2 text-xs text-[#EEEEEE]/50 flex items-center gap-1">
+                        <Info className="w-3 h-3" />
+                        Required to verify your identity
+                      </p>
+                    </div>
+
                     <div>
                       <label htmlFor="newPassword" className="block text-sm font-medium text-[#EEEEEE] mb-2">
                         New Password
