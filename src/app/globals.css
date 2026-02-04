@@ -439,3 +439,13 @@ body:has(.carousel-container) .scroll-progress {
     transform: translateY(-10px) scale(0.95);
   }
 }
+
+/* Hide scrollbar for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

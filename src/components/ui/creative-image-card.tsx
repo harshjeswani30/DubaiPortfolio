@@ -191,7 +191,7 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
         }}
         className="relative"
       >
-        <div className="relative h-[350px] w-[350px] sm:h-[400px] sm:w-[400px] lg:h-[420px] lg:w-[420px]">
+        <div className="relative h-[280px] w-[280px] sm:h-[350px] sm:w-[350px] md:h-[400px] md:w-[400px] lg:h-[420px] lg:w-[420px]">
           <motion.div
             className="relative h-full w-full overflow-hidden rounded-3xl border-2 border-[#393E46]/50 bg-gradient-to-br from-[#393E46] to-[#222831] shadow-2xl"
             animate={{

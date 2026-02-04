@@ -406,30 +406,32 @@ export function HeroSection({ heroData, siteSettings }: HeroSectionProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.4 }}
               style={{ y: statsY, scale: statsScale }}
-              className="mt-8 flex items-center gap-3"
+              className="mt-8 -mx-6 px-6 sm:mx-0 sm:px-0"
             >
-              {stats.map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5 + i * 0.05 }}
-                  className="group relative flex-1"
-                >
+              <div className="flex gap-3 overflow-x-auto pb-2 sm:overflow-visible scrollbar-hide">
+                {stats.map((stat, i) => (
                   <motion.div
-                    whileHover={{ scale: 1.03, y: -2 }}
-                    className="flex items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/20 px-3 py-2.5 backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/30"
+                    key={stat.label}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.5 + i * 0.05 }}
+                    className="group relative flex-shrink-0 w-[45%] sm:flex-1 sm:w-auto"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#393E46]">
-                      <stat.icon className="h-4 w-4 text-[#00ADB5]" />
-                    </div>
-                    <div>
-                      <div className="text-lg font-bold text-[#EEEEEE]">{stat.value}</div>
-                      <div className="text-[10px] text-[#00ADB5]/60 whitespace-nowrap">{stat.label}</div>
-                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.03, y: -2 }}
+                      className="flex items-center gap-2 rounded-xl border border-[#393E46]/50 bg-[#393E46]/20 px-3 py-2.5 backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/30"
+                    >
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#393E46]">
+                        <stat.icon className="h-4 w-4 text-[#00ADB5]" />
+                      </div>
+                      <div>
+                        <div className="text-lg font-bold text-[#EEEEEE]">{stat.value}</div>
+                        <div className="text-[10px] text-[#00ADB5]/60 whitespace-nowrap">{stat.label}</div>
+                      </div>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              ))}
+                ))}
+              </div>
             </motion.div>
           </motion.div>
 

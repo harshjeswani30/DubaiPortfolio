@@ -129,8 +129,8 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
       <nav
         ref={menuRef}
-        className="relative ml-auto flex h-full w-full flex-col justify-between overflow-auto pb-8 pt-24 md:w-[35rem]"
-        style={{ gap: '5rem' }}
+        className="relative ml-auto flex h-full w-full flex-col justify-between overflow-auto pb-20 pt-20 md:w-[35rem] md:pb-8 md:pt-24"
+        style={{ gap: '3rem' }}
       >
         <div className="absolute inset-0 z-0">
           <div
@@ -147,7 +147,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
           />
         </div>
 
-        <div className="relative z-10 flex h-full flex-col justify-between overflow-auto" style={{ gap: '5rem' }}>
+        <div className="relative z-10 flex h-full flex-col justify-between overflow-auto" style={{ gap: '2rem' }}>
           <ul className="m-0 flex w-full list-none flex-col p-0">
             {menuLinks.map((link, index) => (
               <li key={link.href} className="relative overflow-hidden">
@@ -179,7 +179,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
             ))}
           </ul>
 
-          <div className="flex flex-col items-start gap-5 pl-8">
+          <div className="flex flex-col items-start gap-5 pb-4 pl-8 md:pb-0">
             <p
               ref={(el) => { if (el) fadeTargetsRef.current[0] = el }}
               className="m-0 text-sm text-[#EEEEEE]/60"
