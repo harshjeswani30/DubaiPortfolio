@@ -50,11 +50,11 @@ export function Footer() {
       console.error('Failed to fetch social links:', error)
     }
   }
-  
+
   if (pathname?.startsWith("/admin")) {
     return null
   }
-  
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
@@ -62,7 +62,7 @@ export function Footer() {
   return (
     <footer className="relative border-t border-[#393E46]/30 bg-[#222831]">
       <div className="absolute inset-0 dot-background opacity-30" />
-      
+
       <div className="relative mx-auto max-w-7xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -72,7 +72,7 @@ export function Footer() {
                 className="flex items-center gap-3"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#393E46] glow-sm">
-                    <Code2 className="h-6 w-6 text-[#00ADB5]" />
+                  <Code2 className="h-6 w-6 text-[#00ADB5]" />
                 </div>
                 <span className="text-xl font-bold text-[#EEEEEE]">Portfolio</span>
               </motion.div>
@@ -145,7 +145,7 @@ export function Footer() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-[#393E46]/30 pt-8 md:flex-row">
           <p className="flex items-center gap-2 text-sm text-[#00ADB5]/50">
-            © {new Date().getFullYear()} Portfolio. Made with 
+            © {new Date().getFullYear()} Portfolio. Made with
             <Heart className="h-4 w-4 fill-[#00ADB5]/50 text-[#00ADB5]/50" />
             in Dubai
           </p>

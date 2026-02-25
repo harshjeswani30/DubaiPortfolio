@@ -1,78 +1,30 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, Code } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-type SkillRow = {
-  id: string
-  name: string
-  category: string
-  proficiency: number
-  icon_name: string
-  color: string
-  display_order: number
-  is_active: boolean
-}
+import { useSkillsQuery, useUpdateSkill, useDeleteSkill } from "@/hooks/use-skills-query"
 
 export default function AdminSkillsPage() {
-  const [items, setItems] = useState<SkillRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchSkills()
-  }, [])
+  const { data: items = [], isLoading, isError } = useSkillsQuery()
+  const updateSkill = useUpdateSkill()
+  const deleteSkillMutation = useDeleteSkill()
 
-  const fetchSkills = async () => {
-    try {
-      const res = await fetch("/api/admin/skills")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load skills")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load skills")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateSkill.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (skill: SkillRow) => {
-    try {
-      const res = await fetch(`/api/admin/skills/${skill.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !skill.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((s) => (s.id === skill.id ? { ...s, is_active: !s.is_active } : s))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteSkill = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this skill?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/skills/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((s) => s.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteSkillMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((s) => {
+  const filteredItems = items.filter((s: any) => {
     const matchesSearch =
       s.name?.toLowerCase().includes(search.toLowerCase()) ||
       s.category?.toLowerCase().includes(search.toLowerCase())
@@ -83,17 +35,17 @@ export default function AdminSkillsPage() {
     return matchesSearch && matchesFilter
   })
 
-  const groupedSkills = filteredItems.reduce((acc, skill) => {
+  const groupedSkills = filteredItems.reduce((acc: Record<string, any[]>, skill: any) => {
     const cat = skill.category || "General"
     if (!acc[cat]) acc[cat] = []
     acc[cat].push(skill)
     return acc
-  }, {} as Record<string, SkillRow[]>)
+  }, {})
 
   const stats = {
     total: items.length,
-    active: items.filter((s) => s.is_active).length,
-    inactive: items.filter((s) => !s.is_active).length,
+    active: items.filter((s: any) => s.is_active).length,
+    inactive: items.filter((s: any) => !s.is_active).length,
   }
 
   return (
@@ -112,42 +64,25 @@ export default function AdminSkillsPage() {
     >
       <div className="space-y-6">
         <div className="grid grid-cols-3 gap-4">
-          <button
-            onClick={() => setFilter("all")}
-            className={cn(
-              "rounded-2xl border p-4 text-left transition-all",
-              filter === "all"
-                ? "border-cyan-500/50 bg-cyan-500/10"
-                : "border-white/10 bg-zinc-900/50 hover:border-white/20"
-            )}
-          >
-            <p className="text-2xl font-bold text-white">{stats.total}</p>
-            <p className="text-sm text-zinc-400">Total Skills</p>
-          </button>
-          <button
-            onClick={() => setFilter("active")}
-            className={cn(
-              "rounded-2xl border p-4 text-left transition-all",
-              filter === "active"
-                ? "border-green-500/50 bg-green-500/10"
-                : "border-white/10 bg-zinc-900/50 hover:border-white/20"
-            )}
-          >
-            <p className="text-2xl font-bold text-green-400">{stats.active}</p>
-            <p className="text-sm text-zinc-400">Active</p>
-          </button>
-          <button
-            onClick={() => setFilter("inactive")}
-            className={cn(
-              "rounded-2xl border p-4 text-left transition-all",
-              filter === "inactive"
-                ? "border-amber-500/50 bg-amber-500/10"
-                : "border-white/10 bg-zinc-900/50 hover:border-white/20"
-            )}
-          >
-            <p className="text-2xl font-bold text-amber-400">{stats.inactive}</p>
-            <p className="text-sm text-zinc-400">Inactive</p>
-          </button>
+          {[
+            { key: "total", label: "Total Skills", filterVal: "all", color: "white" },
+            { key: "active", label: "Active", filterVal: "active", color: "green-400" },
+            { key: "inactive", label: "Inactive", filterVal: "inactive", color: "amber-400" },
+          ].map(({ key, label, filterVal, color }) => (
+            <button
+              key={key}
+              onClick={() => setFilter(filterVal as typeof filter)}
+              className={cn(
+                "rounded-2xl border p-4 text-left transition-all",
+                filter === filterVal
+                  ? "border-cyan-500/50 bg-cyan-500/10"
+                  : "border-white/10 bg-zinc-900/50 hover:border-white/20"
+              )}
+            >
+              <p className={`text-2xl font-bold text-${color}`}>{stats[key as keyof typeof stats]}</p>
+              <p className="text-sm text-zinc-400">{label}</p>
+            </button>
+          ))}
         </div>
 
         <div className="relative max-w-md">
@@ -161,13 +96,13 @@ export default function AdminSkillsPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load skills
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -188,7 +123,7 @@ export default function AdminSkillsPage() {
               <div key={category} className="space-y-3">
                 <h3 className="text-sm font-medium text-zinc-400">{category}</h3>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {skills.map((skill) => (
+                  {(skills as any[]).map((skill) => (
                     <div
                       key={skill.id}
                       className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-4 transition-all hover:border-white/20"
@@ -197,9 +132,9 @@ export default function AdminSkillsPage() {
                         <div className="flex items-center gap-3">
                           <div
                             className="flex h-10 w-10 items-center justify-center rounded-xl"
-                            style={{ background: `${skill.color || '#3b82f6'}20` }}
+                            style={{ background: `${skill.color || "#3b82f6"}20` }}
                           >
-                            <Code className="h-5 w-5" style={{ color: skill.color || '#3b82f6' }} />
+                            <Code className="h-5 w-5" style={{ color: skill.color || "#3b82f6" }} />
                           </div>
                           <div>
                             <h4 className="font-medium text-white">{skill.name || "(Untitled)"}</h4>
@@ -228,7 +163,7 @@ export default function AdminSkillsPage() {
                             className="h-full rounded-full transition-all"
                             style={{
                               width: `${skill.proficiency || 0}%`,
-                              background: skill.color || '#3b82f6',
+                              background: skill.color || "#3b82f6",
                             }}
                           />
                         </div>
@@ -238,7 +173,7 @@ export default function AdminSkillsPage() {
                         <span className="text-xs text-zinc-500">Order: {skill.display_order ?? 0}</span>
                         <div className="flex items-center gap-1">
                           <button
-                            onClick={() => toggleActive(skill)}
+                            onClick={() => toggleActive(skill.id, skill.is_active)}
                             className={cn(
                               "rounded-lg p-1.5 transition-colors",
                               skill.is_active
@@ -252,15 +187,13 @@ export default function AdminSkillsPage() {
                           <Link
                             href={`/admin/skills/${skill.id}`}
                             className="rounded-lg p-1.5 text-cyan-400 transition-colors hover:bg-cyan-500/10"
-                            title="Edit"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Link>
                           <button
-                            onClick={() => deleteSkill(skill.id)}
-                            disabled={deleting === skill.id}
+                            onClick={() => handleDelete(skill.id)}
+                            disabled={deleteSkillMutation.isPending}
                             className="rounded-lg p-1.5 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
-                            title="Delete"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>

@@ -1,11 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, Briefcase, MapPin, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatDate } from "@/lib/utils"
+import { useExperienceQuery, useUpdateExperience, useDeleteExperience } from "@/hooks/use-experience-query"
 
 type ExperienceRow = {
   id: string
@@ -21,68 +22,30 @@ type ExperienceRow = {
 }
 
 export default function AdminExperiencePage() {
-  const [items, setItems] = useState<ExperienceRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchExperience()
-  }, [])
+  const { data: items = [], isLoading, isError } = useExperienceQuery()
+  const updateExp = useUpdateExperience()
+  const deleteExpMutation = useDeleteExperience()
 
-  const fetchExperience = async () => {
-    try {
-      const res = await fetch("/api/admin/experience")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load experience")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load experience")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateExp.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (exp: ExperienceRow) => {
-    try {
-      const res = await fetch(`/api/admin/experience/${exp.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !exp.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((e) => (e.id === exp.id ? { ...e, is_active: !e.is_active } : e))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteExperience = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this experience?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/experience/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((e) => e.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteExpMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((e) =>
+  const filteredItems = items.filter((e: any) =>
     e.company?.toLowerCase().includes(search.toLowerCase()) ||
     e.position?.toLowerCase().includes(search.toLowerCase())
   )
 
   const stats = {
     total: items.length,
-    active: items.filter((e) => e.is_active).length,
-    current: items.filter((e) => e.is_current || !e.end_date).length,
+    active: items.filter((e: any) => e.is_active).length,
+    current: items.filter((e: any) => e.is_current || !e.end_date).length,
   }
 
   const formatDateRange = (start: string, end: string | null, isCurrent: boolean) => {
@@ -133,13 +96,13 @@ export default function AdminExperiencePage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load experience
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -156,7 +119,7 @@ export default function AdminExperiencePage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredItems.map((exp, index) => (
+            {filteredItems.map((exp: any, index: number) => (
               <div
                 key={exp.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 transition-all hover:border-white/20"
@@ -197,7 +160,7 @@ export default function AdminExperiencePage() {
 
                       <div className="flex items-center gap-1 shrink-0">
                         <button
-                          onClick={() => toggleActive(exp)}
+                          onClick={() => toggleActive(exp.id, exp.is_active)}
                           className={cn(
                             "rounded-lg p-2 transition-colors",
                             exp.is_active
@@ -216,8 +179,8 @@ export default function AdminExperiencePage() {
                           <Edit2 className="h-4 w-4" />
                         </Link>
                         <button
-                          onClick={() => deleteExperience(exp.id)}
-                          disabled={deleting === exp.id}
+                          onClick={() => handleDelete(exp.id)}
+                          disabled={deleteExpMutation.isPending}
                           className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                           title="Delete"
                         >

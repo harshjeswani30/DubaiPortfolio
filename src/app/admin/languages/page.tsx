@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, Globe } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useLanguagesQuery, useUpdateLanguage, useDeleteLanguage } from "@/hooks/use-languages-query"
 
 type LanguageRow = {
   id: string
@@ -16,67 +17,29 @@ type LanguageRow = {
 }
 
 export default function AdminLanguagesPage() {
-  const [items, setItems] = useState<LanguageRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchLanguages()
-  }, [])
+  const { data: items = [], isLoading, isError } = useLanguagesQuery()
+  const updateLang = useUpdateLanguage()
+  const deleteLangMutation = useDeleteLanguage()
 
-  const fetchLanguages = async () => {
-    try {
-      const res = await fetch("/api/admin/languages")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load languages")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load languages")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateLang.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (lang: LanguageRow) => {
-    try {
-      const res = await fetch(`/api/admin/languages/${lang.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !lang.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((l) => (l.id === lang.id ? { ...l, is_active: !l.is_active } : l))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteLanguage = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this language?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/languages/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((l) => l.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteLangMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((l) =>
+  const filteredItems = items.filter((l: any) =>
     l.name?.toLowerCase().includes(search.toLowerCase()) ||
     l.level?.toLowerCase().includes(search.toLowerCase())
   )
 
   const stats = {
     total: items.length,
-    active: items.filter((l) => l.is_active).length,
+    active: items.filter((l: any) => l.is_active).length,
   }
 
   return (
@@ -116,13 +79,13 @@ export default function AdminLanguagesPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load languages
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -139,7 +102,7 @@ export default function AdminLanguagesPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-3">
-            {filteredItems.map((lang) => (
+            {filteredItems.map((lang: any) => (
               <div
                 key={lang.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-5 text-center transition-all hover:border-white/20"
@@ -188,7 +151,7 @@ export default function AdminLanguagesPage() {
 
                 <div className="mt-4 flex items-center justify-center gap-1">
                   <button
-                    onClick={() => toggleActive(lang)}
+                    onClick={() => toggleActive(lang.id, lang.is_active)}
                     className={cn(
                       "rounded-lg p-2 transition-colors",
                       lang.is_active
@@ -205,8 +168,8 @@ export default function AdminLanguagesPage() {
                     <Edit2 className="h-4 w-4" />
                   </Link>
                   <button
-                    onClick={() => deleteLanguage(lang.id)}
-                    disabled={deleting === lang.id}
+                    onClick={() => handleDelete(lang.id)}
+                    disabled={deleteLangMutation.isPending}
                     className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                   >
                     <Trash2 className="h-4 w-4" />

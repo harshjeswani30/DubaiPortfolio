@@ -41,25 +41,25 @@ export function AboutContent({ heroImage, mainTitle, sections }: AboutContentPro
   useEffect(() => {
     if (typeof window === "undefined") return
 
-    const lenis = new Lenis({ 
+    const lenis = new Lenis({
       lerp: 0.1,
       smoothWheel: true,
       touchMultiplier: 2,
     })
-    
+
     lenis.on("scroll", ScrollTrigger.update)
-    
+
     gsap.ticker.add((time: number) => {
       lenis.raf(time * 1000)
     })
-    
+
     gsap.ticker.lagSmoothing(0)
 
     // Handle resize and orientation changes for mobile
     const handleResize = () => {
       ScrollTrigger.refresh()
     }
-    
+
     window.addEventListener("resize", handleResize)
     window.addEventListener("orientationchange", handleResize)
 
@@ -273,7 +273,7 @@ export function AboutContent({ heroImage, mainTitle, sections }: AboutContentPro
               const parts = line.split("{{img}}")
               const imageUrl = section.images?.[lineIndex]
               const hasImage = imageUrl && imageUrl.trim() !== ''
-              
+
               return (
                 <h2 key={lineIndex} className="content__title content__title--medium font-alt">
                   {parts.map((part, partIndex) => (
@@ -327,9 +327,9 @@ export function AboutContent({ heroImage, mainTitle, sections }: AboutContentPro
               }
               const img = section.images?.[i]
               return (
-                <div 
-                  key={i} 
-                  className="content__img" 
+                <div
+                  key={i}
+                  className="content__img"
                   style={img && img.trim() ? { backgroundImage: `url(${img})` } : undefined}
                 ></div>
               )

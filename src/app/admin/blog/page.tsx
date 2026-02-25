@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import Image from "next/image"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Star, Edit2, Trash2, FileText, Clock, Tag } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useBlogQuery, useUpdateBlogPost, useDeleteBlogPost } from "@/hooks/use-blog-query"
 
 type BlogRow = {
   id: string
@@ -23,77 +23,27 @@ type BlogRow = {
 }
 
 export default function AdminBlogPage() {
-  const [items, setItems] = useState<BlogRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<"all" | "published" | "draft" | "featured">("all")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchPosts()
-  }, [])
+  const { data: items = [], isLoading, isError } = useBlogQuery()
+  const updatePost = useUpdateBlogPost()
+  const deletePostMutation = useDeleteBlogPost()
 
-  const fetchPosts = async () => {
-    try {
-      const res = await fetch("/api/admin/blog")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load blog posts")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load blog posts")
-    } finally {
-      setLoading(false)
-    }
+  const togglePublish = (id: string, currentValue: boolean) => {
+    updatePost.mutate({ id, payload: { is_published: !currentValue } })
   }
 
-  const togglePublish = async (post: BlogRow) => {
-    try {
-      const res = await fetch(`/api/admin/blog/${post.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_published: !post.is_published }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((p) => (p.id === post.id ? { ...p, is_published: !p.is_published } : p))
-      )
-    } catch (e) {
-      console.error(e)
-    }
+  const toggleFeatured = (id: string, currentValue: boolean) => {
+    updatePost.mutate({ id, payload: { is_featured: !currentValue } })
   }
 
-  const toggleFeatured = async (post: BlogRow) => {
-    try {
-      const res = await fetch(`/api/admin/blog/${post.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_featured: !post.is_featured }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((p) => (p.id === post.id ? { ...p, is_featured: !p.is_featured } : p))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deletePost = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this post?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/blog/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((p) => p.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deletePostMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((p) => {
+  const filteredItems = items.filter((p: any) => {
     const matchesSearch =
       p.title?.toLowerCase().includes(search.toLowerCase()) ||
       p.category?.toLowerCase().includes(search.toLowerCase())
@@ -107,9 +57,9 @@ export default function AdminBlogPage() {
 
   const stats = {
     total: items.length,
-    published: items.filter((p) => p.is_published).length,
-    draft: items.filter((p) => !p.is_published).length,
-    featured: items.filter((p) => p.is_featured).length,
+    published: items.filter((p: any) => p.is_published).length,
+    draft: items.filter((p: any) => !p.is_published).length,
+    featured: items.filter((p: any) => p.is_featured).length,
   }
 
   return (
@@ -189,13 +139,13 @@ export default function AdminBlogPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load blog posts
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -212,7 +162,7 @@ export default function AdminBlogPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredItems.map((post) => (
+            {filteredItems.map((post: any) => (
               <div
                 key={post.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 transition-all hover:border-white/20"
@@ -276,7 +226,7 @@ export default function AdminBlogPage() {
 
                       <div className="flex items-center gap-1 shrink-0">
                         <button
-                          onClick={() => togglePublish(post)}
+                          onClick={() => togglePublish(post.id, post.is_published)}
                           className={cn(
                             "rounded-lg p-2 transition-colors",
                             post.is_published
@@ -292,7 +242,7 @@ export default function AdminBlogPage() {
                           )}
                         </button>
                         <button
-                          onClick={() => toggleFeatured(post)}
+                          onClick={() => toggleFeatured(post.id, post.is_featured)}
                           className={cn(
                             "rounded-lg p-2 transition-colors",
                             post.is_featured
@@ -311,8 +261,8 @@ export default function AdminBlogPage() {
                           <Edit2 className="h-4 w-4" />
                         </Link>
                         <button
-                          onClick={() => deletePost(post.id)}
-                          disabled={deleting === post.id}
+                          onClick={() => handleDelete(post.id)}
+                          disabled={deletePostMutation.isPending}
                           className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                           title="Delete"
                         >
@@ -323,7 +273,7 @@ export default function AdminBlogPage() {
 
                     {post.tags && post.tags.length > 0 && (
                       <div className="mt-auto pt-3 flex flex-wrap gap-1 border-t border-white/5">
-                        {post.tags.slice(0, 4).map((tag, idx) => (
+                        {post.tags.slice(0, 4).map((tag: string, idx: number) => (
                           <span
                             key={idx}
                             className="rounded bg-white/5 px-2 py-0.5 text-xs text-zinc-400"

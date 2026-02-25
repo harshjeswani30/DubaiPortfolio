@@ -82,6 +82,7 @@ img {
 
 /* Reduce motion for accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -141,18 +142,24 @@ img {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate3d(0, 0, 0);
   }
+
   50% {
     transform: translate3d(0, -20px, 0);
   }
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
   }
+
   50% {
     opacity: 1;
   }
@@ -162,6 +169,7 @@ img {
   0% {
     transform: translate3d(-100%, 0, 0);
   }
+
   100% {
     transform: translate3d(100%, 0, 0);
   }
@@ -171,6 +179,7 @@ img {
   0% {
     transform: rotate(0deg) translateX(100px) rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg) translateX(100px) rotate(-360deg);
   }

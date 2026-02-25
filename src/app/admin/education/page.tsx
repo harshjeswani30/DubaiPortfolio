@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, GraduationCap, MapPin } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useEducationQuery, useUpdateEducation, useDeleteEducation } from "@/hooks/use-education-query"
 
 type EducationRow = {
   id: string
@@ -20,67 +21,29 @@ type EducationRow = {
 }
 
 export default function AdminEducationPage() {
-  const [items, setItems] = useState<EducationRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchEducation()
-  }, [])
+  const { data: items = [], isLoading, isError } = useEducationQuery()
+  const updateEdu = useUpdateEducation()
+  const deleteEduMutation = useDeleteEducation()
 
-  const fetchEducation = async () => {
-    try {
-      const res = await fetch("/api/admin/education")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load education")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load education")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateEdu.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (edu: EducationRow) => {
-    try {
-      const res = await fetch(`/api/admin/education/${edu.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !edu.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((e) => (e.id === edu.id ? { ...e, is_active: !e.is_active } : e))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteEducation = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this education?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/education/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((e) => e.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteEduMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((e) =>
+  const filteredItems = items.filter((e: any) =>
     e.degree?.toLowerCase().includes(search.toLowerCase()) ||
     e.institution?.toLowerCase().includes(search.toLowerCase())
   )
 
   const stats = {
     total: items.length,
-    active: items.filter((e) => e.is_active).length,
+    active: items.filter((e: any) => e.is_active).length,
   }
 
   return (
@@ -120,13 +83,13 @@ export default function AdminEducationPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load education
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -143,7 +106,7 @@ export default function AdminEducationPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredItems.map((edu, index) => (
+            {filteredItems.map((edu: any, index: number) => (
               <div
                 key={edu.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 transition-all hover:border-white/20"
@@ -179,7 +142,7 @@ export default function AdminEducationPage() {
 
                       <div className="flex items-center gap-1 shrink-0">
                         <button
-                          onClick={() => toggleActive(edu)}
+                          onClick={() => toggleActive(edu.id, edu.is_active)}
                           className={cn(
                             "rounded-lg p-2 transition-colors",
                             edu.is_active
@@ -198,8 +161,8 @@ export default function AdminEducationPage() {
                           <Edit2 className="h-4 w-4" />
                         </Link>
                         <button
-                          onClick={() => deleteEducation(edu.id)}
-                          disabled={deleting === edu.id}
+                          onClick={() => handleDelete(edu.id)}
+                          disabled={deleteEduMutation.isPending}
                           className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                           title="Delete"
                         >
@@ -225,7 +188,7 @@ export default function AdminEducationPage() {
 
                     {edu.highlights && edu.highlights.length > 0 && (
                       <div className="mt-3 flex flex-wrap gap-2">
-                        {edu.highlights.slice(0, 3).map((h, i) => (
+                        {edu.highlights.slice(0, 3).map((h: string, i: number) => (
                           <span key={i} className="rounded-full bg-cyan-500/10 px-2 py-0.5 text-xs text-cyan-300">
                             {h}
                           </span>

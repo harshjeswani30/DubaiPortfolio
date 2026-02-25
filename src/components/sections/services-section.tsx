@@ -1,13 +1,11 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useInView, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion"
+import { motion, useInView, useScroll, useTransform, useMotionValue, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowRight, Code, Cpu, Database, Palette, Lightbulb, Layers, Zap, Globe, LucideIcon } from "lucide-react"
 
-function useParallax(value: ReturnType<typeof useSpring>, distance: number) {
-  return useTransform(value, [0, 1], [-distance, distance])
-}
+
 
 interface Service {
   id: string
@@ -106,25 +104,21 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const smoothMouseX = useSpring(mouseX, { stiffness: 50, damping: 20 })
-  const smoothMouseY = useSpring(mouseY, { stiffness: 50, damping: 20 })
+  // Use motion values directly — no spring lag
+  const smoothMouseX = mouseX
+  const smoothMouseY = mouseY
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const bgY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
-  const orb1X = useTransform(smoothProgress, [0, 1], ["-10%", "10%"])
-  const orb2Y = useTransform(smoothProgress, [0, 1], ["10%", "-10%"])
-
-  const titleY = useParallax(smoothProgress, -30)
-  const leftColY = useParallax(smoothProgress, -20)
-  const rightColY = useParallax(smoothProgress, 30)
-  const statsY = useParallax(smoothProgress, 40)
-  const floatingParallax1 = useParallax(smoothProgress, -50)
-  const floatingParallax2 = useParallax(smoothProgress, 60)
+  // Raw scroll progress — no spring for instant parallax response
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"])
+  const orb1X = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"])
+  const orb2Y = useTransform(scrollYProgress, [0, 1], ["5%", "-5%"])
+  const floatingParallax1 = useTransform(scrollYProgress, [0, 1], [0, -25])
+  const floatingParallax2 = useTransform(scrollYProgress, [0, 1], [0, 30])
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -246,16 +240,15 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          style={{ y: titleY }}
+          transition={{ duration: 0.3 }}
           className="mb-20 flex flex-col items-center text-center"
         >
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={isInView ? { scale: 1, rotate: 0 } : {}}
-            transition={{ type: "spring", duration: 0.8 }}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={isInView ? { scale: 1, opacity: 1 } : {}}
+            transition={{ duration: 0.25 }}
             className="mb-6 relative"
           >
             <div className="flex items-center gap-2 rounded-full border border-[#393E46] bg-[#393E46]/20 px-5 py-2.5 backdrop-blur-sm">
@@ -276,17 +269,17 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
           <motion.h2
             className="text-4xl font-bold text-[#EEEEEE] md:text-5xl lg:text-6xl"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.1, duration: 0.25 }}
           >
             My <span className="gradient-text">Services</span>
           </motion.h2>
           <motion.p
             className="mx-auto mt-4 max-w-2xl text-[#00ADB5]/70"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.15, duration: 0.25 }}
           >
             Comprehensive solutions for your digital needs. From concept to deployment, I deliver quality at every step.
           </motion.p>
@@ -295,7 +288,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
             className="mt-8 flex items-center gap-2"
             initial={{ opacity: 0 }}
             animate={isInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.2, duration: 0.2 }}
           >
             {services.map((_, i) => (
               <motion.button
@@ -318,14 +311,14 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
         </motion.div>
 
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <motion.div className="lg:col-span-5" style={{ y: leftColY }}>
+          <div className="lg:col-span-5">
             <div className="sticky top-32 space-y-4">
               {services.map((service, i) => (
                 <motion.div
                   key={service.title}
-                  initial={{ opacity: 0, x: -30 }}
+                  initial={{ opacity: 0, x: -20 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  transition={{ duration: 0.25, delay: i * 0.06 }}
                   onMouseEnter={() => handleServiceHover(i)}
                   onMouseLeave={handleServiceLeave}
                   onClick={() => handleServiceClick(i)}
@@ -334,9 +327,9 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                   <motion.div
                     animate={{
                       scale: activeService === i ? 1.02 : 1,
-                      x: activeService === i ? 8 : 0
+                      x: activeService === i ? 6 : 0
                     }}
-                    transition={{ type: "spring", stiffness: 300 }}
+                    transition={{ type: "spring", stiffness: 600, damping: 35 }}
                     className={`group relative overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${activeService === i
                       ? "border-[#00ADB5]/50 bg-[#393E46]/30"
                       : "border-[#393E46]/30 bg-[#393E46]/10 hover:border-[#393E46]/50"
@@ -398,24 +391,23 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                 </motion.div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div className="lg:col-span-7" style={{ y: rightColY }}>
+          <div className="lg:col-span-7">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.97 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={{ duration: 0.3, delay: 0.1 }}
               className="relative"
             >
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeService}
-                  initial={{ opacity: 0, y: 20, rotateX: -10 }}
-                  animate={{ opacity: 1, y: 0, rotateX: 0 }}
-                  exit={{ opacity: 0, y: -20, rotateX: 10 }}
-                  transition={{ duration: 0.4 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.2 }}
                   className="relative overflow-hidden rounded-3xl border border-[#393E46]/50"
-                  style={{ perspective: "1000px" }}
                 >
                   <motion.div
                     className={`absolute inset-0 bg-gradient-to-br ${services[activeService].gradient}`}
@@ -431,9 +423,9 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                   <div className="relative p-8 lg:p-10">
                     <div className="flex items-start justify-between mb-8">
                       <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", delay: 0.1 }}
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ duration: 0.15 }}
                         className="relative"
                       >
                         <div
@@ -449,10 +441,10 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                           className="absolute -inset-2 rounded-2xl -z-10"
                           style={{ backgroundColor: services[activeService].color }}
                           animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.2, 0.4, 0.2]
+                            scale: [1, 1.15, 1],
+                            opacity: [0.15, 0.3, 0.15]
                           }}
-                          transition={{ duration: 2, repeat: Infinity }}
+                          transition={{ duration: 3, repeat: Infinity }}
                         />
                       </motion.div>
 
@@ -476,36 +468,36 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
                     <motion.h3
                       className="text-3xl font-bold text-[#EEEEEE] mb-4"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
+                      transition={{ delay: 0.05, duration: 0.15 }}
                     >
                       {services[activeService].title}
                     </motion.h3>
 
                     <motion.p
                       className="text-lg text-[#00ADB5]/80 mb-8 leading-relaxed"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
+                      transition={{ delay: 0.08, duration: 0.15 }}
                     >
                       {services[activeService].description}
                     </motion.p>
 
                     <motion.div
                       className="mb-8"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
+                      transition={{ delay: 0.1, duration: 0.15 }}
                     >
                       <div className="text-xs text-[#00ADB5]/50 uppercase tracking-wider mb-3">Technologies</div>
                       <div className="flex flex-wrap gap-3">
                         {services[activeService].skills.map((skill, i) => (
                           <motion.span
                             key={skill}
-                            initial={{ opacity: 0, scale: 0.8 }}
+                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.3 + i * 0.05 }}
+                            transition={{ delay: 0.12 + i * 0.03, duration: 0.15 }}
                             whileHover={{ scale: 1.05, y: -2 }}
                             className="rounded-xl border px-4 py-2 text-sm font-medium transition-all cursor-default"
                             style={{
@@ -521,9 +513,9 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                     </motion.div>
 
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.35 }}
+                      transition={{ delay: 0.14, duration: 0.15 }}
                       className="flex items-center gap-4"
                     >
                       <Link href="/contact">
@@ -580,9 +572,9 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
 
               <motion.div
                 className="mt-6 grid grid-cols-3 gap-4"
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.25 }}
               >
                 {[
                   { label: "Projects", value: `${siteSettings?.projects_completed || 50}+` },
@@ -605,14 +597,13 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
                 ))}
               </motion.div>
             </motion.div>
-          </motion.div>
+          </div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.7, duration: 0.6 }}
-          style={{ y: statsY }}
+          transition={{ delay: 0.3, duration: 0.25 }}
           className="mt-20 flex justify-center"
         >
           <Link href="/skills#services">
@@ -624,7 +615,7 @@ export function ServicesSection({ services: servicesProp, siteSettings }: Servic
               <motion.div
                 className="absolute inset-0 bg-gradient-to-r from-[#00ADB5]/0 via-[#00ADB5]/10 to-[#00ADB5]/0"
                 animate={{ x: ["-100%", "100%"] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
               />
               <span className="relative">View All Services</span>
               <ArrowRight className="relative h-4 w-4 transition-transform group-hover:translate-x-1" />

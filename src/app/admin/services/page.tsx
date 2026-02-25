@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, Palette, Zap } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useServicesQuery, useUpdateService, useDeleteService } from "@/hooks/use-services-query"
 
 type ServiceRow = {
   id: string
@@ -20,69 +21,31 @@ type ServiceRow = {
 }
 
 export default function AdminServicesPage() {
-  const [items, setItems] = useState<ServiceRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchServices()
-  }, [])
+  const { data: items = [], isLoading, isError } = useServicesQuery()
+  const updateService = useUpdateService()
+  const deleteServiceMutation = useDeleteService()
 
-  const fetchServices = async () => {
-    try {
-      const res = await fetch("/api/admin/services")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load services")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load services")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateService.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (service: ServiceRow) => {
-    try {
-      const res = await fetch(`/api/admin/services/${service.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !service.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((s) => (s.id === service.id ? { ...s, is_active: !s.is_active } : s))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteService = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this service?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/services/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((s) => s.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteServiceMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((s) =>
+  const filteredItems = items.filter((s: any) =>
     s.title?.toLowerCase().includes(search.toLowerCase()) ||
     s.description?.toLowerCase().includes(search.toLowerCase())
   )
 
   const stats = {
     total: items.length,
-    active: items.filter((s) => s.is_active).length,
-    featured: items.filter((s) => s.is_featured && s.is_active).length,
-    inactive: items.filter((s) => !s.is_active).length,
+    active: items.filter((s: any) => s.is_active).length,
+    featured: items.filter((s: any) => s.is_featured && s.is_active).length,
+    inactive: items.filter((s: any) => !s.is_active).length,
   }
 
   return (
@@ -130,13 +93,13 @@ export default function AdminServicesPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load services
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -153,7 +116,7 @@ export default function AdminServicesPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredItems.map((service) => (
+            {filteredItems.map((service: any) => (
               <div
                 key={service.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 transition-all hover:border-white/20"
@@ -192,7 +155,7 @@ export default function AdminServicesPage() {
 
                   {service.skills && service.skills.length > 0 && (
                     <div className="mb-4 flex flex-wrap gap-1">
-                      {service.skills.slice(0, 3).map((skill, idx) => (
+                      {service.skills.slice(0, 3).map((skill: string, idx: number) => (
                         <span key={idx} className="rounded bg-white/5 px-2 py-0.5 text-xs text-zinc-400">
                           {skill}
                         </span>
@@ -207,7 +170,7 @@ export default function AdminServicesPage() {
                     <span className="text-xs text-zinc-500">Order: {service.display_order ?? 0}</span>
                     <div className="flex items-center gap-1">
                       <button
-                        onClick={() => toggleActive(service)}
+                        onClick={() => toggleActive(service.id, service.is_active)}
                         className={cn(
                           "rounded-lg p-2 transition-colors",
                           service.is_active
@@ -226,8 +189,8 @@ export default function AdminServicesPage() {
                         <Edit2 className="h-4 w-4" />
                       </Link>
                       <button
-                        onClick={() => deleteService(service.id)}
-                        disabled={deleting === service.id}
+                        onClick={() => handleDelete(service.id)}
+                        disabled={deleteServiceMutation.isPending}
                         className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                         title="Delete"
                       >

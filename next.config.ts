@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     optimizePackageImports: ['framer-motion', 'lucide-react'],
+    // Cache RSC page payloads in the router cache so back-navigation is instant
+    staleTimes: {
+      dynamic: 60,    // seconds — pages with revalidate=0 stay cached for 60s
+      static: 600,    // seconds — static pages cached for 10min
+    },
   },
 };
 

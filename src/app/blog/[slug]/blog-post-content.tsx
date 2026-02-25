@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState } from "react"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import ReactMarkdown from "react-markdown"
@@ -38,11 +38,11 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
     offset: ["start start", "end end"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const headerY = useTransform(smoothProgress, [0, 0.1], [0, -50])
-  const headerOpacity = useTransform(smoothProgress, [0, 0.1], [1, 0])
-  const imageScale = useTransform(smoothProgress, [0, 0.3], [1, 1.1])
-  const imageOpacity = useTransform(smoothProgress, [0, 0.2], [1, 0.5])
+  // Raw scroll for instant parallax
+  const headerY = useTransform(scrollYProgress, [0, 0.1], [0, -25])
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
+  const imageScale = useTransform(scrollYProgress, [0, 0.3], [1, 1.06])
+  const imageOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.5])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -124,7 +124,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
       >
         <motion.div
           className="h-full bg-gradient-to-r from-[#00ADB5] to-[#00ADB5]/70"
-          style={{ scaleX: smoothProgress, transformOrigin: "left" }}
+          style={{ scaleX: scrollYProgress, transformOrigin: "left" }}
         />
       </motion.div>
 
@@ -230,7 +230,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="image-container relative mx-auto max-w-5xl px-6 mb-16"
           >
             <div className="relative aspect-[21/9] overflow-hidden rounded-3xl border border-[#393E46]/30">
@@ -257,7 +257,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="article-content prose prose-lg max-w-none
                 prose-headings:font-bold prose-headings:text-[#EEEEEE] prose-headings:scroll-mt-24
                 prose-h1:text-4xl prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:border-b prose-h2:border-[#393E46]/30 prose-h2:pb-4
@@ -282,7 +282,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="mt-16 border-t border-[#393E46]/30 pt-8"
           >
             <div className="mb-8">
@@ -349,8 +349,8 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
 
       <motion.button
         initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ 
-          opacity: showScrollTop ? 1 : 0, 
+        animate={{
+          opacity: showScrollTop ? 1 : 0,
           scale: showScrollTop ? 1 : 0.8,
           pointerEvents: showScrollTop ? "auto" : "none" as const
         }}
@@ -368,7 +368,7 @@ export function BlogPostContent({ post }: { post: BlogPost }) {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/5 via-[#393E46]/10 to-transparent p-8 text-center backdrop-blur-sm"
           >
             <h3 className="mb-3 text-xl font-bold text-[#EEEEEE]">Enjoyed this article?</h3>

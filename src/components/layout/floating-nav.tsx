@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { Code2, Home, User, FolderKanban, Wrench, BookOpen, FileText, Mail } from "lucide-react"
 import { useOnClickOutside } from "usehooks-ts"
 import { cn } from "@/lib/utils"
@@ -60,6 +60,9 @@ const spanVariants = {
 
 const transition = { delay: 0.05, type: "spring" as const, bounce: 0, duration: 0.4 }
 
+// Create once outside component to avoid re-creation on every render
+const MotionLink = motion(Link)
+
 function ExpandableTabs({
   activeColor = "text-[#00ADB5]"
 }: {
@@ -68,15 +71,10 @@ function ExpandableTabs({
   const [hovered, setHovered] = useState<number | null>(null)
   const outsideClickRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
-  const router = useRouter()
 
   useOnClickOutside(outsideClickRef as React.RefObject<HTMLElement>, () => {
     setHovered(null)
   })
-
-  const handleClick = (href: string) => {
-    router.push(href)
-  }
 
   const Separator = () => (
     <div className="mx-1 h-[24px] w-[1.2px] bg-[#393E46]" aria-hidden="true" />
@@ -99,13 +97,14 @@ function ExpandableTabs({
         const isExpanded = isActive || isHovered
 
         return (
-          <motion.button
+          <MotionLink
             key={tab.title}
+            href={tab.href}
+            prefetch={true}
             variants={buttonVariants}
             initial={false}
             animate="animate"
             custom={isExpanded}
-            onClick={() => handleClick(tab.href)}
             onMouseEnter={() => setHovered(index)}
             transition={transition}
             className={cn(
@@ -132,7 +131,7 @@ function ExpandableTabs({
                 </motion.span>
               )}
             </AnimatePresence>
-          </motion.button>
+          </MotionLink>
         )
       })}
     </div>

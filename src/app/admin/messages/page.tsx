@@ -1,10 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Search, MessageSquare, Trash2, Mail, User, Calendar, ChevronDown, RefreshCw, Inbox, TrendingUp, CheckSquare, Square, Circle, X } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
+import { useMessagesQuery, useDeleteMessage } from "@/hooks/use-messages-query"
+import { useQueryClient } from "@tanstack/react-query"
+import { queryKeys } from "@/lib/query-keys"
 
 type MessageRow = {
   id: string
@@ -19,58 +22,27 @@ type MessageRow = {
 type FilterType = "all" | "unread" | "read"
 
 export default function AdminMessagesPage() {
-  const [items, setItems] = useState<MessageRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [filter, setFilter] = useState<FilterType>("all")
   const [bulkLoading, setBulkLoading] = useState(false)
 
-  useEffect(() => {
-    fetchMessages()
-  }, [])
+  const { data: items = [], isLoading, isError, refetch } = useMessagesQuery()
+  const deleteMessageMutation = useDeleteMessage()
+  const qc = useQueryClient()
 
-  const fetchMessages = async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch("/api/admin/messages")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load messages")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load messages")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const deleteMessage = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Delete this message?")) return
-    setDeletingId(id)
-    try {
-      const res = await fetch(`/api/admin/messages/${id}`, { method: "DELETE" })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json?.error || "Failed to delete")
-      setItems((prev) => prev.filter((m) => m.id !== id))
-      selectedIds.delete(id)
-      setSelectedIds(new Set(selectedIds))
-    } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Failed to delete message")
-    } finally {
-      setDeletingId(null)
-    }
+    deleteMessageMutation.mutate(id)
+    selectedIds.delete(id)
+    setSelectedIds(new Set(selectedIds))
   }
 
   const handleBulkAction = async (action: "delete" | "mark_read" | "mark_unread") => {
     if (selectedIds.size === 0) return
-    
     const actionText = action === "delete" ? "delete" : action === "mark_read" ? "mark as read" : "mark as unread"
     if (!confirm(`${actionText} ${selectedIds.size} selected message${selectedIds.size > 1 ? 's' : ''}?`)) return
-
     setBulkLoading(true)
     try {
       const res = await fetch("/api/admin/messages/bulk", {
@@ -80,17 +52,9 @@ export default function AdminMessagesPage() {
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json?.error || "Bulk action failed")
-      
-      if (action === "delete") {
-        setItems((prev) => prev.filter((m) => !selectedIds.has(m.id)))
-      } else {
-        const isRead = action === "mark_read"
-        setItems((prev) =>
-          prev.map((m) => (selectedIds.has(m.id) ? { ...m, is_read: isRead } : m))
-        )
-      }
-      
       setSelectedIds(new Set())
+      qc.invalidateQueries({ queryKey: queryKeys.messages.all })
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard.all })
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "Bulk action failed")
     } finally {
@@ -112,18 +76,18 @@ export default function AdminMessagesPage() {
     if (selectedIds.size === filteredItems.length) {
       setSelectedIds(new Set())
     } else {
-      setSelectedIds(new Set(filteredItems.map((m) => m.id)))
+      setSelectedIds(new Set(filteredItems.map((m: any) => m.id)))
     }
   }
 
   const filteredItems = items
-    .filter((m) => {
+    .filter((m: any) => {
       if (filter === "unread" && m.is_read) return false
       if (filter === "read" && !m.is_read) return false
       return true
     })
     .filter(
-      (m) =>
+      (m: any) =>
         m.name?.toLowerCase().includes(search.toLowerCase()) ||
         m.email?.toLowerCase().includes(search.toLowerCase()) ||
         m.subject?.toLowerCase().includes(search.toLowerCase())
@@ -131,8 +95,8 @@ export default function AdminMessagesPage() {
 
   const stats = {
     total: items.length,
-    unread: items.filter((m) => !m.is_read).length,
-    thisWeek: items.filter((m) => {
+    unread: items.filter((m: any) => !m.is_read).length,
+    thisWeek: items.filter((m: any) => {
       const date = new Date(m.created_at)
       const weekAgo = new Date()
       weekAgo.setDate(weekAgo.getDate() - 7)
@@ -145,7 +109,7 @@ export default function AdminMessagesPage() {
       <div className="space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -161,7 +125,7 @@ export default function AdminMessagesPage() {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -177,7 +141,7 @@ export default function AdminMessagesPage() {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -206,32 +170,31 @@ export default function AdminMessagesPage() {
               className="w-full rounded-xl border border-[#393E46] bg-[#222831]/80 py-3 pl-12 pr-4 text-sm text-[#EEEEEE] placeholder-[#EEEEEE]/30 outline-none transition-all focus:border-[#00ADB5] focus:ring-2 focus:ring-[#00ADB5]/20"
             />
           </div>
-          
+
           <div className="flex gap-2">
             <div className="flex rounded-xl border border-[#393E46] bg-[#222831]/80 p-1">
               {(["all", "unread", "read"] as FilterType[]).map((f) => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                    filter === f
-                      ? "bg-[#00ADB5] text-white"
-                      : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${filter === f
+                    ? "bg-[#00ADB5] text-white"
+                    : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
+                    }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1)}
                 </button>
               ))}
             </div>
-            
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={fetchMessages}
-              disabled={loading}
+              onClick={() => refetch()}
+              disabled={isLoading}
               className="flex items-center gap-2 rounded-xl bg-[#00ADB5] px-4 py-2 font-medium text-white transition-all hover:bg-[#00ADB5]/90 disabled:opacity-50"
             >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
             </motion.button>
           </div>
         </div>
@@ -284,7 +247,7 @@ export default function AdminMessagesPage() {
           )}
         </AnimatePresence>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <motion.div
               animate={{ rotate: 360 }}
@@ -293,8 +256,8 @@ export default function AdminMessagesPage() {
             />
             <p className="mt-4 text-sm text-[#EEEEEE]/60">Loading messages...</p>
           </div>
-        ) : error ? (
-          <motion.div 
+        ) : isError ? (
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="rounded-2xl border border-red-500/30 bg-red-500/10 p-8 text-center"
@@ -303,16 +266,16 @@ export default function AdminMessagesPage() {
               <MessageSquare className="h-8 w-8 text-red-400" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-red-200">Failed to Load Messages</h3>
-            <p className="text-sm text-red-200/80">{error}</p>
+            <p className="text-sm text-red-200/80">Please try refreshing the page.</p>
             <button
-              onClick={fetchMessages}
+              onClick={() => refetch()}
               className="mt-4 rounded-lg bg-red-500/20 px-4 py-2 text-sm font-medium text-red-200 transition-colors hover:bg-red-500/30"
             >
               Try Again
             </button>
           </motion.div>
         ) : filteredItems.length === 0 ? (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="rounded-2xl border border-[#393E46] bg-[#222831]/50 p-12 text-center"
@@ -345,11 +308,11 @@ export default function AdminMessagesPage() {
                 </button>
               </div>
             )}
-            
+
             {/* Grid Layout - 2 columns */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <AnimatePresence mode="popLayout">
-                {filteredItems.map((message, index) => (
+                {filteredItems.map((message: any, index: number) => (
                   <motion.div
                     key={message.id}
                     initial={{ opacity: 0, y: 20 }}
@@ -357,13 +320,11 @@ export default function AdminMessagesPage() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.03 }}
                     layout
-                    className={`overflow-hidden rounded-2xl border transition-all ${
-                      message.is_read 
-                        ? "border-[#393E46] bg-[#222831]/60" 
-                        : "border-[#00ADB5]/30 bg-[#222831]/80 shadow-lg shadow-[#00ADB5]/5"
-                    } ${
-                      selectedIds.has(message.id) ? "ring-2 ring-[#00ADB5]" : ""
-                    }`}
+                    className={`overflow-hidden rounded-2xl border transition-all ${message.is_read
+                      ? "border-[#393E46] bg-[#222831]/60"
+                      : "border-[#00ADB5]/30 bg-[#222831]/80 shadow-lg shadow-[#00ADB5]/5"
+                      } ${selectedIds.has(message.id) ? "ring-2 ring-[#00ADB5]" : ""
+                      }`}
                   >
                     <div
                       className="flex cursor-pointer items-start gap-3 p-4 transition-colors hover:bg-[#393E46]/30"
@@ -382,23 +343,21 @@ export default function AdminMessagesPage() {
                           <Square className="h-5 w-5 text-[#EEEEEE]/40" />
                         )}
                       </button>
-                      
-                      <motion.div 
+
+                      <motion.div
                         whileHover={{ scale: 1.05 }}
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ${
-                          message.is_read 
-                            ? "from-[#393E46] to-[#393E46] shadow-[#393E46]/30" 
-                            : "from-[#00ADB5] to-cyan-500 shadow-[#00ADB5]/30"
-                        }`}
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg ${message.is_read
+                          ? "from-[#393E46] to-[#393E46] shadow-[#393E46]/30"
+                          : "from-[#00ADB5] to-cyan-500 shadow-[#00ADB5]/30"
+                          }`}
                       >
                         <User className="h-5 w-5 text-white" />
                       </motion.div>
-                      
+
                       <div className="min-w-0 flex-1">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className={`font-semibold truncate ${
-                            message.is_read ? "text-[#EEEEEE]/70" : "text-[#EEEEEE]"
-                          }`}>
+                          <h3 className={`font-semibold truncate ${message.is_read ? "text-[#EEEEEE]/70" : "text-[#EEEEEE]"
+                            }`}>
                             {message.name}
                           </h3>
                           {!message.is_read && (
@@ -407,9 +366,8 @@ export default function AdminMessagesPage() {
                             </span>
                           )}
                         </div>
-                        <p className={`text-sm truncate mb-2 ${
-                          message.is_read ? "text-[#EEEEEE]/50" : "text-[#EEEEEE]/60"
-                        }`}>
+                        <p className={`text-sm truncate mb-2 ${message.is_read ? "text-[#EEEEEE]/50" : "text-[#EEEEEE]/60"
+                          }`}>
                           {message.subject || "(No subject)"}
                         </p>
                         <div className="flex items-center gap-3 text-xs text-[#EEEEEE]/40">
@@ -426,9 +384,9 @@ export default function AdminMessagesPage() {
                           whileTap={{ scale: 0.9 }}
                           onClick={(e) => {
                             e.stopPropagation()
-                            deleteMessage(message.id)
+                            handleDelete(message.id)
                           }}
-                          disabled={deletingId === message.id}
+                          disabled={deleteMessageMutation.isPending}
                           className="rounded-lg p-2 text-red-400 transition-all hover:bg-red-500/10 disabled:opacity-50"
                         >
                           <Trash2 className="h-4 w-4" />

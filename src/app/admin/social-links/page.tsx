@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { motion, AnimatePresence } from "framer-motion"
-import { 
-  Github, Linkedin, Twitter, Instagram, Facebook, Youtube, 
+import {
+  Github, Linkedin, Twitter, Instagram, Facebook, Youtube,
   Mail, Globe, Plus, Trash2, Edit2, Check, X, Eye, EyeOff,
   Link as LinkIcon, ArrowUpDown, Search, Filter, Sparkles
 } from "lucide-react"
+import { useSocialLinksQuery, useCreateSocialLink, useUpdateSocialLink, useDeleteSocialLink } from "@/hooks/use-social-links-query"
 
 interface SocialLink {
   id: string
@@ -30,8 +31,6 @@ const SOCIAL_PLATFORMS = [
 ]
 
 export default function SocialLinksPage() {
-  const [links, setLinks] = useState<SocialLink[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedPlatform, setSelectedPlatform] = useState<typeof SOCIAL_PLATFORMS[0] | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -39,115 +38,65 @@ export default function SocialLinksPage() {
   const [search, setSearch] = useState("")
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all")
 
-  useEffect(() => {
-    fetchLinks()
-  }, [])
+  const { data: links = [], isLoading } = useSocialLinksQuery()
+  const createLink = useCreateSocialLink()
+  const updateLink = useUpdateSocialLink()
+  const deleteLink = useDeleteSocialLink()
 
-  const fetchLinks = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch("/api/admin/social-links")
-      const json = await res.json()
-      if (json.data) {
-        setLinks(json.data)
-      }
-    } catch (error) {
-      console.error("Failed to fetch links:", error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleAddLink = async () => {
+  const handleAddLink = () => {
     if (!selectedPlatform || !formData.url) return
-
-    try {
-      const res = await fetch("/api/admin/social-links", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          platform: selectedPlatform.name,
-          url: formData.url,
-          icon_name: selectedPlatform.name,
-          is_active: true,
-          display_order: links.length,
-        }),
-      })
-      const json = await res.json()
-      if (json.data) {
-        setLinks((prev) => [...prev, json.data])
+    createLink.mutate({
+      platform: selectedPlatform.name,
+      url: formData.url,
+      icon_name: selectedPlatform.name,
+      is_active: true,
+      display_order: links.length,
+    }, {
+      onSuccess: () => {
         setShowAddModal(false)
         setSelectedPlatform(null)
         setFormData({ url: "" })
       }
-    } catch (error) {
-      console.error("Failed to add link:", error)
-    }
+    })
   }
 
-  const handleUpdateLink = async (id: string) => {
-    try {
-      const res = await fetch(`/api/admin/social-links/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: formData.url }),
-      })
-      if (res.ok) {
-        setLinks((prev) => prev.map((l) => (l.id === id ? { ...l, url: formData.url } : l)))
+  const handleUpdateLink = (id: string) => {
+    updateLink.mutate({ id, payload: { url: formData.url } }, {
+      onSuccess: () => {
         setEditingId(null)
         setFormData({ url: "" })
       }
-    } catch (error) {
-      console.error("Failed to update link:", error)
-    }
+    })
   }
 
-  const handleDeleteLink = async (id: string) => {
+  const handleDeleteLink = (id: string) => {
     if (!confirm("Delete this social link?")) return
-    try {
-      await fetch(`/api/admin/social-links/${id}`, { method: "DELETE" })
-      setLinks((prev) => prev.filter((l) => l.id !== id))
-    } catch (error) {
-      console.error("Failed to delete link:", error)
-    }
+    deleteLink.mutate(id)
   }
 
-  const handleToggleActive = async (link: SocialLink) => {
-    try {
-      const res = await fetch(`/api/admin/social-links/${link.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !link.is_active }),
-      })
-      if (res.ok) {
-        setLinks((prev) =>
-          prev.map((l) => (l.id === link.id ? { ...l, is_active: !l.is_active } : l))
-        )
-      }
-    } catch (error) {
-      console.error("Failed to toggle active:", error)
-    }
+  const handleToggleActive = (id: string, currentValue: boolean) => {
+    updateLink.mutate({ id, payload: { is_active: !currentValue } })
   }
 
   const filteredLinks = links
-    .filter((link) => {
+    .filter((link: any) => {
       if (filter === "active") return link.is_active
       if (filter === "inactive") return !link.is_active
       return true
     })
-    .filter((link) =>
+    .filter((link: any) =>
       link.platform.toLowerCase().includes(search.toLowerCase()) ||
       link.url.toLowerCase().includes(search.toLowerCase())
     )
 
   const availablePlatforms = SOCIAL_PLATFORMS.filter(
-    (platform) => !links.some((link) => link.platform === platform.name)
+    (platform) => !links.some((link: any) => link.platform === platform.name)
   )
 
   const stats = {
     total: links.length,
-    active: links.filter((l) => l.is_active).length,
-    inactive: links.filter((l) => !l.is_active).length,
+    active: links.filter((l: any) => l.is_active).length,
+    inactive: links.filter((l: any) => !l.is_active).length,
   }
 
   return (
@@ -216,11 +165,10 @@ export default function SocialLinksPage() {
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
-                    filter === f
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${filter === f
                       ? "bg-[#00ADB5] text-white"
                       : "text-[#EEEEEE]/60 hover:text-[#EEEEEE]"
-                  }`}
+                    }`}
                 >
                   {f.charAt(0).toUpperCase() + f.slice(1)}
                 </button>
@@ -240,7 +188,7 @@ export default function SocialLinksPage() {
         </div>
 
         {/* Links Grid */}
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <motion.div
               animate={{ rotate: 360 }}
@@ -280,11 +228,10 @@ export default function SocialLinksPage() {
                     exit={{ opacity: 0, scale: 0.9 }}
                     transition={{ delay: index * 0.05 }}
                     layout
-                    className={`group relative overflow-hidden rounded-2xl border transition-all ${
-                      link.is_active
+                    className={`group relative overflow-hidden rounded-2xl border transition-all ${link.is_active
                         ? "border-[#00ADB5]/30 bg-[#222831]/80 shadow-lg shadow-[#00ADB5]/5"
                         : "border-[#393E46] bg-[#222831]/40 opacity-60"
-                    }`}
+                      }`}
                   >
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-4">
@@ -311,12 +258,11 @@ export default function SocialLinksPage() {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleToggleActive(link)}
-                            className={`rounded-lg p-2 transition-all ${
-                              link.is_active
+                            onClick={() => handleToggleActive(link.id, link.is_active)}
+                            className={`rounded-lg p-2 transition-all ${link.is_active
                                 ? "bg-green-500/20 text-green-400 hover:bg-green-500/30"
                                 : "bg-[#393E46] text-[#EEEEEE]/60 hover:bg-[#393E46]/80"
-                            }`}
+                              }`}
                             title={link.is_active ? "Active" : "Inactive"}
                           >
                             {link.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}

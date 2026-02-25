@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { AdminShell } from "@/components/admin/admin-shell"
 import { Plus, Search, Eye, EyeOff, Edit2, Trash2, Award, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useCertificationsQuery, useUpdateCertification, useDeleteCertification } from "@/hooks/use-certifications-query"
 
 type CertificationRow = {
   id: string
@@ -17,67 +18,29 @@ type CertificationRow = {
 }
 
 export default function AdminCertificationsPage() {
-  const [items, setItems] = useState<CertificationRow[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [search, setSearch] = useState("")
-  const [deleting, setDeleting] = useState<string | null>(null)
 
-  useEffect(() => {
-    fetchCertifications()
-  }, [])
+  const { data: items = [], isLoading, isError } = useCertificationsQuery()
+  const updateCert = useUpdateCertification()
+  const deleteCertMutation = useDeleteCertification()
 
-  const fetchCertifications = async () => {
-    try {
-      const res = await fetch("/api/admin/certifications")
-      const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || "Failed to load certifications")
-      setItems(json.data || [])
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : "Failed to load certifications")
-    } finally {
-      setLoading(false)
-    }
+  const toggleActive = (id: string, currentValue: boolean) => {
+    updateCert.mutate({ id, payload: { is_active: !currentValue } })
   }
 
-  const toggleActive = async (cert: CertificationRow) => {
-    try {
-      const res = await fetch(`/api/admin/certifications/${cert.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_active: !cert.is_active }),
-      })
-      if (!res.ok) throw new Error("Failed to update")
-      setItems((prev) =>
-        prev.map((c) => (c.id === cert.id ? { ...c, is_active: !c.is_active } : c))
-      )
-    } catch (e) {
-      console.error(e)
-    }
-  }
-
-  const deleteCertification = async (id: string) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this certification?")) return
-    setDeleting(id)
-    try {
-      const res = await fetch(`/api/admin/certifications/${id}`, { method: "DELETE" })
-      if (!res.ok) throw new Error("Failed to delete")
-      setItems((prev) => prev.filter((c) => c.id !== id))
-    } catch (e) {
-      console.error(e)
-    } finally {
-      setDeleting(null)
-    }
+    deleteCertMutation.mutate(id)
   }
 
-  const filteredItems = items.filter((c) =>
+  const filteredItems = items.filter((c: any) =>
     c.name?.toLowerCase().includes(search.toLowerCase()) ||
     c.issuer?.toLowerCase().includes(search.toLowerCase())
   )
 
   const stats = {
     total: items.length,
-    active: items.filter((c) => c.is_active).length,
+    active: items.filter((c: any) => c.is_active).length,
   }
 
   return (
@@ -117,13 +80,13 @@ export default function AdminCertificationsPage() {
           />
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent" />
           </div>
-        ) : error ? (
+        ) : isError ? (
           <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6 text-center text-red-200">
-            {error}
+            Failed to load certifications
           </div>
         ) : filteredItems.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-zinc-900/50 p-12 text-center">
@@ -140,7 +103,7 @@ export default function AdminCertificationsPage() {
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            {filteredItems.map((cert) => (
+            {filteredItems.map((cert: any) => (
               <div
                 key={cert.id}
                 className="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-5 transition-all hover:border-white/20"
@@ -182,7 +145,7 @@ export default function AdminCertificationsPage() {
 
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => toggleActive(cert)}
+                      onClick={() => toggleActive(cert.id, cert.is_active)}
                       className={cn(
                         "rounded-lg p-2 transition-colors",
                         cert.is_active
@@ -199,8 +162,8 @@ export default function AdminCertificationsPage() {
                       <Edit2 className="h-4 w-4" />
                     </Link>
                     <button
-                      onClick={() => deleteCertification(cert.id)}
-                      disabled={deleting === cert.id}
+                      onClick={() => handleDelete(cert.id)}
+                      disabled={deleteCertMutation.isPending}
                       className="rounded-lg p-2 text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-50"
                     >
                       <Trash2 className="h-4 w-4" />

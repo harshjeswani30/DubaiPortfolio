@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useEffect, useState, useMemo } from "react"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
 import { formatDate } from "@/lib/utils"
@@ -68,9 +68,9 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
     offset: ["start start", "end end"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-  const heroY = useTransform(smoothProgress, [0, 0.3], [0, -100])
-  const heroOpacity = useTransform(smoothProgress, [0, 0.15], [1, 0])
+  // Raw scrollYProgress — no spring wrapper for instant parallax
+  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -60])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -161,8 +161,8 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
           <div className="absolute inset-[300px] rounded-full border border-[#EEEEEE]/10" />
         </motion.div>
         <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 8, repeat: Infinity }}
+          animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 14, repeat: Infinity }}
           className="absolute -left-[200px] top-[40%] h-[500px] w-[500px] rounded-full bg-[#00ADB5]/10 blur-[150px]"
         />
       </div>
@@ -292,7 +292,7 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                     className="mb-8 flex items-center gap-3"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10">
@@ -319,7 +319,7 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
                               initial={{ opacity: 0, y: 60 }}
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{ once: true }}
-                              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                               whileHover={{ y: -8 }}
                               className="magnetic-card floating-card group relative overflow-hidden rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/30 via-[#393E46]/10 to-transparent backdrop-blur-sm"
                               style={{ perspective: "1000px" }}
@@ -432,7 +432,7 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                     className="mb-8 flex items-center gap-3"
                   >
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10">
@@ -449,7 +449,7 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
                           initial={{ opacity: 0, y: 40 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
-                          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                           whileHover={{ y: -8, scale: 1.02 }}
                           className="magnetic-card floating-card group h-full overflow-hidden rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 backdrop-blur-sm transition-all hover:border-[#00ADB5]/50 hover:shadow-xl hover:shadow-[#00ADB5]/5"
                           style={{ perspective: "1000px" }}
@@ -520,7 +520,7 @@ export function BlogContent({ posts, featuredPosts }: { posts: BlogPost[]; featu
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="mt-16 text-center"
               >
                 <button className="group inline-flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#00ADB5]/10 hover:text-[#00ADB5]">

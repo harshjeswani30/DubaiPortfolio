@@ -127,8 +127,8 @@ export function CreativeImageCard({ onHoverChange, profileImage, heroTags, locat
 
   const cardRotateX = useMotionValue(0)
   const cardRotateY = useMotionValue(0)
-  const smoothRotateX = useSpring(cardRotateX, { stiffness: 150, damping: 25 })
-  const smoothRotateY = useSpring(cardRotateY, { stiffness: 150, damping: 25 })
+  const smoothRotateX = useSpring(cardRotateX, { stiffness: 500, damping: 30 })
+  const smoothRotateY = useSpring(cardRotateY, { stiffness: 500, damping: 30 })
 
   const handleMouseEnter = () => {
     setIsHovered(true)

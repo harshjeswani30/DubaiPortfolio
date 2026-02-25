@@ -1,15 +1,15 @@
 "use client"
 
 import { useRef } from "react"
-import { motion, useScroll, useTransform, useSpring } from "framer-motion"
+import { motion, useScroll, useTransform } from "framer-motion"
 import { format } from "date-fns"
-import { 
-  Download, 
-  Mail, 
-  MapPin, 
+import {
+  Download,
+  Mail,
+  MapPin,
   Phone,
-  Briefcase, 
-  GraduationCap, 
+  Briefcase,
+  GraduationCap,
   Award,
   Code2,
   Globe,
@@ -62,15 +62,15 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   globe: Globe,
 }
 
-export function ResumeContent({ 
-  about, 
-  experiences, 
-  skills, 
-  education, 
-  certifications, 
-  languages, 
+export function ResumeContent({
+  about,
+  experiences,
+  skills,
+  education,
+  certifications,
+  languages,
   projects,
-  socialLinks 
+  socialLinks
 }: ResumeContentProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -78,18 +78,9 @@ export function ResumeContent({
     offset: ["start start", "end end"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 30 })
-
-  const heroY = useTransform(smoothProgress, [0, 0.15], [0, -100])
-  const heroOpacity = useTransform(smoothProgress, [0, 0.1], [1, 0])
-  
-  const summaryY = useTransform(smoothProgress, [0.05, 0.2], [100, 0])
-  const experienceY = useTransform(smoothProgress, [0.15, 0.3], [80, 0])
-  const educationY = useTransform(smoothProgress, [0.25, 0.4], [80, 0])
-  const skillsY = useTransform(smoothProgress, [0.35, 0.5], [80, 0])
-  const certY = useTransform(smoothProgress, [0.45, 0.6], [80, 0])
-  const langY = useTransform(smoothProgress, [0.55, 0.7], [80, 0])
-  const projectsY = useTransform(smoothProgress, [0.65, 0.8], [80, 0])
+  // Raw scroll — no spring for instant parallax
+  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -50])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
 
   const skillsByCategory = skills.reduce(
     (acc, skill) => {
@@ -102,128 +93,128 @@ export function ResumeContent({
 
   return (
     <div ref={containerRef} className="min-h-screen bg-[#222831]">
-<motion.section 
+      <motion.section
         className="relative min-h-[80vh] flex items-center justify-center overflow-hidden pt-32"
         style={{ y: heroY, opacity: heroOpacity }}
       >
-      <div className="absolute inset-0 dot-background opacity-30" />
-      
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-        className="absolute -right-[300px] -top-[300px] h-[600px] w-[600px] opacity-20"
-      >
-        <div className="absolute inset-0 rounded-full border border-[#393E46]/30" />
-        <div className="absolute inset-[80px] rounded-full border border-[#00ADB5]/20" />
-        <div className="absolute inset-[160px] rounded-full border border-[#EEEEEE]/10" />
-      </motion.div>
-
-      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-          <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-4 text-5xl font-bold text-[#EEEEEE] md:text-7xl"
-        >
-          {about?.name || "Dubai Developer"}
-        </motion.h1>
-        
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="mb-6 text-xl text-[#00ADB5] md:text-2xl"
-        >
-          {about?.role || "Full Stack Developer & UI/UX Enthusiast"}
-        </motion.p>
+        <div className="absolute inset-0 dot-background opacity-30" />
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-[#EEEEEE]/70"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+          className="absolute -right-[300px] -top-[300px] h-[600px] w-[600px] opacity-20"
         >
-          {about?.email && (
-            <span className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-[#00ADB5]" />
-              {about.email}
-            </span>
-          )}
-          {about?.location && (
-            <span className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-[#00ADB5]" />
-              {about.location}
-            </span>
-          )}
-          {about?.phone && (
-            <span className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-[#00ADB5]" />
-              {about.phone}
-            </span>
-          )}
+          <div className="absolute inset-0 rounded-full border border-[#393E46]/30" />
+          <div className="absolute inset-[80px] rounded-full border border-[#00ADB5]/20" />
+          <div className="absolute inset-[160px] rounded-full border border-[#EEEEEE]/10" />
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-wrap items-center justify-center gap-4"
-        >
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-6 py-3 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
+        <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.05 }}
+            className="mb-4 text-5xl font-bold text-[#EEEEEE] md:text-7xl"
           >
-            <Download className="h-5 w-5" />
-            Download Resume
-          </motion.button>
-          <div className="flex items-center gap-3">
-            {socialLinks.length > 0 ? (
-              socialLinks.map((link) => {
-                const Icon = iconMap[link.icon_name?.toLowerCase()] || Globe
-                return (
+            {about?.name || "Dubai Developer"}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.12 }}
+            className="mb-6 text-xl text-[#00ADB5] md:text-2xl"
+          >
+            {about?.role || "Full Stack Developer & UI/UX Enthusiast"}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.18 }}
+            className="mb-8 flex flex-wrap items-center justify-center gap-4 text-sm text-[#EEEEEE]/70"
+          >
+            {about?.email && (
+              <span className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-[#00ADB5]" />
+                {about.email}
+              </span>
+            )}
+            {about?.location && (
+              <span className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-[#00ADB5]" />
+                {about.location}
+              </span>
+            )}
+            {about?.phone && (
+              <span className="flex items-center gap-2">
+                <Phone className="h-4 w-4 text-[#00ADB5]" />
+                {about.phone}
+              </span>
+            )}
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.22 }}
+            className="flex flex-wrap items-center justify-center gap-4"
+          >
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center gap-2 rounded-xl bg-[#00ADB5] px-6 py-3 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
+            >
+              <Download className="h-5 w-5" />
+              Download Resume
+            </motion.button>
+            <div className="flex items-center gap-3">
+              {socialLinks.length > 0 ? (
+                socialLinks.map((link) => {
+                  const Icon = iconMap[link.icon_name?.toLowerCase()] || Globe
+                  return (
+                    <motion.a
+                      key={link.id}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                    >
+                      <Icon className="h-5 w-5" />
+                    </motion.a>
+                  )
+                })
+              ) : (
+                <>
                   <motion.a
-                    key={link.id}
                     whileHover={{ scale: 1.1, y: -2 }}
-                    href={link.url}
+                    href="https://linkedin.com"
                     target="_blank"
-                    rel="noopener noreferrer"
                     className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
                   >
-                    <Icon className="h-5 w-5" />
+                    <Linkedin className="h-5 w-5" />
                   </motion.a>
-                )
-              })
-            ) : (
-              <>
-                <motion.a
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  href="https://linkedin.com"
-                  target="_blank"
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-                >
-                  <Linkedin className="h-5 w-5" />
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  href="https://github.com"
-                  target="_blank"
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-                >
-                  <Github className="h-5 w-5" />
-                </motion.a>
-                <motion.a
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  href="/"
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-                >
-                  <Globe className="h-5 w-5" />
-                </motion.a>
-              </>
-            )}
-          </div>
-        </motion.div>
-      </div>
+                  <motion.a
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    href="https://github.com"
+                    target="_blank"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                  >
+                    <Github className="h-5 w-5" />
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.1, y: -2 }}
+                    href="/"
+                    className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#393E46] bg-[#393E46]/20 text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                  >
+                    <Globe className="h-5 w-5" />
+                  </motion.a>
+                </>
+              )}
+            </div>
+          </motion.div>
+        </div>
 
       </motion.section>
 
@@ -249,21 +240,20 @@ export function ResumeContent({
         </motion.div>
       </motion.div>
 
-    <div className="relative mx-auto max-w-6xl px-6 pb-32">
-      <motion.section 
-        className="py-16"
-        style={{ y: summaryY }}
-      >
-        <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Professional Summary" />
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 md:p-8 backdrop-blur-sm"
+      <div className="relative mx-auto max-w-6xl px-6 pb-32">
+        <motion.section
+          className="py-16"
         >
-          <p className="text-lg leading-relaxed text-[#EEEEEE]/80">
-            {about?.bio || "Passionate Full Stack Developer with 5+ years of experience crafting high-performance web applications. Specialized in React, Next.js, and Node.js ecosystems with a strong focus on creating exceptional user experiences. Proven track record of delivering scalable solutions for startups and enterprises across fintech, real estate, and e-commerce sectors. Committed to writing clean, maintainable code and staying current with emerging technologies."}
-          </p>
+          <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Professional Summary" />
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 md:p-8 backdrop-blur-sm"
+          >
+            <p className="text-lg leading-relaxed text-[#EEEEEE]/80">
+              {about?.bio || "Passionate Full Stack Developer with 5+ years of experience crafting high-performance web applications. Specialized in React, Next.js, and Node.js ecosystems with a strong focus on creating exceptional user experiences. Proven track record of delivering scalable solutions for startups and enterprises across fintech, real estate, and e-commerce sectors. Committed to writing clean, maintainable code and staying current with emerging technologies."}
+            </p>
             <div className="mt-6 flex flex-wrap gap-3">
               {["React Expert", "Node.js", "TypeScript", "Cloud Architecture", "Team Lead"].map((tag) => (
                 <motion.span
@@ -278,384 +268,378 @@ export function ResumeContent({
                 </motion.span>
               ))}
             </div>
-        </motion.div>
-      </motion.section>
+          </motion.div>
+        </motion.section>
 
-      {experiences.length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: experienceY }}
-        >
-          <SectionHeader icon={<Briefcase className="h-5 w-5" />} title="Work Experience" />
-          <div className="relative">
-            <div className="absolute left-[19px] top-0 h-full w-[2px] bg-gradient-to-b from-[#00ADB5] via-[#00ADB5]/50 to-transparent md:left-1/2 md:-translate-x-1/2" />
-            
-            <div className="space-y-12">
-              {experiences.map((exp, index) => (
+        {experiences.length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<Briefcase className="h-5 w-5" />} title="Work Experience" />
+            <div className="relative">
+              <div className="absolute left-[19px] top-0 h-full w-[2px] bg-gradient-to-b from-[#00ADB5] via-[#00ADB5]/50 to-transparent md:left-1/2 md:-translate-x-1/2" />
+
+              <div className="space-y-12">
+                {experiences.map((exp, index) => (
+                  <motion.div
+                    key={exp.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+                  >
+                    <div className="absolute left-[12px] top-0 z-10 h-4 w-4 rounded-full border-4 border-[#222831] bg-[#00ADB5] md:left-1/2 md:-translate-x-1/2" />
+
+                    <div className={`ml-12 md:ml-0 md:w-1/2 ${index % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12"}`}>
+                      <motion.div
+                        whileHover={{ scale: 1.02, y: -4 }}
+                        className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/20"
+                      >
+                        <div className={`mb-2 flex items-center gap-2 text-sm text-[#00ADB5] ${index % 2 === 0 ? "md:justify-end" : ""}`}>
+                          <Calendar className="h-4 w-4" />
+                          {format(new Date(exp.start_date), "MMM yyyy")} - {exp.is_current || !exp.end_date ? "Present" : format(new Date(exp.end_date), "MMM yyyy")}
+                        </div>
+                        <h3 className="mb-1 text-xl font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                          {exp.position}
+                        </h3>
+                        <p className="mb-3 font-medium text-[#00ADB5]/80">{exp.company}</p>
+                        {exp.location && (
+                          <p className="mb-3 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
+                            <MapPin className="h-3 w-3" />
+                            {exp.location}
+                          </p>
+                        )}
+                        <p className="text-sm leading-relaxed text-[#EEEEEE]/70">{exp.description}</p>
+                      </motion.div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.section>
+        )}
+
+        {education.length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<GraduationCap className="h-5 w-5" />} title="Education" />
+            <div className="grid gap-6 md:grid-cols-2">
+              {education.map((edu) => (
                 <motion.div
-                  key={exp.id}
+                  key={edu.id}
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                  className={`relative flex flex-col md:flex-row ${index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"}`}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  whileHover={{ scale: 1.02, y: -4 }}
+                  className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50"
                 >
-                  <div className="absolute left-[12px] top-0 z-10 h-4 w-4 rounded-full border-4 border-[#222831] bg-[#00ADB5] md:left-1/2 md:-translate-x-1/2" />
-                  
-                  <div className={`ml-12 md:ml-0 md:w-1/2 ${index % 2 === 0 ? "md:pr-12 md:text-right" : "md:pl-12"}`}>
-                    <motion.div
-                      whileHover={{ scale: 1.02, y: -4 }}
-                      className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50 hover:bg-[#393E46]/20"
-                    >
-                      <div className={`mb-2 flex items-center gap-2 text-sm text-[#00ADB5] ${index % 2 === 0 ? "md:justify-end" : ""}`}>
-                        <Calendar className="h-4 w-4" />
-                        {format(new Date(exp.start_date), "MMM yyyy")} - {exp.is_current || !exp.end_date ? "Present" : format(new Date(exp.end_date), "MMM yyyy")}
-                      </div>
-                      <h3 className="mb-1 text-xl font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                        {exp.position}
-                      </h3>
-                      <p className="mb-3 font-medium text-[#00ADB5]/80">{exp.company}</p>
-                      {exp.location && (
-                        <p className="mb-3 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
-                          <MapPin className="h-3 w-3" />
-                          {exp.location}
-                        </p>
-                      )}
-                      <p className="text-sm leading-relaxed text-[#EEEEEE]/70">{exp.description}</p>
-                    </motion.div>
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                      <GraduationCap className="h-6 w-6 text-[#00ADB5]" />
+                    </div>
+                    <span className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs font-medium text-[#EEEEEE]/70">
+                      {edu.start_year}{edu.end_year && edu.end_year !== edu.start_year ? ` - ${edu.end_year}` : ""}
+                    </span>
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                    {edu.degree}
+                  </h3>
+                  <p className="mb-1 font-medium text-[#00ADB5]/80">{edu.institution}</p>
+                  {edu.location && (
+                    <p className="mb-4 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
+                      <MapPin className="h-3 w-3" />
+                      {edu.location}
+                    </p>
+                  )}
+                  {edu.gpa && (
+                    <p className="mb-3 text-sm text-[#EEEEEE]/70">GPA: {edu.gpa}</p>
+                  )}
+                  {edu.highlights.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {edu.highlights.map((highlight) => (
+                        <span
+                          key={highlight}
+                          className="rounded-full bg-[#00ADB5]/10 px-3 py-1 text-xs text-[#00ADB5]"
+                        >
+                          {highlight}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {Object.keys(skillsByCategory).length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Technical Skills" />
+            <div className="space-y-8">
+              {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
+                <motion.div
+                  key={category}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <h3 className="mb-4 text-lg font-semibold text-[#EEEEEE]">{category}</h3>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {categorySkills.map((skill) => (
+                      <motion.div
+                        key={skill.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        className="group relative overflow-hidden rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-medium text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                            {skill.name}
+                          </span>
+                          <span className="text-sm text-[#00ADB5]">{skill.proficiency}%</span>
+                        </div>
+                        <div className="h-2 w-full overflow-hidden rounded-full bg-[#393E46]/50">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            whileInView={{ width: `${skill.proficiency}%` }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, delay: 0.2 }}
+                            className="h-full rounded-full bg-gradient-to-r from-[#00ADB5] to-[#00ADB5]/70"
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
                 </motion.div>
               ))}
             </div>
-          </div>
-        </motion.section>
-      )}
+          </motion.section>
+        )}
 
-      {education.length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: educationY }}
-        >
-          <SectionHeader icon={<GraduationCap className="h-5 w-5" />} title="Education" />
-          <div className="grid gap-6 md:grid-cols-2">
-            {education.map((edu) => (
-              <motion.div
-                key={edu.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 transition-all hover:border-[#00ADB5]/50"
-              >
-                <div className="mb-4 flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#00ADB5]/10">
-                    <GraduationCap className="h-6 w-6 text-[#00ADB5]" />
+        {certifications.length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<Award className="h-5 w-5" />} title="Certifications" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {certifications.map((cert) => (
+                <motion.div
+                  key={cert.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  className="group flex items-center gap-4 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
+                >
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#00ADB5]/10">
+                    <Award className="h-6 w-6 text-[#00ADB5]" />
                   </div>
-                  <span className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs font-medium text-[#EEEEEE]/70">
-                    {edu.start_year}{edu.end_year && edu.end_year !== edu.start_year ? ` - ${edu.end_year}` : ""}
-                  </span>
-                </div>
-                <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                  {edu.degree}
-                </h3>
-                <p className="mb-1 font-medium text-[#00ADB5]/80">{edu.institution}</p>
-                {edu.location && (
-                  <p className="mb-4 flex items-center gap-1 text-sm text-[#EEEEEE]/50">
-                    <MapPin className="h-3 w-3" />
-                    {edu.location}
-                  </p>
-                )}
-                {edu.gpa && (
-                  <p className="mb-3 text-sm text-[#EEEEEE]/70">GPA: {edu.gpa}</p>
-                )}
-                {edu.highlights.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {edu.highlights.map((highlight) => (
-                      <span
-                        key={highlight}
-                        className="rounded-full bg-[#00ADB5]/10 px-3 py-1 text-xs text-[#00ADB5]"
-                      >
-                        {highlight}
-                      </span>
-                    ))}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors truncate">
+                      {cert.name}
+                    </h3>
+                    <p className="text-sm text-[#EEEEEE]/60">{cert.issuer} {cert.year && `• ${cert.year}`}</p>
                   </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
+                  {cert.credential_url ? (
+                    <a href={cert.credential_url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
+                    </a>
+                  ) : (
+                    <ChevronRight className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
-      {Object.keys(skillsByCategory).length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: skillsY }}
-        >
-          <SectionHeader icon={<Code2 className="h-5 w-5" />} title="Technical Skills" />
-          <div className="space-y-8">
-            {Object.entries(skillsByCategory).map(([category, categorySkills]) => (
-              <motion.div
-                key={category}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <h3 className="mb-4 text-lg font-semibold text-[#EEEEEE]">{category}</h3>
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {categorySkills.map((skill) => (
+        {languages.length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<Globe className="h-5 w-5" />} title="Languages" />
+            <div className="grid gap-4 sm:grid-cols-3">
+              {languages.map((lang) => (
+                <motion.div
+                  key={lang.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 text-center transition-all hover:border-[#00ADB5]/50"
+                >
+                  <div className="relative mx-auto mb-4 h-20 w-20">
+                    <svg className="h-20 w-20 -rotate-90 transform">
+                      <circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        fill="none"
+                        className="text-[#393E46]/50"
+                      />
+                      <motion.circle
+                        cx="40"
+                        cy="40"
+                        r="36"
+                        stroke="currentColor"
+                        strokeWidth="6"
+                        fill="none"
+                        strokeLinecap="round"
+                        className="text-[#00ADB5]"
+                        initial={{ strokeDasharray: "0 226" }}
+                        whileInView={{ strokeDasharray: `${(lang.proficiency / 100) * 226} 226` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, delay: 0.3 }}
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-lg font-bold text-[#EEEEEE]">{lang.proficiency}%</span>
+                    </div>
+                  </div>
+                  <h3 className="mb-1 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                    {lang.name}
+                  </h3>
+                  <p className="text-sm text-[#00ADB5]/70">{lang.level}</p>
+                </motion.div>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {projects.length > 0 && (
+          <motion.section
+            className="py-16"
+          >
+            <SectionHeader icon={<Folder className="h-5 w-5" />} title="Featured Projects" />
+            <div className="grid gap-6 md:grid-cols-3">
+              {projects.map((project) => (
+                <motion.div
+                  key={project.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <Link href={`/projects/${project.slug}`}>
                     <motion.div
-                      key={skill.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      className="group relative overflow-hidden rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
+                      whileHover={{ scale: 1.03, y: -8 }}
+                      className="group h-full rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 transition-all hover:border-[#00ADB5]/50 hover:shadow-xl hover:shadow-[#00ADB5]/5"
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                          {skill.name}
-                        </span>
-                        <span className="text-sm text-[#00ADB5]">{skill.proficiency}%</span>
+                      <div className="mb-4 flex items-center justify-between">
+                        <Folder className="h-8 w-8 text-[#00ADB5]" />
+                        <ExternalLink className="h-5 w-5 text-[#393E46] transition-colors group-hover:text-[#00ADB5]" />
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-[#393E46]/50">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${skill.proficiency}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 1, delay: 0.2 }}
-                          className="h-full rounded-full bg-gradient-to-r from-[#00ADB5] to-[#00ADB5]/70"
-                        />
+                      <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
+                        {project.title}
+                      </h3>
+                      <p className="mb-4 text-sm text-[#EEEEEE]/60 line-clamp-2">
+                        {project.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {project.tech_stack.slice(0, 3).map((tech) => (
+                          <span
+                            key={tech}
+                            className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs text-[#EEEEEE]/70"
+                          >
+                            {tech}
+                          </span>
+                        ))}
                       </div>
                     </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {certifications.length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: certY }}
-        >
-          <SectionHeader icon={<Award className="h-5 w-5" />} title="Certifications" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            {certifications.map((cert) => (
-              <motion.div
-                key={cert.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                whileHover={{ scale: 1.02, x: 4 }}
-                className="group flex items-center gap-4 rounded-xl border border-[#393E46]/50 bg-[#393E46]/10 p-4 transition-all hover:border-[#00ADB5]/50"
-              >
-                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[#00ADB5]/10">
-                  <Award className="h-6 w-6 text-[#00ADB5]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors truncate">
-                    {cert.name}
-                  </h3>
-                  <p className="text-sm text-[#EEEEEE]/60">{cert.issuer} {cert.year && `• ${cert.year}`}</p>
-                </div>
-                {cert.credential_url ? (
-                  <a href={cert.credential_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
-                  </a>
-                ) : (
-                  <ChevronRight className="h-5 w-5 text-[#393E46] group-hover:text-[#00ADB5] transition-colors" />
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {languages.length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: langY }}
-        >
-          <SectionHeader icon={<Globe className="h-5 w-5" />} title="Languages" />
-          <div className="grid gap-4 sm:grid-cols-3">
-            {languages.map((lang) => (
-              <motion.div
-                key={lang.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className="group rounded-2xl border border-[#393E46]/50 bg-[#393E46]/10 p-6 text-center transition-all hover:border-[#00ADB5]/50"
-              >
-                <div className="relative mx-auto mb-4 h-20 w-20">
-                  <svg className="h-20 w-20 -rotate-90 transform">
-                    <circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      className="text-[#393E46]/50"
-                    />
-                    <motion.circle
-                      cx="40"
-                      cy="40"
-                      r="36"
-                      stroke="currentColor"
-                      strokeWidth="6"
-                      fill="none"
-                      strokeLinecap="round"
-                      className="text-[#00ADB5]"
-                      initial={{ strokeDasharray: "0 226" }}
-                      whileInView={{ strokeDasharray: `${(lang.proficiency / 100) * 226} 226` }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 1, delay: 0.3 }}
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-bold text-[#EEEEEE]">{lang.proficiency}%</span>
-                  </div>
-                </div>
-                <h3 className="mb-1 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                  {lang.name}
-                </h3>
-                <p className="text-sm text-[#00ADB5]/70">{lang.level}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-      )}
-
-      {projects.length > 0 && (
-        <motion.section 
-          className="py-16"
-          style={{ y: projectsY }}
-        >
-          <SectionHeader icon={<Folder className="h-5 w-5" />} title="Featured Projects" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {projects.map((project) => (
-              <motion.div
-                key={project.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <Link href={`/projects/${project.slug}`}>
-                  <motion.div
-                    whileHover={{ scale: 1.03, y: -8 }}
-                    className="group h-full rounded-2xl border border-[#393E46]/50 bg-gradient-to-br from-[#393E46]/20 to-transparent p-6 transition-all hover:border-[#00ADB5]/50 hover:shadow-xl hover:shadow-[#00ADB5]/5"
-                  >
-                    <div className="mb-4 flex items-center justify-between">
-                      <Folder className="h-8 w-8 text-[#00ADB5]" />
-                      <ExternalLink className="h-5 w-5 text-[#393E46] transition-colors group-hover:text-[#00ADB5]" />
-                    </div>
-                    <h3 className="mb-2 text-lg font-bold text-[#EEEEEE] group-hover:text-[#00ADB5] transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="mb-4 text-sm text-[#EEEEEE]/60 line-clamp-2">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.tech_stack.slice(0, 3).map((tech) => (
-                        <span
-                          key={tech}
-                          className="rounded-full bg-[#393E46]/50 px-3 py-1 text-xs text-[#EEEEEE]/70"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </motion.div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mt-8 text-center"
-          >
-            <Link href="/projects">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-6 py-3 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
-              >
-                View All Projects
-                <ChevronRight className="h-4 w-4" />
-              </motion.button>
-            </Link>
-          </motion.div>
-        </motion.section>
-      )}
-
-        <motion.section 
-        className="py-16"
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 md:p-12 text-center">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
-          >
-            Let&apos;s Work Together
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
-          >
-            I&apos;m currently open to new opportunities and exciting projects. 
-            Let&apos;s discuss how we can create something amazing together.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="flex flex-wrap items-center justify-center gap-4"
-          >
-            <Link href="/contact">
-              <motion.button
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 rounded-xl bg-[#00ADB5] px-8 py-4 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
-              >
-                <Mail className="h-5 w-5" />
-                Get in Touch
-              </motion.button>
-            </Link>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 rounded-xl border-2 border-[#393E46] px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="mt-8 text-center"
             >
-              <Download className="h-5 w-5" />
-              Download Resume
-            </motion.button>
-          </motion.div>
-        </div>
-      </motion.section>
+              <Link href="/projects">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#393E46] bg-[#393E46]/20 px-6 py-3 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:text-[#00ADB5]"
+                >
+                  View All Projects
+                  <ChevronRight className="h-4 w-4" />
+                </motion.button>
+              </Link>
+            </motion.div>
+          </motion.section>
+        )}
+
+        <motion.section
+          className="py-16"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+        >
+          <div className="rounded-3xl border border-[#393E46]/50 bg-gradient-to-br from-[#00ADB5]/10 via-[#393E46]/20 to-transparent p-8 md:p-12 text-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mb-4 text-3xl font-bold text-[#EEEEEE] md:text-4xl"
+            >
+              Let&apos;s Work Together
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mx-auto mb-8 max-w-2xl text-[#EEEEEE]/70"
+            >
+              I&apos;m currently open to new opportunities and exciting projects.
+              Let&apos;s discuss how we can create something amazing together.
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="flex flex-wrap items-center justify-center gap-4"
+            >
+              <Link href="/contact">
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center gap-2 rounded-xl bg-[#00ADB5] px-8 py-4 font-semibold text-[#222831] transition-all hover:shadow-lg hover:shadow-[#00ADB5]/25"
+                >
+                  <Mail className="h-5 w-5" />
+                  Get in Touch
+                </motion.button>
+              </Link>
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 rounded-xl border-2 border-[#393E46] px-8 py-4 font-semibold text-[#EEEEEE] transition-all hover:border-[#00ADB5] hover:bg-[#393E46]/20"
+              >
+                <Download className="h-5 w-5" />
+                Download Resume
+              </motion.button>
+            </motion.div>
+          </div>
+        </motion.section>
+      </div>
     </div>
-  </div>
   )
 }
 
@@ -665,7 +649,7 @@ function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="mb-8 flex items-center gap-3"
     >
       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#00ADB5]/10 text-[#00ADB5]">

@@ -1302,31 +1302,17 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
   const containerRef = useRef<HTMLDivElement>(null)
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
-  const smoothX = useSpring(mouseX, { stiffness: 50, damping: 20 })
-  const smoothY = useSpring(mouseY, { stiffness: 50, damping: 20 })
+  const smoothX = useSpring(mouseX, { stiffness: 400, damping: 30 })
+  const smoothY = useSpring(mouseY, { stiffness: 400, damping: 30 })
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
   })
 
-  const smoothProgress = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
-    restDelta: 0.001
-  })
-
-  const headerY = useTransform(smoothProgress, [0, 0.15], [0, -50])
-  const headerOpacity = useTransform(smoothProgress, [0, 0.12], [1, 0])
-
-  const gridY = useTransform(smoothProgress, [0.08, 0.5], [50, -30])
-  const gridScale = useTransform(smoothProgress, [0.08, 0.25], [0.98, 1])
-
-  const categoriesY = useTransform(smoothProgress, [0.35, 0.7], [30, -20])
-
-  const servicesY = useTransform(smoothProgress, [0.65, 0.85], [50, -25])
-
-  const learningY = useTransform(smoothProgress, [0.8, 1], [60, -20])
+  // Raw scroll — no spring for instant parallax
+  const headerY = useTransform(scrollYProgress, [0, 0.15], [0, -30])
+  const headerOpacity = useTransform(scrollYProgress, [0, 0.12], [1, 0])
 
   const skillsByCategory = skills.reduce((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = []
@@ -1377,7 +1363,7 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0.05 }}
             className="text-5xl font-bold text-[#EEEEEE] md:text-7xl lg:text-8xl"
           >
             <span className="inline">Skills & </span>
@@ -1389,7 +1375,7 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.12 }}
             className="mx-auto mt-8 max-w-2xl text-lg text-[#00ADB5]/70"
           >
             A curated collection of technologies, frameworks, and tools I use to build exceptional digital experiences
@@ -1398,7 +1384,7 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
+            transition={{ duration: 0.4, delay: 0.18 }}
             className="mt-12 flex justify-center gap-12"
           >
             <StatsCard value={`${totalSkills}+`} label="Technologies" />
@@ -1432,7 +1418,6 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
 
       <motion.section
         className="relative z-10 min-h-screen py-32"
-        style={{ y: gridY, scale: gridScale }}
       >
         <div className="absolute inset-0 grid-background opacity-50" />
         <div className="relative mx-auto max-w-7xl px-6">
@@ -1498,7 +1483,6 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
 
       <motion.section
         className="relative z-10 py-32"
-        style={{ y: categoriesY }}
       >
         <div className="relative mx-auto max-w-7xl px-6">
           <motion.div
@@ -1549,7 +1533,6 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
       <motion.section
         id="services"
         className="relative z-10 overflow-hidden py-32"
-        style={{ y: servicesY }}
       >
         {/* Animated background elements */}
         <div className="absolute inset-0 grid-background opacity-50" />
@@ -1614,7 +1597,6 @@ export function SkillsContent({ skills, allServices }: { skills: Skill[]; allSer
 
       <motion.section
         className="relative z-10 py-32"
-        style={{ y: learningY }}
       >
         <div className="absolute inset-0 grid-background opacity-50" />
         <div className="relative mx-auto max-w-5xl px-6">

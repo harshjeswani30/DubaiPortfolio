@@ -36,10 +36,10 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
   const rotateX = useMotionValue(0)
   const rotateY = useMotionValue(0)
   const scale = useMotionValue(1)
-  const smoothRotateX = useSpring(rotateX, { stiffness: 150, damping: 15, mass: 0.1 })
-  const smoothRotateY = useSpring(rotateY, { stiffness: 150, damping: 15, mass: 0.1 })
-  const smoothScale = useSpring(scale, { stiffness: 200, damping: 20, mass: 0.2 })
-  const glowOpacity = useSpring(0, { stiffness: 200, damping: 25, mass: 0.3 })
+  const smoothRotateX = useSpring(rotateX, { stiffness: 500, damping: 30, mass: 0.1 })
+  const smoothRotateY = useSpring(rotateY, { stiffness: 500, damping: 30, mass: 0.1 })
+  const smoothScale = useSpring(scale, { stiffness: 400, damping: 25, mass: 0.1 })
+  const glowOpacity = useSpring(0, { stiffness: 400, damping: 30, mass: 0.2 })
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
@@ -57,7 +57,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
     const maxRotation = 12
     rotateX.set(-normalizedY * maxRotation)
     rotateY.set(normalizedX * maxRotation)
-    
+
     setMousePosition({ x, y })
   }
 
@@ -110,8 +110,8 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
       initial={{ opacity: 0, y: 60, scale: 0.95 }}
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{
-        duration: 0.5,
-        delay: index * 0.08,
+        duration: 0.3,
+        delay: index * 0.05,
         ease: [0.16, 1, 0.3, 1]
       }}
       onMouseMove={handleMouseMove}
@@ -149,7 +149,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
             }}
           />
 
-          <div 
+          <div
             className="relative h-full overflow-hidden rounded-2xl border border-[#393E46]/60 bg-gradient-to-br from-[#2a2f38]/90 via-[#222831] to-[#1a1e24] backdrop-blur-sm transition-all duration-500 group-hover:border-[#00ADB5]/50 group-hover:shadow-2xl group-hover:shadow-[#00ADB5]/10"
             style={{ transform: 'translateZ(20px)' }}
           >
@@ -186,11 +186,11 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               ) : project.featured_image ? (
                 <motion.div
                   className="h-full w-full"
-                  animate={{ 
+                  animate={{
                     scale: isHovered ? 1.08 : 1,
                   }}
-                  transition={{ 
-                    duration: 0.7, 
+                  transition={{
+                    duration: 0.7,
                     ease: [0.34, 1.56, 0.64, 1]
                   }}
                 >
@@ -293,7 +293,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
               </motion.div>
             </div>
 
-            <motion.div 
+            <motion.div
               className="relative p-5"
               style={{ transform: 'translateZ(30px)' }}
             >
@@ -314,7 +314,7 @@ function ProjectCard({ project, index, isInView, totalProjects }: { project: Pro
                   }}
                   whileHover={{ scale: 1.15 }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ 
+                  transition={{
                     type: "spring",
                     stiffness: 300,
                     damping: 20,
@@ -431,11 +431,10 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
     offset: ["start end", "end start"],
   })
 
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 150, damping: 25, mass: 0.5 })
-  const bgY = useTransform(smoothProgress, [0, 1], ["0%", "12%"])
-  const titleY = useTransform(smoothProgress, [0, 1], [30, -15])
-  const orbY = useTransform(smoothProgress, [0, 1], ["0%", "20%"])
-  const orb2Y = useTransform(smoothProgress, [0, 1], ["5%", "-10%"])
+  // Raw scroll progress — no spring for crisp parallax
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"])
+  const orbY = useTransform(scrollYProgress, [0, 1], ["0%", "8%"])
+  const orb2Y = useTransform(scrollYProgress, [0, 1], ["3%", "-6%"])
 
   const categories = [...new Set(projects.map(p => p.category))]
   const filteredProjects = activeFilter
@@ -458,29 +457,29 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           className="absolute top-24 left-[8%]"
-          animate={{ y: [0, -15, 0], rotate: [0, 8, 0] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, -10, 0], rotate: [0, 6, 0] }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         >
           <Layers className="h-7 w-7 text-[#00ADB5]/8" />
         </motion.div>
         <motion.div
           className="absolute top-36 right-[12%]"
-          animate={{ y: [0, 12, 0], rotate: [0, -4, 0] }}
-          transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
+          animate={{ y: [0, 8, 0], rotate: [0, -3, 0] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
         >
           <Code2 className="h-9 w-9 text-[#EEEEEE]/4" />
         </motion.div>
         <motion.div
           className="absolute bottom-28 left-[18%]"
-          animate={{ y: [0, 10, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          animate={{ y: [0, 7, 0], scale: [1, 1.05, 1] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
         >
           <Star className="h-5 w-5 text-[#00ADB5]/12" />
         </motion.div>
         <motion.div
           className="absolute top-1/2 right-[8%]"
-          animate={{ y: [0, -8, 0], rotate: [0, 180, 360] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ y: [0, -6, 0], rotate: [0, 180, 360] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
         >
           <Zap className="h-6 w-6 text-[#00ADB5]/6" />
         </motion.div>
@@ -488,10 +487,9 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 35 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{ y: titleY }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14"
         >
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
@@ -499,7 +497,7 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={isInView ? { scale: 1, opacity: 1 } : {}}
-                transition={{ type: "spring", duration: 0.5 }}
+                transition={{ duration: 0.2 }}
                 className="mb-5 inline-flex items-center gap-2.5 rounded-full border border-[#00ADB5]/20 bg-[#00ADB5]/5 px-4 py-2"
               >
                 <motion.div
@@ -542,18 +540,18 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
 
               <motion.p
                 className="mt-4 text-base text-[#EEEEEE]/45 leading-relaxed"
-                initial={{ opacity: 0, y: 15 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: 0.25, duration: 0.5 }}
+                transition={{ delay: 0.15, duration: 0.25 }}
               >
                 A curated selection of my recent work showcasing modern solutions and creative problem-solving.
               </motion.p>
             </div>
 
             <motion.div
-              initial={{ opacity: 0, x: 15 }}
+              initial={{ opacity: 0, x: 10 }}
               animate={isInView ? { opacity: 1, x: 0 } : {}}
-              transition={{ delay: 0.35, duration: 0.5 }}
+              transition={{ delay: 0.15, duration: 0.25 }}
               className="flex flex-col gap-3"
             >
               {categories.length > 1 && (

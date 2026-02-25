@@ -4,12 +4,13 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/providers/theme-provider"
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
 import { PageTransitionProvider } from "@/components/providers/page-transition-provider"
+import { QueryProvider } from "@/components/providers/query-provider"
+import { GlobalPrefetcher } from "@/components/providers/global-prefetcher"
 
 import { Footer } from "@/components/layout/footer"
 import { FloatingNav } from "@/components/layout/floating-nav"
 import { ScrollProgress } from "@/components/ui/scroll-progress"
 import { CommandPalette } from "@/components/ui/command-palette"
-import { CircleTrailCursor } from "@/components/ui/circle-trail-cursor"
 
 
 
@@ -69,20 +70,24 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-          className={`${geistSans.variable} ${geistMono.variable} ${cardo.variable} bg-black antialiased`}
-        >
-        <FloatingNav />
-        <ThemeProvider>
-          <PageTransitionProvider>
+        className={`${geistSans.variable} ${geistMono.variable} ${cardo.variable} bg-black antialiased`}
+      >
+        <QueryProvider>
+          {/* Fires all public queries on first load → stores in localStorage */}
+          <GlobalPrefetcher />
+          <FloatingNav />
+          <ThemeProvider>
+            <PageTransitionProvider>
               <SmoothScrollProvider>
-                  {/* <CircleTrailCursor fillColor="#00ADB5" /> Disabled for performance */}
+                {/* <CircleTrailCursor fillColor="#00ADB5" /> Disabled for performance */}
                 <ScrollProgress />
                 <CommandPalette />
                 <main className="min-h-screen">{children}</main>
                 <Footer />
               </SmoothScrollProvider>
             </PageTransitionProvider>
-            </ThemeProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   )

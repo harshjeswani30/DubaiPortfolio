@@ -39,8 +39,8 @@ function MagneticButton({ children, href, variant = "primary" }: MagneticButtonP
 
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const springX = useSpring(x, { stiffness: 150, damping: 15 })
-  const springY = useSpring(y, { stiffness: 150, damping: 15 })
+  const springX = useSpring(x, { stiffness: 500, damping: 30 })
+  const springY = useSpring(y, { stiffness: 500, damping: 30 })
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!buttonRef.current) return
@@ -84,7 +84,7 @@ function MagneticButton({ children, href, variant = "primary" }: MagneticButtonP
           <span>{children}</span>
           <motion.div
             animate={{ x: isHovered ? 4 : 0 }}
-            transition={{ type: "spring", stiffness: 400 }}
+            transition={{ type: "spring", stiffness: 600, damping: 30 }}
           >
             <ArrowRight className="h-4 w-4" />
           </motion.div>
@@ -149,13 +149,13 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [4, -4]), { stiffness: 100, damping: 20 })
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-4, 4]), { stiffness: 100, damping: 20 })
-  const translateX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), { stiffness: 100, damping: 20 })
-  const translateY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-10, 10]), { stiffness: 100, damping: 20 })
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [4, -4]), { stiffness: 400, damping: 30 })
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-4, 4]), { stiffness: 400, damping: 30 })
+  const translateX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), { stiffness: 400, damping: 30 })
+  const translateY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-10, 10]), { stiffness: 400, damping: 30 })
 
-  const glowX = useSpring(useTransform(mouseX, [-0.5, 0.5], [20, 80]), { stiffness: 100, damping: 20 })
-  const glowY = useSpring(useTransform(mouseY, [-0.5, 0.5], [20, 80]), { stiffness: 100, damping: 20 })
+  const glowX = useSpring(useTransform(mouseX, [-0.5, 0.5], [20, 80]), { stiffness: 400, damping: 30 })
+  const glowY = useSpring(useTransform(mouseY, [-0.5, 0.5], [20, 80]), { stiffness: 400, damping: 30 })
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return
@@ -183,13 +183,13 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
 
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          animate={{ opacity: [0.15, 0.25, 0.15], scale: [1, 1.1, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ opacity: [0.15, 0.25, 0.15], scale: [1, 1.08, 1] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
           className="absolute left-1/4 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#00ADB5]/10 blur-[120px]"
         />
         <motion.div
-          animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.15, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.12, 1] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut", delay: 2 }}
           className="absolute right-1/4 top-1/2 h-[400px] w-[400px] translate-x-1/2 -translate-y-1/2 rounded-full bg-[#393E46]/30 blur-[100px]"
         />
       </div>
@@ -197,9 +197,9 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
       <div className="relative mx-auto max-w-5xl px-6" style={{ perspective: 1000 }}>
         <motion.div
           ref={cardRef}
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 25 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{
@@ -236,12 +236,12 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ delay: 0.2, duration: 0.5 }}
+                transition={{ delay: 0.15, duration: 0.5 }}
                 className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#00ADB5]/30 bg-[#00ADB5]/10 px-4 py-2"
               >
                 <motion.span
                   animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
                   className="h-2 w-2 rounded-full bg-[#00ADB5]"
                 />
                 <span className="text-sm font-medium text-[#00ADB5]">{availabilityText}</span>
@@ -250,9 +250,9 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
             )}
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              transition={{ delay: 0.2, duration: 0.35 }}
               className="text-4xl font-bold text-[#EEEEEE] md:text-5xl lg:text-6xl"
             >
               {title}{" "}
@@ -260,9 +260,9 @@ export function CTASection({ ctaData, siteSettings }: CTASectionProps) {
             </motion.h2>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              transition={{ delay: 0.25, duration: 0.35 }}
               className="mx-auto mt-5 max-w-lg text-lg text-[#EEEEEE]/60"
             >
               {description}

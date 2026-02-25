@@ -57,7 +57,7 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
 
   useEffect(() => {
     tlRef.current = gsap.timeline({ paused: true })
-    
+
     return () => {
       tlRef.current?.kill()
     }
@@ -110,22 +110,22 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
-    return (
+  return (
+    <div
+      ref={navRef}
+      className="side-menu fixed inset-0 z-[100] hidden"
+      style={{ width: '100%', height: '100vh', overscrollBehavior: 'contain' }}
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
       <div
-        ref={navRef}
-        className="side-menu fixed inset-0 z-[100] hidden"
-        style={{ width: '100%', height: '100vh', overscrollBehavior: 'contain' }}
-        onWheel={(e) => e.stopPropagation()}
-        onTouchMove={(e) => e.stopPropagation()}
-      >
-        <div
-          ref={overlayRef}
-          onClick={onClose}
-          className="absolute inset-0 z-0 cursor-pointer bg-[#131313]/40"
-          style={{ opacity: 0 }}
-          onWheel={(e) => e.preventDefault()}
-          onTouchMove={(e) => e.preventDefault()}
-        />
+        ref={overlayRef}
+        onClick={onClose}
+        className="absolute inset-0 z-0 cursor-pointer bg-[#131313]/40"
+        style={{ opacity: 0 }}
+        onWheel={(e) => e.preventDefault()}
+        onTouchMove={(e) => e.preventDefault()}
+      />
 
       <nav
         ref={menuRef}
@@ -160,9 +160,9 @@ export function SideMenu({ isOpen, onClose }: SideMenuProps) {
                     pathname === link.href ? "text-[#00ADB5]" : "text-[#EEEEEE]"
                   )}
                 >
-                  <p 
+                  <p
                     className="relative z-10 m-0 font-bold uppercase leading-[0.75] transition-transform duration-500"
-                    style={{ 
+                    style={{
                       fontFamily: "'PP Neue Corp Tight', Arial, sans-serif",
                       fontSize: 'clamp(2.5rem, 5.625vw, 5.625rem)',
                       textShadow: '0px 1em 0px #393E46'
@@ -214,29 +214,29 @@ interface MenuButtonProps {
 }
 
 export function MenuButton({ isOpen, onClick, className }: MenuButtonProps) {
-    return (
-      <button
-        onClick={onClick}
-        className={cn(
-          "group flex items-center gap-2.5 border-none bg-transparent p-4 -m-4",
-          className
-        )}
-      >
-        <div className="flex h-5 flex-col items-end justify-start overflow-hidden">
-          <p 
-            className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
-            style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
-          >
-            Menu
-          </p>
-          <p 
-            className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
-            style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
-          >
-            Close
-          </p>
-        </div>
-      <div 
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "group flex items-center gap-2.5 border-none bg-transparent p-4 -m-4",
+        className
+      )}
+    >
+      <div className="flex h-5 flex-col items-end justify-start overflow-hidden">
+        <p
+          className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
+          style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
+        >
+          Menu
+        </p>
+        <p
+          className="m-0 text-sm font-medium text-[#EEEEEE] transition-transform duration-300 leading-5"
+          style={{ transform: isOpen ? 'translateY(-100%)' : 'translateY(0)' }}
+        >
+          Close
+        </p>
+      </div>
+      <div
         className="transition-transform duration-300"
         style={{ transform: isOpen ? 'rotate(315deg)' : 'rotate(0deg)' }}
       >
